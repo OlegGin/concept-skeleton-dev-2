@@ -56,6 +56,11 @@ abstract class FormRequest implements FormRequestInterface
         protected readonly ?CasterInterface $caster = null,
     ) {}
 
+    public function httpRequest(): ServerRequestInterface
+    {
+        return $this->request;
+    }
+
     /**
      * @return array<string, string>|array<string, string[]>
      */

@@ -98,9 +98,7 @@ final class ResponseFactory implements ResponseFactoryInterface
             $url = $request->getAttribute(RequestAttribute::SAFE_BACK_URL);
         }
 
-        $target = (is_string($url) && $url !== '' && $this->isInternalUrl($request, $url))
-            ? $url
-            : $fallback;
+        $target = (is_string($url) && $url !== '' && $this->isInternalUrl($request, $url)) ? $url : $fallback;
 
         return new RedirectResponse($target, $status);
     }

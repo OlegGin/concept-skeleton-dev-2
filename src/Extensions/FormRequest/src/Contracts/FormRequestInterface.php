@@ -2,8 +2,12 @@
 
 namespace Concept\Extensions\FormRequest\Contracts;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 interface FormRequestInterface
 {
+    public function httpRequest(): ServerRequestInterface;
+
     /**
      * @return array<string, string|list<string>>
      */
