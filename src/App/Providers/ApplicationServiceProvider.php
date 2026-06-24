@@ -10,6 +10,7 @@ use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
 use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
 use Concept\Core\Providers\Http\HttpServiceProvider as CoreHttpServiceProvider;
 use Concept\Extensions\CastingValinor\CastingServiceProvider;
+use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
@@ -51,6 +52,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new CsrfServiceProvider());
         $this->registerRoutingProvider();
         $container->addServiceProvider(new HttpServiceProvider());
+        $this->registerConsoleProvider();
         $this->registerMiddlewareBindings();
         $this->registerViewProvider();
         $this->registerTwigViewProvider();
@@ -145,6 +147,21 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             logDbQueries: filter_var($_ENV['LOG_DB_QUERIES'] ?? $logging['db_queries'], FILTER_VALIDATE_BOOL),
             queryLogPath: $this->root . '/storage/logs/query.log',
             logMaxFiles: filter_var($_ENV['LOG_MAX_FILES'] ?? $logging['max_files'], FILTER_VALIDATE_INT) ?: $logging['max_files'],
+        ));
+    }
+
+    private function registerConsoleProvider(): void
+    {
+        /** @var array{commands: list<class-string<\Symfony\Component\Console\Command\Command>>} $config */
+        $config = require $this->root . '/config/commands.php';
+
+        $appName = $_ENV['APP_NAME'] ?? 'Concept';
+        $appVersion = $_ENV['APP_VERSION'] ?? '1.0.0';
+
+        $this->getContainer()->addServiceProvider(new ConsoleSymfonyServiceProvider(
+            appName: is_string($appName) ? $appName : 'Concept',
+            appVersion: is_string($appVersion) ? $appVersion : '1.0.0',
+            commands: $config['commands'],
         ));
     }
 

@@ -98,6 +98,13 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/ConsoleSymfony",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {
@@ -127,9 +134,11 @@
         "php-concept/extension-web": "@dev",
         "php-concept/extension-data-masker": "@dev",
         "php-concept/extension-logger-monolog": "@dev",
-        "php-concept/extension-database-eloquent": "@dev"
+        "php-concept/extension-database-eloquent": "@dev",
+        "php-concept/extension-console-symfony": "@dev"
     },
     "scripts": {
-        "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G"
+        "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G",
+        "console": "php bin/console.php"
     }
 }
