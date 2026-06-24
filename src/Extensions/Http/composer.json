@@ -1,0 +1,26 @@
+{
+    "name": "php-concept/extension-http",
+    "description": "Concept HTTP extension — responses, URLs, route introspection",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\Http\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "php-concept/core-2": "@dev",
+        "laminas/laminas-diactoros": "^3.8",
+        "league/route": "^6.2"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/concept-core-2",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+}
