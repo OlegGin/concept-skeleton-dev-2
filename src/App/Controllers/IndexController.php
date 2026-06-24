@@ -2,32 +2,27 @@
 
 namespace Concept\App\Controllers;
 
-use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
-use Laminas\Diactoros\Response;
+use Concept\App\Http\Dto\LoginDto;
+use Concept\App\Http\LoginFormResponse;
+use Concept\App\Http\Requests\LoginRequest;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 class IndexController
 {
-    public function __construct(
-        private readonly ResponseFactoryInterface $response
-    ) {}
-
     public function index(): ResponseInterface
     {
-        $response = new Response();
-        $response->getBody()->write('body');
-
-        return $response;
+        return LoginFormResponse::create();
     }
 
-    public function edit(ServerRequestInterface $request, int $id): ResponseInterface
+    public function login(LoginRequest $request): ResponseInterface
     {
-        var_dump($id, $request->getAttributes());
+        $dto = $request->toDto();
+        if (!$dto instanceof LoginDto) {
+            return LoginFormResponse::create(success: 'Validated, but DTO mapping failed.');
+        }
 
-        $response = new Response();
-        $response->getBody()->write('body');
-
-        return $response;
+        return LoginFormResponse::create(
+            success: sprintf('Welcome, %s! (Dto: %s)', $dto->email, $dto::class),
+        );
     }
 }

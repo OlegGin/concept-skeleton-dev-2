@@ -5,13 +5,19 @@ namespace Concept\Extensions\Casting\Routing;
 use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Extensions\Casting\Contracts\CasterInterface;
 use Concept\Extensions\Casting\Exceptions\CastingException;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use ReflectionNamedType;
 use ReflectionParameter;
+use RuntimeException;
 
 final class TypedRouteParameterArgumentResolver implements ArgumentResolverInterface
 {
-    public function __construct(private readonly CasterInterface $caster) {}
+    private const string ERR_CASTER_NOT_REGISTERED = 'CasterInterface is not registered in the container.';
+
+    private ?CasterInterface $caster = null;
+
+    public function __construct(private readonly ContainerInterface $container) {}
 
     public function supports(ReflectionParameter $parameter, array $vars): bool
     {
@@ -41,6 +47,20 @@ final class TypedRouteParameterArgumentResolver implements ArgumentResolverInter
             throw new CastingException('mixed');
         }
 
-        return $this->caster->cast($vars[$parameter->getName()], $type->getName());
+        return $this->caster()->cast($vars[$parameter->getName()], $type->getName());
+    }
+
+    private function caster(): CasterInterface
+    {
+        if ($this->caster === null) {
+            $caster = $this->container->get(CasterInterface::class);
+            if (!$caster instanceof CasterInterface) {
+                throw new RuntimeException(self::ERR_CASTER_NOT_REGISTERED);
+            }
+
+            $this->caster = $caster;
+        }
+
+        return $this->caster;
     }
 }

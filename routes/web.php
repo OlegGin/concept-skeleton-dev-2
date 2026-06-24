@@ -5,4 +5,4 @@ use League\Route\Router;
 
 /** @var Router $router */
 $router->get('/', [IndexController::class, 'index'])->setName('home');
-$router->get('/edit/{id:number}', [IndexController::class, 'edit'])->setName('edit');
+$router->post('/login', [IndexController::class, 'login'])->setName('login');
