@@ -4,7 +4,7 @@ namespace Concept\Extensions\Csrf;
 
 use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
 use Concept\Extensions\Csrf\Protocol\CsrfField;
-use Concept\Extensions\Session\Contracts\SessionInterface;
+use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 
 final class CsrfTokenManager implements CsrfTokenManagerInterface
 {

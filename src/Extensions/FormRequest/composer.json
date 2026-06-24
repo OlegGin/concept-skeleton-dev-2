@@ -11,8 +11,8 @@
     "require": {
         "php": "^8.4",
         "php-concept/core-2": "@dev",
-        "php-concept/extension-casting": "@dev",
-        "php-concept/extension-validation": "@dev",
+        "php-concept/extension-casting-valinor": "@dev",
+        "php-concept/extension-validation-rakit": "@dev",
         "php-concept/extension-csrf": "@dev",
         "league/container": "^5.1",
         "psr/http-message": "^2.0"
@@ -27,14 +27,14 @@
         },
         {
             "type": "path",
-            "url": "../Casting",
+            "url": "../CastingValinor",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "../Validation",
+            "url": "../ValidationRakit",
             "options": {
                 "symlink": true
             }

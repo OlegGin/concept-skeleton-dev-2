@@ -127,7 +127,7 @@ src/Extensions/{Name}/              # корінь пакета (майбутн�
 
 ### Validation extension (`php-concept/extension-validation`)
 
-Namespace: `Concept\Extensions\Validation\` → `src/Extensions/Validation/src/`
+Namespace: `Concept\Extensions\ValidationRakit\` → `src/Extensions/ValidationRakit/src/`
 
 ```
 Validation/
@@ -160,7 +160,7 @@ FormRequest/
 
 ### Casting extension (`php-concept/extension-casting`)
 
-Namespace: `Concept\Extensions\Casting\` → `src/Extensions/Casting/src/`
+Namespace: `Concept\Extensions\CastingValinor\` → `src/Extensions/CastingValinor/src/`
 
 ```
 Casting/

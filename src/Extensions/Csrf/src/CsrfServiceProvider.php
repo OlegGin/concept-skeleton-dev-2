@@ -4,7 +4,7 @@ namespace Concept\Extensions\Csrf;
 
 use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
 use Concept\Extensions\Csrf\Middleware\VerifyCsrfTokenMiddleware;
-use Concept\Extensions\Session\Contracts\SessionInterface;
+use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 final class CsrfServiceProvider extends AbstractServiceProvider

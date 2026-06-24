@@ -2,7 +2,7 @@
 
 namespace Concept\App\Http\Dto;
 
-use Concept\Extensions\Casting\Dto\Dto;
+use Concept\Extensions\CastingValinor\Dto\Dto;
 
 final class LoginDto extends Dto
 {

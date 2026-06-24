@@ -1,0 +1,26 @@
+{
+    "name": "php-concept/extension-session-symfony",
+    "description": "Concept Session extension — session and flash bag",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\SessionSymfony\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "php-concept/core-2": "@dev",
+        "symfony/http-foundation": "^7.2",
+        "league/container": "^5.1"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/concept-core-2",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+}

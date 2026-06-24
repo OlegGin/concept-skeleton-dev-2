@@ -6,7 +6,7 @@ use Concept\Extensions\Http\Protocol\HttpHeader;
 use Concept\Extensions\Http\Protocol\HttpMethod;
 use Concept\Extensions\Http\Protocol\HttpValue;
 use Concept\Extensions\Http\Requests\RequestAttribute;
-use Concept\Extensions\Session\Contracts\SessionInterface;
+use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use Concept\Extensions\Web\Protocol\UrlSessionKey;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

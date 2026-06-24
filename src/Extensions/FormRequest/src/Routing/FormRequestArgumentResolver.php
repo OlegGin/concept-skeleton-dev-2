@@ -5,7 +5,7 @@ namespace Concept\Extensions\FormRequest\Routing;
 use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Extensions\FormRequest\Contracts\FormRequestFactoryInterface;
 use Concept\Extensions\FormRequest\Contracts\FormRequestInterface;
-use Concept\Extensions\Validation\Exceptions\ValidationException;
+use Concept\Extensions\ValidationRakit\Exceptions\ValidationException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use ReflectionNamedType;

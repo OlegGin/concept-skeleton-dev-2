@@ -5,7 +5,7 @@ namespace Concept\App\Middleware;
 use Concept\App\Session\SessionKey;
 use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
 use Concept\Extensions\Http\Requests\RequestAttribute;
-use Concept\Extensions\Session\Contracts\FlashBagInterface;
+use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

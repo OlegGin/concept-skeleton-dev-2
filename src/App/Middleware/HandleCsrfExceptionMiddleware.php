@@ -6,7 +6,7 @@ use Concept\Extensions\Csrf\Exceptions\CsrfException;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Protocol\HttpStatusCode;
 use Concept\Extensions\Http\Requests\RequestFormat;
-use Concept\Extensions\Session\Contracts\FlashBagInterface;
+use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

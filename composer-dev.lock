@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "869300f9500a11d885f4823900df788d",
+    "content-hash": "5f25ab7b35d3de45910a28c825aea6ce",
     "packages": [
         {
             "name": "cuyz/valinor",
@@ -609,12 +609,12 @@
             }
         },
         {
-            "name": "php-concept/extension-casting",
+            "name": "php-concept/extension-casting-valinor",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "src/Extensions/Casting",
-                "reference": "242fa7fbb36a5d458921008d399c539729e04b46"
+                "url": "src/Extensions/CastingValinor",
+                "reference": "92b499cfa40545df077767c4d24790a7780acbfd"
             },
             "require": {
                 "cuyz/valinor": "^2.0",
@@ -625,7 +625,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Concept\\Extensions\\Casting\\": "src/"
+                    "Concept\\Extensions\\CastingValinor\\": "src/"
                 }
             },
             "license": [
@@ -643,14 +643,14 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/Csrf",
-                "reference": "4899213687c689c7ceab66137af37892def65ccd"
+                "reference": "14ad2abdc3bf24051e65f34b36d727bc5f96405b"
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
                 "php-concept/core-2": "@dev",
                 "php-concept/extension-http": "@dev",
-                "php-concept/extension-session": "@dev",
+                "php-concept/extension-session-symfony": "@dev",
                 "psr/http-message": "^2.0",
                 "psr/http-server-middleware": "^1.0"
             },
@@ -702,15 +702,15 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/FormRequest",
-                "reference": "b9873ba13a94c354b3b54ef845d0bf3328b74d50"
+                "reference": "a10a8cb37b248cc54d0ff38f3d05e2e505c43aa8"
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
                 "php-concept/core-2": "@dev",
-                "php-concept/extension-casting": "@dev",
+                "php-concept/extension-casting-valinor": "@dev",
                 "php-concept/extension-csrf": "@dev",
-                "php-concept/extension-validation": "@dev",
+                "php-concept/extension-validation-rakit": "@dev",
                 "psr/http-message": "^2.0"
             },
             "type": "library",
@@ -789,12 +789,12 @@
             }
         },
         {
-            "name": "php-concept/extension-session",
+            "name": "php-concept/extension-session-symfony",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "src/Extensions/Session",
-                "reference": "0e6627670715a4ba3eb5aec4a71158c5147f2eda"
+                "url": "src/Extensions/SessionSymfony",
+                "reference": "2a8aeb3e29779655728cf76817aa623fc142d54c"
             },
             "require": {
                 "league/container": "^5.1",
@@ -805,7 +805,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Concept\\Extensions\\Session\\": "src/"
+                    "Concept\\Extensions\\SessionSymfony\\": "src/"
                 }
             },
             "license": [
@@ -818,12 +818,12 @@
             }
         },
         {
-            "name": "php-concept/extension-validation",
+            "name": "php-concept/extension-validation-rakit",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "src/Extensions/Validation",
-                "reference": "d61bb79fe24fb5243650e2452cc44030eac8e1e5"
+                "url": "src/Extensions/ValidationRakit",
+                "reference": "cd203f644ad5226ac8d9336efda24a748ec6d5aa"
             },
             "require": {
                 "league/container": "^5.1",
@@ -835,7 +835,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Concept\\Extensions\\Validation\\": "src/"
+                    "Concept\\Extensions\\ValidationRakit\\": "src/"
                 }
             },
             "license": [
@@ -913,13 +913,13 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/Web",
-                "reference": "392f1fc4a90188594ac23784109ee07db3e2e259"
+                "reference": "76f5591d9f1237107600e392eb177353e2a4f139"
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
                 "php-concept/extension-http": "@dev",
-                "php-concept/extension-session": "@dev",
+                "php-concept/extension-session-symfony": "@dev",
                 "psr/http-message": "^2.0",
                 "psr/http-server-middleware": "^1.0"
             },
@@ -1786,12 +1786,12 @@
     "stability-flags": {
         "php-concept/core-2": 20,
         "php-concept/extension-http": 20,
-        "php-concept/extension-casting": 20,
+        "php-concept/extension-casting-valinor": 20,
         "php-concept/extension-form-request": 20,
-        "php-concept/extension-validation": 20,
+        "php-concept/extension-validation-rakit": 20,
         "php-concept/extension-view": 20,
         "php-concept/extension-view-twig": 20,
-        "php-concept/extension-session": 20,
+        "php-concept/extension-session-symfony": 20,
         "php-concept/extension-csrf": 20,
         "php-concept/extension-json": 20,
         "php-concept/extension-web": 20,

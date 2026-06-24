@@ -1,0 +1,26 @@
+{
+    "name": "php-concept/extension-casting-valinor",
+    "description": "Concept Casting extension — Valinor caster and typed route parameter resolving",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\CastingValinor\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "php-concept/core-2": "@dev",
+        "cuyz/valinor": "^2.0",
+        "league/container": "^5.1"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/concept-core-2",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+}

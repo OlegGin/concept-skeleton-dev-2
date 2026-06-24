@@ -17,7 +17,7 @@
         },
         {
             "type": "path",
-            "url": "src/Extensions/Casting",
+            "url": "src/Extensions/CastingValinor",
             "options": {
                 "symlink": true
             }
@@ -31,7 +31,7 @@
         },
         {
             "type": "path",
-            "url": "src/Extensions/Validation",
+            "url": "src/Extensions/ValidationRakit",
             "options": {
                 "symlink": true
             }
@@ -52,7 +52,7 @@
         },
         {
             "type": "path",
-            "url": "src/Extensions/Session",
+            "url": "src/Extensions/SessionSymfony",
             "options": {
                 "symlink": true
             }
@@ -102,12 +102,12 @@
     "require": {
         "php-concept/core-2": "@dev",
         "php-concept/extension-http": "@dev",
-        "php-concept/extension-casting": "@dev",
+        "php-concept/extension-casting-valinor": "@dev",
         "php-concept/extension-form-request": "@dev",
-        "php-concept/extension-validation": "@dev",
+        "php-concept/extension-validation-rakit": "@dev",
         "php-concept/extension-view": "@dev",
         "php-concept/extension-view-twig": "@dev",
-        "php-concept/extension-session": "@dev",
+        "php-concept/extension-session-symfony": "@dev",
         "php-concept/extension-csrf": "@dev",
         "php-concept/extension-json": "@dev",
         "php-concept/extension-web": "@dev",
