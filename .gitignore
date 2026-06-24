@@ -1,0 +1,6 @@
+/.idea
+/.cursor
+/.phpunit.cache
+/storage
+/vendor
+.env

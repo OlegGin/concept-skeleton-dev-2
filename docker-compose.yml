@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    container_name: concept_skeleton_dev_2
+    user: "${UID:-1000}:${GID:-1000}"
+    ports:
+      - "8088:80"
+    volumes:
+      - .:/var/www/html
+      - ../concept-core-2:/var/www/concept-core-2
+      - ./docker/apache/vhost.conf:/etc/apache2/sites-available/000-default.conf
+      - ./docker/php/error-reporting.ini:/usr/local/etc/php/conf.d/error-reporting.ini
+    environment:
+      - MYSQL_HOST=db
+      - COMPOSER=composer-dev.json
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.4
+    command: --mysql-native-password=ON
+    container_name: concept_skeleton_dev_db_2
+    environment:
+      MYSQL_DATABASE: concept_skeleton_dev_db_2
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3366:3306"

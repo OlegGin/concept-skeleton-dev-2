@@ -1,0 +1,32 @@
+{
+    "name": "php-concept/framework",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/concept-core-2",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Concept\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1"
+    },
+    "require": {
+        "php-concept/core-2": "@dev"
+    },
+    "scripts": {
+        "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G"
+    }
+}
