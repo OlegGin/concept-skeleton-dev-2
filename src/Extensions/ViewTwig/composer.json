@@ -1,0 +1,34 @@
+{
+    "name": "php-concept/extension-view-twig",
+    "description": "Concept View Twig engine — TwigView implementation",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\ViewTwig\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "php-concept/core-2": "@dev",
+        "php-concept/extension-view": "@dev",
+        "twig/twig": "^3.0",
+        "league/container": "^5.1"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/concept-core-2",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../View",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+}
