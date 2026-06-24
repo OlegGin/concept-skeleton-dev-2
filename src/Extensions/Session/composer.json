@@ -1,18 +1,17 @@
 {
-    "name": "php-concept/extension-http",
-    "description": "Concept HTTP extension — responses, URLs, route introspection",
+    "name": "php-concept/extension-session",
+    "description": "Concept Session extension — session and flash bag",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Concept\\Extensions\\Http\\": "src/"
+            "Concept\\Extensions\\Session\\": "src/"
         }
     },
     "require": {
         "php": "^8.4",
         "php-concept/core-2": "@dev",
-        "laminas/laminas-diactoros": "^3.8",
-        "league/route": "^6.2",
+        "symfony/http-foundation": "^7.2",
         "league/container": "^5.1"
     },
     "repositories": [

@@ -2,6 +2,7 @@
 
 namespace Concept\Extensions\View;
 
+use Concept\Core\Http\Contracts\RequestContextInterface;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\View\Contracts\ViewInterface;
 use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
@@ -64,8 +65,10 @@ final class ViewServiceProvider extends AbstractServiceProvider
             $responseFactory = $container->get(ResponseFactoryInterface::class);
             /** @var ViewInterface $view */
             $view = $container->get(ViewInterface::class);
+            /** @var RequestContextInterface $requestContext */
+            $requestContext = $container->get(RequestContextInterface::class);
 
-            return new ViewResponseFactory($responseFactory, $view);
+            return new ViewResponseFactory($responseFactory, $view, $requestContext);
         })->setShared(true);
     }
 }

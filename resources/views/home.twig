@@ -21,7 +21,7 @@
 
     {% if errors is defined and errors is not empty %}
         <ul class="errors">
-            {% for fieldErrors in errors %}
+            {% for field, fieldErrors in errors %}
                 {% for message in fieldErrors %}
                     <li>{{ message }}</li>
                 {% endfor %}

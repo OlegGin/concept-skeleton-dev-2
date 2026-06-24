@@ -2,6 +2,8 @@
 
 namespace Concept\App\Providers;
 
+use Concept\App\Middleware\HandleValidationExceptionMiddleware;
+use Concept\App\Middleware\ShareViewDataMiddleware;
 use Concept\App\View\Twig\AppExtension;
 use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
 use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
@@ -10,11 +12,14 @@ use Concept\Extensions\Casting\CastingServiceProvider;
 use Concept\Extensions\Casting\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
+use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\HttpServiceProvider;
+use Concept\Extensions\Http\Requests\RequestFormat;
+use Concept\Extensions\Session\Contracts\FlashBagInterface;
+use Concept\Extensions\Session\SessionServiceProvider;
 use Concept\Extensions\Validation\ValidationServiceProvider;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
-use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 
@@ -29,11 +34,14 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     public function boot(): void
     {
+        $container = $this->getContainer();
         $this->registerCastingProvider();
-        $this->registerValidationProvider();
-        $this->registerFormRequestProvider();
+        $container->addServiceProvider(new ValidationServiceProvider());
+        $container->addServiceProvider(new FormRequestServiceProvider());
+        $this->registerSessionProvider();
         $this->registerRoutingProvider();
-        $this->container()->addServiceProvider(new HttpServiceProvider());
+        $container->addServiceProvider(new HttpServiceProvider());
+        $this->registerMiddlewareBindings();
         $this->registerViewProvider();
         $this->registerTwigViewProvider();
     }
@@ -44,26 +52,22 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     private function registerCastingProvider(): void
     {
-        $this->container()->addServiceProvider(new CastingServiceProvider(
+        $this->getContainer()->addServiceProvider(new CastingServiceProvider(
             cacheDirectory: $this->root . '/storage/cache/valinor',
             debug: $this->appDebug(),
         ));
     }
 
-    private function registerValidationProvider(): void
+    private function registerSessionProvider(): void
     {
-        $this->container()->addServiceProvider(new ValidationServiceProvider());
-    }
-
-    private function registerFormRequestProvider(): void
-    {
-        $this->container()->addServiceProvider(new FormRequestServiceProvider());
+        $this->getContainer()->addServiceProvider(new SessionServiceProvider(
+            savePath: $this->root . '/storage/sessions',
+        ));
     }
 
     private function registerRoutingProvider(): void
     {
-        $container = $this->container();
-
+        $container = $this->getContainer();
         $container->addServiceProvider(new CoreHttpServiceProvider(
             routePaths: [$this->root . '/routes/web.php'],
             resolvers: [
@@ -75,27 +79,32 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         ));
     }
 
-    private function container(): DefinitionContainerInterface
+    private function registerMiddlewareBindings(): void
     {
-        return $this->getContainer();
-    }
+        $container = $this->getContainer();
 
-    private function appDebug(): bool
-    {
-        return filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL);
-    }
+        $container->add(HandleValidationExceptionMiddleware::class, function () use ($container): HandleValidationExceptionMiddleware {
+            /** @var ResponseFactoryInterface $responseFactory */
+            $responseFactory = $container->get(ResponseFactoryInterface::class);
+            /** @var RequestFormat $requestFormat */
+            $requestFormat = $container->get(RequestFormat::class);
+            /** @var FlashBagInterface $flashBag */
+            $flashBag = $container->get(FlashBagInterface::class);
 
-    private function appName(): string
-    {
-        $name = $_ENV['APP_NAME'] ?? 'Concept';
+            return new HandleValidationExceptionMiddleware($responseFactory, $requestFormat, $flashBag);
+        })->setShared(true);
 
-        return is_string($name) ? $name : 'Concept';
+        $container->add(ShareViewDataMiddleware::class, function () use ($container): ShareViewDataMiddleware {
+            /** @var FlashBagInterface $flashBag */
+            $flashBag = $container->get(FlashBagInterface::class);
+
+            return new ShareViewDataMiddleware($flashBag);
+        })->setShared(true);
     }
 
     private function registerViewProvider(): void
     {
-        $container = $this->container();
-
+        $container = $this->getContainer();
         $container->add(AppExtension::class, fn (): AppExtension => new AppExtension(
             $this->appName(),
         ))->setShared(true);
@@ -112,11 +121,23 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     private function registerTwigViewProvider(): void
     {
-        $this->container()->addServiceProvider(new TwigViewServiceProvider(
+        $this->getContainer()->addServiceProvider(new TwigViewServiceProvider(
             root: $this->root,
             viewsPath: $this->root . '/resources/views',
             debug: $this->appDebug(),
             cacheDir: $this->root . '/storage/cache/views',
         ));
+    }
+
+    private function appDebug(): bool
+    {
+        return filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL);
+    }
+
+    private function appName(): string
+    {
+        $name = $_ENV['APP_NAME'] ?? 'Concept';
+
+        return is_string($name) ? $name : 'Concept';
     }
 }
