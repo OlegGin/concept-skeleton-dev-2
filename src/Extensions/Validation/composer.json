@@ -13,7 +13,6 @@
         "php-concept/core-2": "@dev",
         "php-concept/extension-http": "@dev",
         "magewirephp/validation": "^1.0",
-        "ext-mbstring": "*",
         "league/container": "^5.1"
     },
     "repositories": [
