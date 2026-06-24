@@ -1,0 +1,35 @@
+{
+    "name": "php-concept/extension-validation",
+    "description": "Concept Validation extension — magewirephp/validation and validation exceptions",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\Validation\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "php-concept/core-2": "@dev",
+        "php-concept/extension-http": "@dev",
+        "magewirephp/validation": "^1.0",
+        "ext-mbstring": "*",
+        "league/container": "^5.1"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/concept-core-2",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../Http",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+}
