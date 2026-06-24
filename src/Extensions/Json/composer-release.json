@@ -1,0 +1,18 @@
+{
+    "name": "php-concept/extension-json",
+    "description": "Concept JSON extension — parse JSON body and force JSON responses",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\Json\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "php-concept/extension-http": "^1.0",
+        "league/container": "^5.1",
+        "psr/http-message": "^2.0",
+        "psr/http-server-middleware": "^1.0"
+    }
+}

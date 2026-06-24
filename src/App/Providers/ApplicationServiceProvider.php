@@ -18,6 +18,7 @@ use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\Http\Requests\RequestFormat;
+use Concept\Extensions\Json\JsonServiceProvider;
 use Concept\Extensions\Session\Contracts\FlashBagInterface;
 use Concept\Extensions\Session\SessionServiceProvider;
 use Concept\Extensions\Validation\ValidationServiceProvider;
@@ -45,6 +46,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new CsrfServiceProvider());
         $this->registerRoutingProvider();
         $container->addServiceProvider(new HttpServiceProvider());
+        $container->addServiceProvider(new JsonServiceProvider());
         $this->registerMiddlewareBindings();
         $this->registerViewProvider();
         $this->registerTwigViewProvider();
@@ -73,7 +75,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
         $container = $this->getContainer();
         $container->addServiceProvider(new CoreHttpServiceProvider(
-            routePaths: [$this->root . '/routes/web.php'],
+            routePaths: [$this->root . '/routes/web.php', $this->root . '/routes/api.php'],
             resolvers: [
                 new FormRequestArgumentResolver($container),
                 new ServerRequestArgumentResolver(),

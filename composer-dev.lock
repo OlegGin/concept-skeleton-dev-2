@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f1c36934f05e00e8d8322a306c92ae6d",
+    "content-hash": "f9acd33a56879b7a9daf29a9affb61c5",
     "packages": [
         {
             "name": "cuyz/valinor",
@@ -571,7 +571,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/www/concept-core-2",
-                "reference": "a38c89863ab9b8e099d5049ecef14e8b03c0c37a"
+                "reference": "c2bd45d3aa408dd8d7cd2b570b9a1de5771d7e1b"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
@@ -726,6 +726,36 @@
                 "MIT"
             ],
             "description": "Concept HTTP extension — responses, URLs, route introspection",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "php-concept/extension-json",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "src/Extensions/Json",
+                "reference": "8ab667ba91b9575b5082360e99e6abe258055a47"
+            },
+            "require": {
+                "league/container": "^5.1",
+                "php": "^8.4",
+                "php-concept/extension-http": "@dev",
+                "psr/http-message": "^2.0",
+                "psr/http-server-middleware": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\Json\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept JSON extension — parse JSON body and force JSON responses",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -1697,18 +1727,19 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "php-concept/core-2": 20,
-        "php-concept/extension-casting": 20,
-        "php-concept/extension-csrf": 20,
-        "php-concept/extension-form-request": 20,
         "php-concept/extension-http": 20,
-        "php-concept/extension-session": 20,
+        "php-concept/extension-casting": 20,
+        "php-concept/extension-form-request": 20,
         "php-concept/extension-validation": 20,
         "php-concept/extension-view": 20,
-        "php-concept/extension-view-twig": 20
+        "php-concept/extension-view-twig": 20,
+        "php-concept/extension-session": 20,
+        "php-concept/extension-csrf": 20,
+        "php-concept/extension-json": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
-    "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
 }

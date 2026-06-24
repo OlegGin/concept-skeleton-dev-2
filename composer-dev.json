@@ -63,6 +63,13 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Json",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {
@@ -87,7 +94,8 @@
         "php-concept/extension-view": "@dev",
         "php-concept/extension-view-twig": "@dev",
         "php-concept/extension-session": "@dev",
-        "php-concept/extension-csrf": "@dev"
+        "php-concept/extension-csrf": "@dev",
+        "php-concept/extension-json": "@dev"
     },
     "scripts": {
         "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G"
