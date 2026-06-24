@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f9acd33a56879b7a9daf29a9affb61c5",
+    "content-hash": "00a45aa915c7f96d09204914c32ce5d9",
     "packages": [
         {
             "name": "cuyz/valinor",
@@ -881,6 +881,37 @@
             }
         },
         {
+            "name": "php-concept/extension-web",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "src/Extensions/Web",
+                "reference": "392f1fc4a90188594ac23784109ee07db3e2e259"
+            },
+            "require": {
+                "league/container": "^5.1",
+                "php": "^8.4",
+                "php-concept/extension-http": "@dev",
+                "php-concept/extension-session": "@dev",
+                "psr/http-message": "^2.0",
+                "psr/http-server-middleware": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\Web\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept Web extension — safe back URL and web navigation middleware",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
             "name": "psr/container",
             "version": "2.0.2",
             "source": {
@@ -1735,7 +1766,8 @@
         "php-concept/extension-view-twig": 20,
         "php-concept/extension-session": 20,
         "php-concept/extension-csrf": 20,
-        "php-concept/extension-json": 20
+        "php-concept/extension-json": 20,
+        "php-concept/extension-web": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
