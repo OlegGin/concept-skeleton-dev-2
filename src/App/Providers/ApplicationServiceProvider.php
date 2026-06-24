@@ -13,6 +13,7 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
+use Concept\Extensions\DatabaseEloquent\DatabaseEloquentServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
@@ -43,6 +44,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $this->registerCastingProvider();
         $this->registerDataMaskerProvider();
         $this->registerLoggerProvider();
+        $this->registerDatabaseProvider();
         $container->addServiceProvider(new ValidationServiceProvider());
         $container->addServiceProvider(new FormRequestServiceProvider());
         $this->registerSessionProvider();
@@ -104,6 +106,45 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             level: is_string($_ENV['LOG_LEVEL'] ?? null) ? $_ENV['LOG_LEVEL'] : $logging['level'],
             maxFiles: filter_var($_ENV['LOG_MAX_FILES'] ?? $logging['max_files'], FILTER_VALIDATE_INT) ?: $logging['max_files'],
             channel: $logging['name'],
+        ));
+    }
+
+    private function registerDatabaseProvider(): void
+    {
+        /** @var array{
+         *     database: array{
+         *         driver: string,
+         *         host: string,
+         *         database: string,
+         *         username: string,
+         *         password: string,
+         *         charset: string,
+         *         collation: string,
+         *         prefix: string,
+         *     }
+         * } $config
+         */
+        $config = require $this->root . '/config/database.php';
+        $database = $config['database'];
+
+        /** @var array{logging: array{max_files: int, db_queries: bool}} $loggingConfig */
+        $loggingConfig = require $this->root . '/config/logging.php';
+        $logging = $loggingConfig['logging'];
+
+        $this->getContainer()->addServiceProvider(new DatabaseEloquentServiceProvider(
+            connection: [
+                'driver' => is_string($_ENV['DB_DRIVER'] ?? null) ? $_ENV['DB_DRIVER'] : $database['driver'],
+                'host' => is_string($_ENV['DB_HOST'] ?? null) ? $_ENV['DB_HOST'] : $database['host'],
+                'database' => is_string($_ENV['DB_DATABASE'] ?? null) ? $_ENV['DB_DATABASE'] : $database['database'],
+                'username' => is_string($_ENV['DB_USERNAME'] ?? null) ? $_ENV['DB_USERNAME'] : $database['username'],
+                'password' => is_string($_ENV['DB_PASSWORD'] ?? null) ? $_ENV['DB_PASSWORD'] : $database['password'],
+                'charset' => $database['charset'],
+                'collation' => $database['collation'],
+                'prefix' => $database['prefix'],
+            ],
+            logDbQueries: filter_var($_ENV['LOG_DB_QUERIES'] ?? $logging['db_queries'], FILTER_VALIDATE_BOOL),
+            queryLogPath: $this->root . '/storage/logs/query.log',
+            logMaxFiles: filter_var($_ENV['LOG_MAX_FILES'] ?? $logging['max_files'], FILTER_VALIDATE_INT) ?: $logging['max_files'],
         ));
     }
 

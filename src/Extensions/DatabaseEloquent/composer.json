@@ -1,0 +1,29 @@
+{
+    "name": "php-concept/extension-database-eloquent",
+    "description": "Concept Database extension — Illuminate Eloquent via Capsule",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\DatabaseEloquent\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "illuminate/database": "^13.1",
+        "illuminate/events": "^13.1",
+        "illuminate/container": "^13.1",
+        "monolog/monolog": "^3",
+        "php-concept/extension-data-masker": "@dev",
+        "league/container": "^5.1"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../DataMasker",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+}
