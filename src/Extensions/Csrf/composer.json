@@ -1,21 +1,21 @@
 {
-    "name": "php-concept/extension-form-request",
-    "description": "Concept FormRequest extension — form request factory and argument resolver",
+    "name": "php-concept/extension-csrf",
+    "description": "Concept CSRF extension — token manager and verification middleware",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Concept\\Extensions\\FormRequest\\": "src/"
+            "Concept\\Extensions\\Csrf\\": "src/"
         }
     },
     "require": {
         "php": "^8.4",
         "php-concept/core-2": "@dev",
-        "php-concept/extension-casting": "@dev",
-        "php-concept/extension-validation": "@dev",
-        "php-concept/extension-csrf": "@dev",
+        "php-concept/extension-http": "@dev",
+        "php-concept/extension-session": "@dev",
         "league/container": "^5.1",
-        "psr/http-message": "^2.0"
+        "psr/http-message": "^2.0",
+        "psr/http-server-middleware": "^1.0"
     },
     "repositories": [
         {
@@ -27,21 +27,14 @@
         },
         {
             "type": "path",
-            "url": "../Casting",
+            "url": "../Http",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "../Validation",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../Csrf",
+            "url": "../Session",
             "options": {
                 "symlink": true
             }

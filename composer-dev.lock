@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "03928a351a813b02fb81ec996be6a1a8",
+    "content-hash": "f1c36934f05e00e8d8322a306c92ae6d",
     "packages": [
         {
             "name": "cuyz/valinor",
@@ -571,7 +571,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/www/concept-core-2",
-                "reference": "962c732496f9b21ca1e309e163afb1b45764d12d"
+                "reference": "a38c89863ab9b8e099d5049ecef14e8b03c0c37a"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
@@ -638,18 +638,51 @@
             }
         },
         {
+            "name": "php-concept/extension-csrf",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "src/Extensions/Csrf",
+                "reference": "4899213687c689c7ceab66137af37892def65ccd"
+            },
+            "require": {
+                "league/container": "^5.1",
+                "php": "^8.4",
+                "php-concept/core-2": "@dev",
+                "php-concept/extension-http": "@dev",
+                "php-concept/extension-session": "@dev",
+                "psr/http-message": "^2.0",
+                "psr/http-server-middleware": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\Csrf\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept CSRF extension — token manager and verification middleware",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
             "name": "php-concept/extension-form-request",
             "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/FormRequest",
-                "reference": "a9bf3225a63485affc13e91dfc94c101551dbc51"
+                "reference": "b9873ba13a94c354b3b54ef845d0bf3328b74d50"
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
                 "php-concept/core-2": "@dev",
                 "php-concept/extension-casting": "@dev",
+                "php-concept/extension-csrf": "@dev",
                 "php-concept/extension-validation": "@dev",
                 "psr/http-message": "^2.0"
             },
@@ -1664,17 +1697,18 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "php-concept/core-2": 20,
-        "php-concept/extension-http": 20,
         "php-concept/extension-casting": 20,
+        "php-concept/extension-csrf": 20,
         "php-concept/extension-form-request": 20,
+        "php-concept/extension-http": 20,
+        "php-concept/extension-session": 20,
         "php-concept/extension-validation": 20,
         "php-concept/extension-view": 20,
-        "php-concept/extension-view-twig": 20,
-        "php-concept/extension-session": 20
+        "php-concept/extension-view-twig": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "platform": {},
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }

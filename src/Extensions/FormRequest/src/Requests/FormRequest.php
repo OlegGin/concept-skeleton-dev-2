@@ -6,7 +6,7 @@ use Concept\Extensions\Casting\Contracts\CasterInterface;
 use Concept\Extensions\Casting\Contracts\DtoInterface;
 use Concept\Extensions\Casting\Exceptions\CastingException;
 use Concept\Extensions\FormRequest\Contracts\FormRequestInterface;
-use Concept\Extensions\FormRequest\Session\SessionKey;
+use Concept\Extensions\Csrf\Protocol\CsrfField;
 use Concept\Extensions\Validation\Contracts\ValidationInterface;
 use Concept\Extensions\Validation\Contracts\ValidatorInterface;
 use Concept\Extensions\Validation\Exceptions\ValidationCastException;
@@ -24,7 +24,7 @@ abstract class FormRequest implements FormRequestInterface
      * @var array<string>
      */
     private array $globalExcept = [
-        SessionKey::CSRF_TOKEN,
+        CsrfField::NAME,
     ];
 
     /**

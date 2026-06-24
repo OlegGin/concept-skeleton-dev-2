@@ -37,7 +37,7 @@ final class TwigViewServiceProvider extends AbstractServiceProvider
         $container->add(ViewInterface::class, function () use ($container): TwigView {
             $loader = new FilesystemLoader($this->viewsPath);
             $twig = new Environment($loader, [
-                'cache' => $this->debug ? false : $this->cacheDir,
+                'cache' => $this->debug ? $this->cacheDir : false,
                 'debug' => $this->debug,
             ]);
 

@@ -2,6 +2,7 @@
 
 namespace Concept\App\Providers;
 
+use Concept\App\Middleware\HandleCsrfExceptionMiddleware;
 use Concept\App\Middleware\HandleValidationExceptionMiddleware;
 use Concept\App\Middleware\ShareViewDataMiddleware;
 use Concept\App\View\Twig\AppExtension;
@@ -9,6 +10,8 @@ use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
 use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
 use Concept\Core\Providers\Http\HttpServiceProvider as CoreHttpServiceProvider;
 use Concept\Extensions\Casting\CastingServiceProvider;
+use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
+use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\Casting\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
@@ -39,6 +42,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new ValidationServiceProvider());
         $container->addServiceProvider(new FormRequestServiceProvider());
         $this->registerSessionProvider();
+        $container->addServiceProvider(new CsrfServiceProvider());
         $this->registerRoutingProvider();
         $container->addServiceProvider(new HttpServiceProvider());
         $this->registerMiddlewareBindings();
@@ -94,11 +98,24 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             return new HandleValidationExceptionMiddleware($responseFactory, $requestFormat, $flashBag);
         })->setShared(true);
 
-        $container->add(ShareViewDataMiddleware::class, function () use ($container): ShareViewDataMiddleware {
+        $container->add(HandleCsrfExceptionMiddleware::class, function () use ($container): HandleCsrfExceptionMiddleware {
+            /** @var ResponseFactoryInterface $responseFactory */
+            $responseFactory = $container->get(ResponseFactoryInterface::class);
+            /** @var RequestFormat $requestFormat */
+            $requestFormat = $container->get(RequestFormat::class);
             /** @var FlashBagInterface $flashBag */
             $flashBag = $container->get(FlashBagInterface::class);
 
-            return new ShareViewDataMiddleware($flashBag);
+            return new HandleCsrfExceptionMiddleware($responseFactory, $requestFormat, $flashBag);
+        })->setShared(true);
+
+        $container->add(ShareViewDataMiddleware::class, function () use ($container): ShareViewDataMiddleware {
+            /** @var FlashBagInterface $flashBag */
+            $flashBag = $container->get(FlashBagInterface::class);
+            /** @var CsrfTokenManagerInterface $csrfTokenManager */
+            $csrfTokenManager = $container->get(CsrfTokenManagerInterface::class);
+
+            return new ShareViewDataMiddleware($flashBag, $csrfTokenManager);
         })->setShared(true);
     }
 
