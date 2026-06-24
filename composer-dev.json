@@ -77,6 +77,13 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/DataMasker",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {
@@ -103,7 +110,8 @@
         "php-concept/extension-session": "@dev",
         "php-concept/extension-csrf": "@dev",
         "php-concept/extension-json": "@dev",
-        "php-concept/extension-web": "@dev"
+        "php-concept/extension-web": "@dev",
+        "php-concept/extension-data-masker": "@dev"
     },
     "scripts": {
         "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G"

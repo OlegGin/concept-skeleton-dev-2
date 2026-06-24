@@ -12,6 +12,7 @@ use Concept\Core\Providers\Http\HttpServiceProvider as CoreHttpServiceProvider;
 use Concept\Extensions\Casting\CastingServiceProvider;
 use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
+use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
 use Concept\Extensions\Casting\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
@@ -39,6 +40,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
         $container = $this->getContainer();
         $this->registerCastingProvider();
+        $this->registerDataMaskerProvider();
         $container->addServiceProvider(new ValidationServiceProvider());
         $container->addServiceProvider(new FormRequestServiceProvider());
         $this->registerSessionProvider();
@@ -59,6 +61,26 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $this->getContainer()->addServiceProvider(new CastingServiceProvider(
             cacheDirectory: $this->root . '/storage/cache/valinor',
             debug: $this->appDebug(),
+        ));
+    }
+
+    private function registerDataMaskerProvider(): void
+    {
+        /** @var array{
+         *     masking: array{
+         *         patterns: array<string, string>,
+         *         key_patterns: list<string>,
+         *         rules: list<class-string<\Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface>>
+         *     }
+         * } $config
+         */
+        $config = require $this->root . '/config/masking.php';
+        $masking = $config['masking'];
+
+        $this->getContainer()->addServiceProvider(new DataMaskerServiceProvider(
+            patterns: $masking['patterns'],
+            keyPatterns: $masking['key_patterns'],
+            rules: $masking['rules'],
         ));
     }
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00a45aa915c7f96d09204914c32ce5d9",
+    "content-hash": "869300f9500a11d885f4823900df788d",
     "packages": [
         {
             "name": "cuyz/valinor",
@@ -664,6 +664,33 @@
                 "MIT"
             ],
             "description": "Concept CSRF extension — token manager and verification middleware",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "php-concept/extension-data-masker",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "src/Extensions/DataMasker",
+                "reference": "3f858a1e4ed9b0443f2bca189a1a3837a1d880c2"
+            },
+            "require": {
+                "league/container": "^5.1",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\DataMasker\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept DataMasker extension — redact sensitive values in logs and debug output",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -1767,7 +1794,8 @@
         "php-concept/extension-session": 20,
         "php-concept/extension-csrf": 20,
         "php-concept/extension-json": 20,
-        "php-concept/extension-web": 20
+        "php-concept/extension-web": 20,
+        "php-concept/extension-data-masker": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
