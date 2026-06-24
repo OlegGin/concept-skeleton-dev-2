@@ -4,8 +4,85 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "10acb514fc268ea4238e60b8a006152f",
+    "content-hash": "fef012e3e2a96625dba7cd6b5f4669b6",
     "packages": [
+        {
+            "name": "cuyz/valinor",
+            "version": "2.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CuyZ/Valinor.git",
+                "reference": "3b0afa3a287ed7f3a69aab223726cf1139454c34"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CuyZ/Valinor/zipball/3b0afa3a287ed7f3a69aab223726cf1139454c34",
+                "reference": "3b0afa3a287ed7f3a69aab223726cf1139454c34",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
+            },
+            "conflict": {
+                "phpstan/phpstan": "<1.0 || >= 3.0",
+                "vimeo/psalm": "<5.0 || >=7.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.91",
+                "infection/infection": "^0.32",
+                "marcocesarato/php-conventional-changelog": "^1.12",
+                "mikey179/vfsstream": "^1.6.10",
+                "phpbench/phpbench": "^1.3",
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^11.5",
+                "psr/http-message": "^2.0",
+                "rector/rector": "^2.0",
+                "vimeo/psalm": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "CuyZ\\Valinor\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Romain Canon",
+                    "email": "romain.hydrocanon@gmail.com",
+                    "homepage": "https://github.com/romm"
+                }
+            ],
+            "description": "Dependency free PHP library that helps to map any input into a strongly-typed structure.",
+            "homepage": "https://github.com/CuyZ/Valinor",
+            "keywords": [
+                "array",
+                "conversion",
+                "hydrator",
+                "json",
+                "mapper",
+                "mapping",
+                "object",
+                "tree",
+                "yaml"
+            ],
+            "support": {
+                "issues": "https://github.com/CuyZ/Valinor/issues",
+                "source": "https://github.com/CuyZ/Valinor/tree/2.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/romm",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-03-23T17:38:05+00:00"
+        },
         {
             "name": "laminas/laminas-diactoros",
             "version": "3.8.0",
@@ -452,7 +529,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/www/concept-core-2",
-                "reference": "a38c89863ab9b8e099d5049ecef14e8b03c0c37a"
+                "reference": "962c732496f9b21ca1e309e163afb1b45764d12d"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
@@ -487,6 +564,64 @@
             "transport-options": {
                 "symlink": true,
                 "relative": false
+            }
+        },
+        {
+            "name": "php-concept/extension-casting",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "src/Extensions/Casting",
+                "reference": "242fa7fbb36a5d458921008d399c539729e04b46"
+            },
+            "require": {
+                "cuyz/valinor": "^2.0",
+                "league/container": "^5.1",
+                "php": "^8.4",
+                "php-concept/core-2": "@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\Casting\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept Casting extension — Valinor caster and typed route parameter resolving",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "php-concept/extension-http",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "src/Extensions/Http",
+                "reference": "d54db4642fa940f6b17b748798fb3293dba18bcf"
+            },
+            "require": {
+                "laminas/laminas-diactoros": "^3.8",
+                "league/route": "^6.2",
+                "php": "^8.4",
+                "php-concept/core-2": "@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\Http\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept HTTP extension — responses, URLs, route introspection",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
             }
         },
         {
@@ -934,11 +1069,13 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "php-concept/core-2": 20
+        "php-concept/core-2": 20,
+        "php-concept/extension-http": 20,
+        "php-concept/extension-casting": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
-    "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
 }

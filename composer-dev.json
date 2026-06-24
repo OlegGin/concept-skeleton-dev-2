@@ -7,12 +7,25 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Http",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Casting",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {
         "psr-4": {
-            "Concept\\": "src/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Concept\\": "src/"
         }
     },
     "autoload-dev": {
@@ -24,7 +37,9 @@
         "phpstan/phpstan": "^2.1"
     },
     "require": {
-        "php-concept/core-2": "@dev"
+        "php-concept/core-2": "@dev",
+        "php-concept/extension-http": "@dev",
+        "php-concept/extension-casting": "@dev"
     },
     "scripts": {
         "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G"

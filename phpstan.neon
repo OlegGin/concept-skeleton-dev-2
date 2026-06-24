@@ -2,13 +2,16 @@ parameters:
     level: 9
 
     paths:
-        - bin
         - bootstrap
         - config
         - public
         - routes
         - src
+        - src/Extensions/Http/src
+        - src/Extensions/Casting/src
 
     excludePaths:
         - routes/*
         - */Models/*
+        - src/Extensions/FormRequest/*
+        - vendor/*
