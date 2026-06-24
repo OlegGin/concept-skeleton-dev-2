@@ -35,6 +35,20 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/View",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/ViewTwig",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {
@@ -55,7 +69,9 @@
         "php-concept/extension-http": "@dev",
         "php-concept/extension-casting": "@dev",
         "php-concept/extension-form-request": "@dev",
-        "php-concept/extension-validation": "@dev"
+        "php-concept/extension-validation": "@dev",
+        "php-concept/extension-view": "@dev",
+        "php-concept/extension-view-twig": "@dev"
     },
     "scripts": {
         "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G"

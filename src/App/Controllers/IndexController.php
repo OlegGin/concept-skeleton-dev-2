@@ -3,26 +3,32 @@
 namespace Concept\App\Controllers;
 
 use Concept\App\Http\Dto\LoginDto;
-use Concept\App\Http\LoginFormResponse;
 use Concept\App\Http\Requests\LoginRequest;
+use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class IndexController
 {
+    public function __construct(
+        private readonly ViewResponseFactoryInterface $viewResponse,
+    ) {}
+
     public function index(): ResponseInterface
     {
-        return LoginFormResponse::create();
+        return $this->viewResponse->create('home');
     }
 
     public function login(LoginRequest $request): ResponseInterface
     {
         $dto = $request->toDto();
         if (!$dto instanceof LoginDto) {
-            return LoginFormResponse::create(success: 'Validated, but DTO mapping failed.');
+            return $this->viewResponse->create('home', [
+                'success' => 'Validated, but DTO mapping failed.',
+            ]);
         }
 
-        return LoginFormResponse::create(
-            success: sprintf('Welcome, %s! (Dto: %s)', $dto->email, $dto::class),
-        );
+        return $this->viewResponse->create('home', [
+            'success' => sprintf('Welcome, %s! (Dto: %s)', $dto->email, $dto::class),
+        ]);
     }
 }

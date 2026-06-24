@@ -7,10 +7,6 @@ parameters:
         - public
         - routes
         - src
-        - src/Extensions/Http/src
-        - src/Extensions/Casting/src
-        - src/Extensions/FormRequest/src
-        - src/Extensions/Validation/src
 
     excludePaths:
         - routes/*
