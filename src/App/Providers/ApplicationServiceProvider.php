@@ -13,6 +13,7 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
+use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
@@ -41,6 +42,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container = $this->getContainer();
         $this->registerCastingProvider();
         $this->registerDataMaskerProvider();
+        $this->registerLoggerProvider();
         $container->addServiceProvider(new ValidationServiceProvider());
         $container->addServiceProvider(new FormRequestServiceProvider());
         $this->registerSessionProvider();
@@ -81,6 +83,27 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             patterns: $masking['patterns'],
             keyPatterns: $masking['key_patterns'],
             rules: $masking['rules'],
+        ));
+    }
+
+    private function registerLoggerProvider(): void
+    {
+        /** @var array{
+         *     logging: array{
+         *         name: string,
+         *         level: string,
+         *         max_files: int,
+         *     }
+         * } $config
+         */
+        $config = require $this->root . '/config/logging.php';
+        $logging = $config['logging'];
+
+        $this->getContainer()->addServiceProvider(new LoggerMonologServiceProvider(
+            path: $this->root . '/storage/logs/app.log',
+            level: is_string($_ENV['LOG_LEVEL'] ?? null) ? $_ENV['LOG_LEVEL'] : $logging['level'],
+            maxFiles: filter_var($_ENV['LOG_MAX_FILES'] ?? $logging['max_files'], FILTER_VALIDATE_INT) ?: $logging['max_files'],
+            channel: $logging['name'],
         ));
     }
 
