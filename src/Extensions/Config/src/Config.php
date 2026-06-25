@@ -55,4 +55,14 @@ final class Config implements ConfigInterface
 
         return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
+
+    public function getArray(string $key, array $default = []): array
+    {
+        $value = $this->get($key, $default);
+        if (!is_array($value)) {
+            return $default;
+        }
+
+        return $value;
+    }
 }

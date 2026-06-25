@@ -18,4 +18,11 @@ interface ConfigInterface
     public function getInt(string $key, int $default = 0): int;
 
     public function getBool(string $key, bool $default = false): bool;
+
+    /**
+     * @param string $key
+     * @param array<mixed> $default
+     * @return array<mixed>
+     */
+    public function getArray(string $key, array $default = []): array;
 }

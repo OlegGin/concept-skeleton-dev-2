@@ -2,7 +2,7 @@
 
 namespace Concept\App\Providers;
 
-use Concept\App\View\Twig\AppExtension;
+use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
 use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
 use Concept\Core\Providers\Http\HttpServiceProvider as CoreHttpServiceProvider;
@@ -30,10 +30,29 @@ use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 
 final class ApplicationServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    private const string BOOTSTRAP_PATHS_FILE = 'bootstrap/paths.php';
+    private const string DEFAULT_CONFIG_DIR = 'config';
+
+    private const string CACHE_VALINOR_DIR = 'valinor';
+    private const string CACHE_VIEWS_DIR = 'views';
+
+    private const string LOG_APP_FILE = 'app.log';
+    private const string LOG_QUERY_FILE = 'query.log';
+
+    private const string STORAGE_SESSIONS_DIR = 'sessions';
+
+    private const string DEFAULT_MIGRATIONS_TABLE = 'migrations';
+
+    private const string DEFAULT_DB_DRIVER = 'mysql';
+    private const string DEFAULT_DB_HOST = '127.0.0.1';
+    private const string DEFAULT_DB_CHARSET = 'utf8mb4';
+    private const string DEFAULT_DB_COLLATION = 'utf8mb4_unicode_ci';
+
     public function __construct(private readonly string $root) {}
 
     public function provides(string $id): bool
@@ -41,231 +60,158 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         return false;
     }
 
-    public function boot(): void
-    {
-        $this->registerConfigProvider();
-
-        $container = $this->getContainer();
-        $this->registerCastingProvider();
-        $this->registerDataMaskerProvider();
-        $this->registerLoggerProvider();
-        $this->registerDatabaseProvider();
-        $container->addServiceProvider(new ValidationServiceProvider());
-        $container->addServiceProvider(new FormRequestServiceProvider());
-        $this->registerSessionProvider();
-        $container->addServiceProvider(new CsrfServiceProvider());
-        $this->registerRoutingProvider();
-        $container->addServiceProvider(new PaginationConfiguratorServiceProvider());
-        $container->addServiceProvider(new HttpServiceProvider());
-        $this->registerViewProvider();
-        $this->registerTwigViewProvider();
-        $this->registerConsoleProvider();
-        $this->registerErrorHandlerProvider();
-    }
-
     public function register(): void
     {
     }
 
-    private function registerConfigProvider(): void
+    public function boot(): void
     {
-        /** @var array<string, string> $paths */
-        $paths = require $this->root . '/bootstrap/paths.php';
+        $container = $this->getContainer();
 
-        $this->getContainer()->addServiceProvider(new ConfigServiceProvider(
+        /** @var array<string, string> $paths */
+        $paths = require $this->root . '/' . self::BOOTSTRAP_PATHS_FILE;
+        $container->addServiceProvider(new ConfigServiceProvider(
             root: $this->root,
-            configDir: $paths[PathName::CONFIG] ?? 'config',
+            configDir: $paths[PathName::CONFIG] ?? self::DEFAULT_CONFIG_DIR,
             pathMap: $paths,
         ));
-    }
 
-    private function config(): ConfigInterface
-    {
         /** @var ConfigInterface $config */
-        $config = $this->getContainer()->get(ConfigInterface::class);
-
-        return $config;
-    }
-
-    private function paths(): PathManager
-    {
-        /** @var PathManager $paths */
-        $paths = $this->getContainer()->get(PathManager::class);
-
-        return $paths;
-    }
-
-    private function registerCastingProvider(): void
-    {
-        $config = $this->config();
-        $paths = $this->paths();
+        $config = $container->get(ConfigInterface::class);
+        /** @var PathManager $pathManager */
+        $pathManager = $container->get(PathManager::class);
 
         /** @var list<class-string> $transformerClasses */
         $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];
-
-        $this->getContainer()->addServiceProvider(new CastingServiceProvider(
-            cacheDirectory: $paths->get(PathName::CACHE, 'valinor'),
+        $container->addServiceProvider(new CastingServiceProvider(
+            cacheDirectory: $pathManager->get(PathName::CACHE, self::CACHE_VALINOR_DIR),
             transformerClasses: $transformerClasses,
             debug: $config->getBool(ConfigKey::APP_DEBUG),
         ));
-    }
-
-    private function registerDataMaskerProvider(): void
-    {
-        $config = $this->config();
 
         /** @var array<string, string> $patterns */
         $patterns = $config->get(ConfigKey::MASKING_PATTERNS) ?? [];
-
         /** @var list<string> $keyPatterns */
         $keyPatterns = $config->get(ConfigKey::MASKING_KEY_PATTERNS) ?? [];
-
         /** @var list<class-string<DataMaskerRuleInterface>> $rules */
         $rules = $config->get(ConfigKey::MASKING_RULES) ?? [];
-
-        $this->getContainer()->addServiceProvider(new DataMaskerServiceProvider(
+        $container->addServiceProvider(new DataMaskerServiceProvider(
             patterns: $patterns,
             keyPatterns: $keyPatterns,
             rules: $rules,
         ));
-    }
 
-    private function registerLoggerProvider(): void
-    {
-        $config = $this->config();
-        $paths = $this->paths();
-
-        $this->getContainer()->addServiceProvider(new LoggerMonologServiceProvider(
-            path: $paths->get(PathName::LOGS, 'app.log'),
+        $container->addServiceProvider(new LoggerMonologServiceProvider(
+            path: $pathManager->get(PathName::LOGS, self::LOG_APP_FILE),
             level: $config->getString(ConfigKey::LOG_LEVEL),
             maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
             channel: $config->getString(ConfigKey::LOG_NAME),
         ));
-    }
 
-    private function registerDatabaseProvider(): void
-    {
-        $config = $this->config();
-        $paths = $this->paths();
-
-        /** @var list<string> $migrationPathKeys */
-        $migrationPathKeys = $config->get(ConfigKey::MIGRATIONS_PATHS) ?? [];
-
+        /** @var list<string> $migrationPaths */
+        $migrationPaths = $config->get(ConfigKey::MIGRATIONS_PATHS) ?? [];
         /** @var list<class-string> $seeders */
         $seeders = $config->get(ConfigKey::SEEDERS_LIST) ?? [];
-
-        $this->getContainer()->addServiceProvider(new DatabaseEloquentServiceProvider(
-            connection: [
-                'driver' => $config->getString(ConfigKey::DB_DRIVER),
-                'host' => $config->getString(ConfigKey::DB_HOST),
-                'database' => $config->getString(ConfigKey::DB_DATABASE),
-                'username' => $config->getString(ConfigKey::DB_USERNAME),
-                'password' => $config->getString(ConfigKey::DB_PASSWORD),
-                'charset' => $config->getString(ConfigKey::DB_CHARSET),
-                'collation' => $config->getString(ConfigKey::DB_COLLATION),
-                'prefix' => $config->getString(ConfigKey::DB_PREFIX),
-            ],
+        $container->addServiceProvider(new DatabaseEloquentServiceProvider(
+            connection: $this->getConnectionOptions($config),
             logDbQueries: $config->getBool(ConfigKey::LOG_DB_QUERIES),
-            queryLogPath: $paths->get(PathName::LOGS, 'query.log'),
+            queryLogPath: $pathManager->get(PathName::LOGS, self::LOG_QUERY_FILE),
             logMaxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
-            migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, 'migrations'),
-            migrationPaths: array_map(
-                fn (string $path): string => $paths->root($path),
-                $migrationPathKeys,
-            ),
+            migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
+            migrationPaths: $this->relativeToAbsolutePath($pathManager, $migrationPaths),
             seeders: $seeders,
         ));
-    }
 
-    private function registerConsoleProvider(): void
-    {
-        $config = $this->config();
-
-        /** @var list<class-string<Command>> $commands */
-        $commands = $config->get(ConfigKey::COMMANDS) ?? [];
-
-        $this->getContainer()->addServiceProvider(new ConsoleSymfonyServiceProvider(
-            appName: $config->getString(ConfigKey::APP_NAME),
-            appVersion: $config->getString(ConfigKey::APP_VERSION),
-            commands: $commands,
+        $container->addServiceProvider(new ValidationServiceProvider());
+        $container->addServiceProvider(new FormRequestServiceProvider());
+        $container->addServiceProvider(new SessionServiceProvider(
+            savePath: $pathManager->get(PathName::STORAGE, self::STORAGE_SESSIONS_DIR),
         ));
-    }
-
-    private function registerSessionProvider(): void
-    {
-        $paths = $this->paths();
-
-        $this->getContainer()->addServiceProvider(new SessionServiceProvider(
-            savePath: $paths->get(PathName::STORAGE, 'sessions'),
-        ));
-    }
-
-    private function registerRoutingProvider(): void
-    {
-        $config = $this->config();
-        $paths = $this->paths();
-        $container = $this->getContainer();
-
-        /** @var list<string> $routePathKeys */
-        $routePathKeys = $config->get(ConfigKey::ROUTES_LIST) ?? [];
+        $container->addServiceProvider(new CsrfServiceProvider());
+        /** @var list<string> $routesList */
+        $routesList = $config->get(ConfigKey::ROUTES_LIST) ?? [];
 
         $container->addServiceProvider(new CoreHttpServiceProvider(
-            routePaths: array_map(
-                fn (string $path): string => $paths->root($path),
-                $routePathKeys,
-            ),
-            resolvers: [
-                new FormRequestArgumentResolver($container),
-                new ServerRequestArgumentResolver(),
-                new TypedRouteParameterArgumentResolver($container),
-                new RouteParameterArgumentResolver(),
-            ],
+            routePaths: $this->relativeToAbsolutePath($pathManager, $routesList),
+            resolvers: $this->getArgumentResolvers($container),
         ));
-    }
 
-    private function registerViewProvider(): void
-    {
-        $config = $this->config();
-        $container = $this->getContainer();
-
-        $container->add(AppExtension::class, fn (): AppExtension => new AppExtension(
-            $this->config()->getString(ConfigKey::APP_NAME),
-        ))->setShared(true);
+        $container->addServiceProvider(new PaginationConfiguratorServiceProvider());
+        $container->addServiceProvider(new HttpServiceProvider());
 
         /** @var array<string, string> $viewPaths */
         $viewPaths = $config->get(ConfigKey::VIEW_PATHS) ?? [];
-
         /** @var list<class-string> $viewExtensions */
         $viewExtensions = $config->get(ConfigKey::VIEW_EXTENSIONS) ?? [];
-
         $container->addServiceProvider(new ViewServiceProvider(
             paths: $viewPaths,
             extensions: $viewExtensions,
         ));
-    }
 
-    private function registerTwigViewProvider(): void
-    {
-        $config = $this->config();
-        $paths = $this->paths();
-
-        $this->getContainer()->addServiceProvider(new TwigViewServiceProvider(
+        $container->addServiceProvider(new TwigViewServiceProvider(
             root: $this->root,
-            viewsPath: $paths->get(PathName::VIEWS),
+            viewsPath: $pathManager->get(PathName::VIEWS),
             debug: $config->getBool(ConfigKey::APP_DEBUG),
-            cacheDir: $paths->get(PathName::CACHE, 'views'),
+            cacheDir: $pathManager->get(PathName::CACHE, self::CACHE_VIEWS_DIR),
+        ));
+
+        /** @var list<class-string<Command>> $commands */
+        $commands = $config->get(ConfigKey::COMMANDS) ?? [];
+        $container->addServiceProvider(new ConsoleSymfonyServiceProvider(
+            appName: $config->getString(ConfigKey::APP_NAME),
+            appVersion: $config->getString(ConfigKey::APP_VERSION),
+            commands: $commands,
+        ));
+
+        $container->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
+            root: $this->root,
+            debug: $config->getBool(ConfigKey::APP_DEBUG),
+            errorsFallbackPath: $pathManager->get(PathName::ERRORS_FALLBACK_VIEWS),
         ));
     }
 
-    private function registerErrorHandlerProvider(): void
+    /**
+     * @param PathManager $pathManager
+     * @param list<string> $flatList
+     * @return list<string>
+     */
+    private function relativeToAbsolutePath(PathManager $pathManager, array $flatList): array
     {
-        $config = $this->config();
-        $paths = $this->paths();
+        return array_map(
+            fn(string $path): string => $pathManager->root($path),
+            $flatList,
+        );
+    }
 
-        $this->getContainer()->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
-            root: $this->root,
-            debug: $config->getBool(ConfigKey::APP_DEBUG),
-            errorsFallbackPath: $paths->get(PathName::ERRORS_FALLBACK_VIEWS),
-        ));
+    /**
+     * @param ContainerInterface $container
+     * @return array<ArgumentResolverInterface>
+     */
+    private function getArgumentResolvers(ContainerInterface $container): array
+    {
+        return [
+            new FormRequestArgumentResolver($container),
+            new ServerRequestArgumentResolver(),
+            new TypedRouteParameterArgumentResolver($container),
+            new RouteParameterArgumentResolver(),
+        ];
+    }
+
+    /**
+     * @param ConfigInterface $config
+     * @return array<string, string>
+     */
+    private function getConnectionOptions(ConfigInterface $config): array
+    {
+        return [
+            'driver' => $config->getString(ConfigKey::DB_DRIVER, self::DEFAULT_DB_DRIVER),
+            'host' => $config->getString(ConfigKey::DB_HOST, self::DEFAULT_DB_HOST),
+            'database' => $config->getString(ConfigKey::DB_DATABASE),
+            'username' => $config->getString(ConfigKey::DB_USERNAME),
+            'password' => $config->getString(ConfigKey::DB_PASSWORD),
+            'charset' => $config->getString(ConfigKey::DB_CHARSET, self::DEFAULT_DB_CHARSET),
+            'collation' => $config->getString(ConfigKey::DB_COLLATION, self::DEFAULT_DB_COLLATION),
+            'prefix' => $config->getString(ConfigKey::DB_PREFIX),
+        ];
     }
 }
