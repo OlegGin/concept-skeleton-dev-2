@@ -1823,11 +1823,12 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/ConsoleSymfony",
-                "reference": "9d1e213689e2f7906a783a7c4621287d9c55046a"
+                "reference": "d673f0b2f8d07b1be3fc78604616d38e9cd86d68"
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
+                "php-concept/extension-database-eloquent": "@dev",
                 "php-concept/extension-http": "@dev",
                 "symfony/console": "^7.2|^8.0"
             },
@@ -1911,12 +1912,13 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/DatabaseEloquent",
-                "reference": "175a03bbb305614dd31f6e43c4c6841df8ea4b99"
+                "reference": "28e49efa7f8cad800362167a02981bee1eb041c3"
             },
             "require": {
                 "illuminate/container": "^13.1",
                 "illuminate/database": "^13.1",
                 "illuminate/events": "^13.1",
+                "illuminate/filesystem": "^13.1",
                 "league/container": "^5.1",
                 "monolog/monolog": "^3",
                 "php": "^8.4",

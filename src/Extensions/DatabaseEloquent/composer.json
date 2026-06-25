@@ -13,6 +13,8 @@
         "illuminate/database": "^13.1",
         "illuminate/events": "^13.1",
         "illuminate/container": "^13.1",
+        "illuminate/filesystem": "^13.1",
+        "symfony/console": "^7.2|^8.0",
         "monolog/monolog": "^3",
         "php-concept/extension-data-masker": "@dev",
         "league/container": "^5.1"

@@ -125,7 +125,17 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $loggingConfig = require $this->root . '/config/logging.php';
         $logging = $loggingConfig['logging'];
 
-        $this->getContainer()->addServiceProvider(new DatabaseEloquentServiceProvider(
+        /** @var array{migrations: array{table: string, paths: list<string>}} $migrationsConfig */
+        $migrationsConfig = require $this->root . '/config/migrations.php';
+        $migrations = $migrationsConfig['migrations'];
+
+        /** @var array{seeders: array{list: list<class-string>}} $seedersConfig */
+        $seedersConfig = require $this->root . '/config/seeders.php';
+        $seeders = $seedersConfig['seeders'];
+
+        $container = $this->getContainer();
+
+        $container->addServiceProvider(new DatabaseEloquentServiceProvider(
             connection: [
                 'driver' => is_string($_ENV['DB_DRIVER'] ?? null) ? $_ENV['DB_DRIVER'] : $database['driver'],
                 'host' => is_string($_ENV['DB_HOST'] ?? null) ? $_ENV['DB_HOST'] : $database['host'],
@@ -139,6 +149,12 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             logDbQueries: filter_var($_ENV['LOG_DB_QUERIES'] ?? $logging['db_queries'], FILTER_VALIDATE_BOOL),
             queryLogPath: $this->root . '/storage/logs/query.log',
             logMaxFiles: filter_var($_ENV['LOG_MAX_FILES'] ?? $logging['max_files'], FILTER_VALIDATE_INT) ?: $logging['max_files'],
+            migrationsTable: $migrations['table'],
+            migrationPaths: array_map(
+                fn (string $path): string => $this->root . '/' . ltrim($path, '/'),
+                $migrations['paths'],
+            ),
+            seeders: $seeders['list'],
         ));
     }
 

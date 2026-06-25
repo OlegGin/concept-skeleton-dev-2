@@ -12,12 +12,20 @@
         "php": "^8.4",
         "symfony/console": "^7.2|^8.0",
         "php-concept/extension-http": "@dev",
+        "php-concept/extension-database-eloquent": "@dev",
         "league/container": "^5.1"
     },
     "repositories": [
         {
             "type": "path",
             "url": "../Http",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../DatabaseEloquent",
             "options": {
                 "symlink": true
             }
