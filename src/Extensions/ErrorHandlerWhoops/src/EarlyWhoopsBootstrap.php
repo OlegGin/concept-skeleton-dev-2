@@ -10,8 +10,14 @@ use Whoops\Run as Whoops;
 
 final class EarlyWhoopsBootstrap
 {
-    public static function register(string $root, bool $debug): Whoops
+    public static function register(string $root): Whoops
     {
+        if (ob_get_level() === 0) {
+            ob_start();
+        }
+
+        $debug = ($_ENV['APP_DEBUG'] ?? 'false') === 'true';
+
         $whoops = new Whoops();
 
         if ($debug) {

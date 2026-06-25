@@ -7,23 +7,30 @@ use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
 use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
 use Concept\Core\Providers\Http\HttpServiceProvider as CoreHttpServiceProvider;
 use Concept\Extensions\CastingValinor\CastingServiceProvider;
+use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
+use Concept\App\Foundation\ConfigKey;
+use Concept\App\Foundation\PathName;
+use Concept\Extensions\Config\ConfigServiceProvider;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Config\Foundation\PathManager;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
+use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
 use Concept\Extensions\DatabaseEloquent\DatabaseEloquentServiceProvider;
 use Concept\Extensions\DatabaseEloquent\PaginationConfiguratorServiceProvider;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
-use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
-use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
+use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use Symfony\Component\Console\Command\Command;
 
 final class ApplicationServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -36,6 +43,8 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     public function boot(): void
     {
+        $this->registerConfigProvider();
+
         $container = $this->getContainer();
         $this->registerCastingProvider();
         $this->registerDataMaskerProvider();
@@ -58,137 +67,153 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
     }
 
+    private function registerConfigProvider(): void
+    {
+        /** @var array<string, string> $paths */
+        $paths = require $this->root . '/bootstrap/paths.php';
+
+        $this->getContainer()->addServiceProvider(new ConfigServiceProvider(
+            root: $this->root,
+            configDir: $paths[PathName::CONFIG] ?? 'config',
+            pathMap: $paths,
+        ));
+    }
+
+    private function config(): ConfigInterface
+    {
+        /** @var ConfigInterface $config */
+        $config = $this->getContainer()->get(ConfigInterface::class);
+
+        return $config;
+    }
+
+    private function paths(): PathManager
+    {
+        /** @var PathManager $paths */
+        $paths = $this->getContainer()->get(PathManager::class);
+
+        return $paths;
+    }
+
     private function registerCastingProvider(): void
     {
+        $config = $this->config();
+        $paths = $this->paths();
+
+        /** @var list<class-string> $transformerClasses */
+        $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];
+
         $this->getContainer()->addServiceProvider(new CastingServiceProvider(
-            cacheDirectory: $this->root . '/storage/cache/valinor',
-            debug: $this->appDebug(),
+            cacheDirectory: $paths->get(PathName::CACHE, 'valinor'),
+            transformerClasses: $transformerClasses,
+            debug: $config->getBool(ConfigKey::APP_DEBUG),
         ));
     }
 
     private function registerDataMaskerProvider(): void
     {
-        /** @var array{
-         *     masking: array{
-         *         patterns: array<string, string>,
-         *         key_patterns: list<string>,
-         *         rules: list<class-string<\Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface>>
-         *     }
-         * } $config
-         */
-        $config = require $this->root . '/config/masking.php';
-        $masking = $config['masking'];
+        $config = $this->config();
+
+        /** @var array<string, string> $patterns */
+        $patterns = $config->get(ConfigKey::MASKING_PATTERNS) ?? [];
+
+        /** @var list<string> $keyPatterns */
+        $keyPatterns = $config->get(ConfigKey::MASKING_KEY_PATTERNS) ?? [];
+
+        /** @var list<class-string<DataMaskerRuleInterface>> $rules */
+        $rules = $config->get(ConfigKey::MASKING_RULES) ?? [];
 
         $this->getContainer()->addServiceProvider(new DataMaskerServiceProvider(
-            patterns: $masking['patterns'],
-            keyPatterns: $masking['key_patterns'],
-            rules: $masking['rules'],
+            patterns: $patterns,
+            keyPatterns: $keyPatterns,
+            rules: $rules,
         ));
     }
 
     private function registerLoggerProvider(): void
     {
-        /** @var array{
-         *     logging: array{
-         *         name: string,
-         *         level: string,
-         *         max_files: int,
-         *     }
-         * } $config
-         */
-        $config = require $this->root . '/config/logging.php';
-        $logging = $config['logging'];
+        $config = $this->config();
+        $paths = $this->paths();
 
         $this->getContainer()->addServiceProvider(new LoggerMonologServiceProvider(
-            path: $this->root . '/storage/logs/app.log',
-            level: is_string($_ENV['LOG_LEVEL'] ?? null) ? $_ENV['LOG_LEVEL'] : $logging['level'],
-            maxFiles: filter_var($_ENV['LOG_MAX_FILES'] ?? $logging['max_files'], FILTER_VALIDATE_INT) ?: $logging['max_files'],
-            channel: $logging['name'],
+            path: $paths->get(PathName::LOGS, 'app.log'),
+            level: $config->getString(ConfigKey::LOG_LEVEL),
+            maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
+            channel: $config->getString(ConfigKey::LOG_NAME),
         ));
     }
 
     private function registerDatabaseProvider(): void
     {
-        /** @var array{
-         *     database: array{
-         *         driver: string,
-         *         host: string,
-         *         database: string,
-         *         username: string,
-         *         password: string,
-         *         charset: string,
-         *         collation: string,
-         *         prefix: string,
-         *     }
-         * } $config
-         */
-        $config = require $this->root . '/config/database.php';
-        $database = $config['database'];
+        $config = $this->config();
+        $paths = $this->paths();
 
-        /** @var array{logging: array{max_files: int, db_queries: bool}} $loggingConfig */
-        $loggingConfig = require $this->root . '/config/logging.php';
-        $logging = $loggingConfig['logging'];
+        /** @var list<string> $migrationPathKeys */
+        $migrationPathKeys = $config->get(ConfigKey::MIGRATIONS_PATHS) ?? [];
 
-        /** @var array{migrations: array{table: string, paths: list<string>}} $migrationsConfig */
-        $migrationsConfig = require $this->root . '/config/migrations.php';
-        $migrations = $migrationsConfig['migrations'];
+        /** @var list<class-string> $seeders */
+        $seeders = $config->get(ConfigKey::SEEDERS_LIST) ?? [];
 
-        /** @var array{seeders: array{list: list<class-string>}} $seedersConfig */
-        $seedersConfig = require $this->root . '/config/seeders.php';
-        $seeders = $seedersConfig['seeders'];
-
-        $container = $this->getContainer();
-
-        $container->addServiceProvider(new DatabaseEloquentServiceProvider(
+        $this->getContainer()->addServiceProvider(new DatabaseEloquentServiceProvider(
             connection: [
-                'driver' => is_string($_ENV['DB_DRIVER'] ?? null) ? $_ENV['DB_DRIVER'] : $database['driver'],
-                'host' => is_string($_ENV['DB_HOST'] ?? null) ? $_ENV['DB_HOST'] : $database['host'],
-                'database' => is_string($_ENV['DB_DATABASE'] ?? null) ? $_ENV['DB_DATABASE'] : $database['database'],
-                'username' => is_string($_ENV['DB_USERNAME'] ?? null) ? $_ENV['DB_USERNAME'] : $database['username'],
-                'password' => is_string($_ENV['DB_PASSWORD'] ?? null) ? $_ENV['DB_PASSWORD'] : $database['password'],
-                'charset' => $database['charset'],
-                'collation' => $database['collation'],
-                'prefix' => $database['prefix'],
+                'driver' => $config->getString(ConfigKey::DB_DRIVER),
+                'host' => $config->getString(ConfigKey::DB_HOST),
+                'database' => $config->getString(ConfigKey::DB_DATABASE),
+                'username' => $config->getString(ConfigKey::DB_USERNAME),
+                'password' => $config->getString(ConfigKey::DB_PASSWORD),
+                'charset' => $config->getString(ConfigKey::DB_CHARSET),
+                'collation' => $config->getString(ConfigKey::DB_COLLATION),
+                'prefix' => $config->getString(ConfigKey::DB_PREFIX),
             ],
-            logDbQueries: filter_var($_ENV['LOG_DB_QUERIES'] ?? $logging['db_queries'], FILTER_VALIDATE_BOOL),
-            queryLogPath: $this->root . '/storage/logs/query.log',
-            logMaxFiles: filter_var($_ENV['LOG_MAX_FILES'] ?? $logging['max_files'], FILTER_VALIDATE_INT) ?: $logging['max_files'],
-            migrationsTable: $migrations['table'],
+            logDbQueries: $config->getBool(ConfigKey::LOG_DB_QUERIES),
+            queryLogPath: $paths->get(PathName::LOGS, 'query.log'),
+            logMaxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
+            migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, 'migrations'),
             migrationPaths: array_map(
-                fn (string $path): string => $this->root . '/' . ltrim($path, '/'),
-                $migrations['paths'],
+                fn (string $path): string => $paths->root($path),
+                $migrationPathKeys,
             ),
-            seeders: $seeders['list'],
+            seeders: $seeders,
         ));
     }
 
     private function registerConsoleProvider(): void
     {
-        /** @var array{commands: list<class-string<\Symfony\Component\Console\Command\Command>>} $config */
-        $config = require $this->root . '/config/commands.php';
+        $config = $this->config();
 
-        $appName = $_ENV['APP_NAME'] ?? 'Concept';
-        $appVersion = $_ENV['APP_VERSION'] ?? '1.0.0';
+        /** @var list<class-string<Command>> $commands */
+        $commands = $config->get(ConfigKey::COMMANDS) ?? [];
 
         $this->getContainer()->addServiceProvider(new ConsoleSymfonyServiceProvider(
-            appName: is_string($appName) ? $appName : 'Concept',
-            appVersion: is_string($appVersion) ? $appVersion : '1.0.0',
-            commands: $config['commands'],
+            appName: $config->getString(ConfigKey::APP_NAME),
+            appVersion: $config->getString(ConfigKey::APP_VERSION),
+            commands: $commands,
         ));
     }
 
     private function registerSessionProvider(): void
     {
+        $paths = $this->paths();
+
         $this->getContainer()->addServiceProvider(new SessionServiceProvider(
-            savePath: $this->root . '/storage/sessions',
+            savePath: $paths->get(PathName::STORAGE, 'sessions'),
         ));
     }
 
     private function registerRoutingProvider(): void
     {
+        $config = $this->config();
+        $paths = $this->paths();
         $container = $this->getContainer();
+
+        /** @var list<string> $routePathKeys */
+        $routePathKeys = $config->get(ConfigKey::ROUTES_LIST) ?? [];
+
         $container->addServiceProvider(new CoreHttpServiceProvider(
-            routePaths: [$this->root . '/routes/web.php', $this->root . '/routes/api.php'],
+            routePaths: array_map(
+                fn (string $path): string => $paths->root($path),
+                $routePathKeys,
+            ),
             resolvers: [
                 new FormRequestArgumentResolver($container),
                 new ServerRequestArgumentResolver(),
@@ -200,49 +225,47 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     private function registerViewProvider(): void
     {
+        $config = $this->config();
         $container = $this->getContainer();
+
         $container->add(AppExtension::class, fn (): AppExtension => new AppExtension(
-            $this->appName(),
+            $this->config()->getString(ConfigKey::APP_NAME),
         ))->setShared(true);
 
+        /** @var array<string, string> $viewPaths */
+        $viewPaths = $config->get(ConfigKey::VIEW_PATHS) ?? [];
+
+        /** @var list<class-string> $viewExtensions */
+        $viewExtensions = $config->get(ConfigKey::VIEW_EXTENSIONS) ?? [];
+
         $container->addServiceProvider(new ViewServiceProvider(
-            paths: [
-                'app' => '/resources/views',
-            ],
-            extensions: [
-                AppExtension::class,
-            ],
+            paths: $viewPaths,
+            extensions: $viewExtensions,
         ));
     }
 
     private function registerTwigViewProvider(): void
     {
+        $config = $this->config();
+        $paths = $this->paths();
+
         $this->getContainer()->addServiceProvider(new TwigViewServiceProvider(
             root: $this->root,
-            viewsPath: $this->root . '/resources/views',
-            debug: $this->appDebug(),
-            cacheDir: $this->root . '/storage/cache/views',
+            viewsPath: $paths->get(PathName::VIEWS),
+            debug: $config->getBool(ConfigKey::APP_DEBUG),
+            cacheDir: $paths->get(PathName::CACHE, 'views'),
         ));
     }
 
     private function registerErrorHandlerProvider(): void
     {
+        $config = $this->config();
+        $paths = $this->paths();
+
         $this->getContainer()->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
             root: $this->root,
-            debug: $this->appDebug(),
-            errorsFallbackPath: $this->root . '/resources/views/errors/fallback',
+            debug: $config->getBool(ConfigKey::APP_DEBUG),
+            errorsFallbackPath: $paths->get(PathName::ERRORS_FALLBACK_VIEWS),
         ));
-    }
-
-    private function appDebug(): bool
-    {
-        return filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL);
-    }
-
-    private function appName(): string
-    {
-        $name = $_ENV['APP_NAME'] ?? 'Concept';
-
-        return is_string($name) ? $name : 'Concept';
     }
 }

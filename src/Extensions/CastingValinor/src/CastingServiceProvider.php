@@ -12,8 +12,8 @@ final class CastingServiceProvider extends AbstractServiceProvider
      */
     public function __construct(
         private readonly string $cacheDirectory,
-        private readonly bool $debug = false,
         private readonly array $transformerClasses = [],
+        private readonly bool $debug = false,
     ) {}
 
     public function provides(string $id): bool
@@ -28,8 +28,8 @@ final class CastingServiceProvider extends AbstractServiceProvider
         $container->add(CasterInterface::class, function () {
             return new Caster(
                 $this->cacheDirectory,
-                $this->debug,
                 $this->transformerClasses,
+                $this->debug,
             );
         })->setShared(true);
     }

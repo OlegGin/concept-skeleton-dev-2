@@ -19,8 +19,8 @@ final class Caster implements CasterInterface
      */
     public function __construct(
         string $cacheDirectory,
-        bool $debug = false,
         array $transformerClasses = [],
+        bool $debug = false,
     ) {
         $cache = new FileSystemCache($cacheDirectory);
         if ($debug) {

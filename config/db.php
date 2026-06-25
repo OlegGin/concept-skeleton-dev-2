@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 return [
-    'database' => [
+    'db' => [
         'driver' => 'mysql',
         'host' => '127.0.0.1',
         'database' => 'db',

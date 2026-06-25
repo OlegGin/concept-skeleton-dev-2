@@ -2,10 +2,10 @@
 
 return [
     'routes' => [
-        'interceptors' => [
-        ],
+        'interceptors' => [],
         'list' => [
-            dirname(__DIR__) . '/routes/web.php',
+            'routes/web.php',
+            'routes/api.php',
         ],
     ],
 ];
