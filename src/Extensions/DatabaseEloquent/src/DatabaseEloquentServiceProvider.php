@@ -26,7 +26,7 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
     private const string DEFAULT_TABLE_NAME = 'migrations';
 
     /**
-     * @param array<string, string> $connection
+     * @param array<string, string|integer> $connection
      * @param list<string> $migrationPaths
      * @param list<class-string> $seeders
      */

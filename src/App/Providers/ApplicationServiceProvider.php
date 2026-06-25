@@ -10,6 +10,7 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
+use Concept\App\Session\SessionHandlerFactory;
 use Concept\Extensions\Config\ConfigServiceProvider;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Config\Foundation\PathManager;
@@ -50,6 +51,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     private const string DEFAULT_DB_DRIVER = 'mysql';
     private const string DEFAULT_DB_HOST = '127.0.0.1';
+    private const int DEFAULT_DB_PORT = 3306;
     private const string DEFAULT_DB_CHARSET = 'utf8mb4';
     private const string DEFAULT_DB_COLLATION = 'utf8mb4_unicode_ci';
 
@@ -114,7 +116,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $seeders = $config->get(ConfigKey::SEEDERS_LIST) ?? [];
         $container->addServiceProvider(new DatabaseEloquentServiceProvider(
             connection: $this->getConnectionOptions($config),
-            logDbQueries: $config->getBool(ConfigKey::LOG_DB_QUERIES),
+            logDbQueries: $config->getBool(ConfigKey::DB_LOG_QUERIES),
             queryLogPath: $pathManager->get(PathName::LOGS, self::LOG_QUERY_FILE),
             logMaxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
             migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
@@ -124,9 +126,15 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
         $container->addServiceProvider(new ValidationServiceProvider());
         $container->addServiceProvider(new FormRequestServiceProvider());
+
+        $sessionHandlerFactory = new SessionHandlerFactory(
+            defaultFilePath: $pathManager->get(PathName::STORAGE, self::STORAGE_SESSIONS_DIR),
+        );
         $container->addServiceProvider(new SessionServiceProvider(
-            savePath: $pathManager->get(PathName::STORAGE, self::STORAGE_SESSIONS_DIR),
+            sessionOptions: $sessionHandlerFactory->createSessionOptions($config),
+            handler: $sessionHandlerFactory->create($config),
         ));
+
         $container->addServiceProvider(new CsrfServiceProvider());
         /** @var list<string> $routesList */
         $routesList = $config->get(ConfigKey::ROUTES_LIST) ?? [];
@@ -199,13 +207,14 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     /**
      * @param ConfigInterface $config
-     * @return array<string, string>
+     * @return array<string, string|integer>
      */
     private function getConnectionOptions(ConfigInterface $config): array
     {
         return [
             'driver' => $config->getString(ConfigKey::DB_DRIVER, self::DEFAULT_DB_DRIVER),
             'host' => $config->getString(ConfigKey::DB_HOST, self::DEFAULT_DB_HOST),
+            'port' => $config->getInt(ConfigKey::DB_PORT, self::DEFAULT_DB_PORT),
             'database' => $config->getString(ConfigKey::DB_DATABASE),
             'username' => $config->getString(ConfigKey::DB_USERNAME),
             'password' => $config->getString(ConfigKey::DB_PASSWORD),

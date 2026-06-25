@@ -21,18 +21,20 @@ final class ConfigKey
 
     public const string DB_DRIVER = 'db.driver';
     public const string DB_HOST = 'db.host';
+    public const string DB_PORT = 'db.port';
     public const string DB_DATABASE = 'db.database';
     public const string DB_USERNAME = 'db.username';
     public const string DB_PASSWORD = 'db.password';
     public const string DB_CHARSET = 'db.charset';
     public const string DB_COLLATION = 'db.collation';
     public const string DB_PREFIX = 'db.prefix';
+    public const string DB_LOG_QUERIES = 'db.log_queries';
 
     public const string LOG_NAME = 'log.name';
     public const string LOG_LEVEL = 'log.level';
     public const string LOG_MAX_FILES = 'log.max_files';
-    public const string LOG_DB_QUERIES = 'log.db_queries';
-    public const string LOG_VALIDATION_DATA = 'log.validation_data';
+
+    public const string VALIDATOR_LOG_VALIDATION_DATA = 'validator.log_validation_data';
 
     public const string CASTER_TRANSFORMERS = 'caster.transformers';
 
@@ -44,6 +46,26 @@ final class ConfigKey
     public const string MIGRATIONS_PATHS = 'migrations.paths';
 
     public const string SEEDERS_LIST = 'seeders.list';
+
+    public const string SESSION_DRIVER = 'session.driver';
+
+    public const string SESSION_COOKIE_LIFETIME = 'session.cookie.lifetime';
+    public const string SESSION_COOKIE_PATH = 'session.cookie.path';
+    public const string SESSION_COOKIE_SECURE = 'session.cookie.secure';
+    public const string SESSION_COOKIE_HTTPONLY = 'session.cookie.httponly';
+    public const string SESSION_COOKIE_DOMAIN = 'session.cookie.domain';
+    public const string SESSION_COOKIE_SAMESITE = 'session.cookie.samesite';
+
+    public const string SESSION_OPTIONS_USE_ONLY_COOKIES = 'session.options.use_only_cookies';
+    public const string SESSION_OPTIONS_USE_STRICT_MODE = 'session.options.use_strict_mode';
+
+    public const string SESSION_FILE_PATH = 'session.file.path';
+
+    public const string SESSION_REDIS_URL = 'session.redis.url';
+    public const string SESSION_REDIS_PREFIX = 'session.redis.prefix';
+
+    public const string SESSION_PDO_DSN = 'session.pdo.dsn';
+    public const string SESSION_PDO_TABLE = 'session.pdo.table';
 
     public const string PAGINATION_PER_PAGE = 'pagination.per_page';
 

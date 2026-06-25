@@ -4,11 +4,13 @@ return [
     'db' => [
         'driver' => 'mysql',
         'host' => '127.0.0.1',
-        'database' => 'db',
+        'port' => 3306,
+        'database' => 'concept_db',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
         'prefix' => '',
+        'log_queries' => false,
     ],
 ];

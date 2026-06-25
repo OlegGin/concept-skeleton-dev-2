@@ -1,9 +1,9 @@
-<?php declare(strict_types=1);
+<?php
 
 return [
     'log' => [
         'name' => 'app',
-        'level' => 'ERROR',
+        'level' => 'DEBUG',
         'max_files' => 7,
     ],
 ];

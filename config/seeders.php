@@ -2,9 +2,6 @@
 
 use Database\Seeders\PageSeeder;
 
-/**
- * Register application seeders here.
- */
 return [
     'seeders' => [
         'list' => [
@@ -12,3 +9,4 @@ return [
         ],
     ],
 ];
+

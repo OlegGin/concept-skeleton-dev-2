@@ -1,12 +1,14 @@
 <?php declare(strict_types=1);
 
+use Concept\App\View\Twig\AppExtension;
+
 return [
     'view' => [
         'paths' => [
             'app' => 'resources/views',
         ],
         'extensions' => [
-            \Concept\App\View\Twig\AppExtension::class,
+            AppExtension::class,
         ],
         'contexts' => [],
     ],

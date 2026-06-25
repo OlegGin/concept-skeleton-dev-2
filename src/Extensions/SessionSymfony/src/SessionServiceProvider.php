@@ -5,7 +5,7 @@ namespace Concept\Extensions\SessionSymfony;
 use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;
 use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
+use SessionHandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 final class SessionServiceProvider extends AbstractServiceProvider
@@ -14,8 +14,8 @@ final class SessionServiceProvider extends AbstractServiceProvider
      * @param array<string, mixed> $sessionOptions
      */
     public function __construct(
-        private readonly string $savePath,
-        private readonly array $sessionOptions = [],
+        private readonly array $sessionOptions,
+        private readonly SessionHandlerInterface $handler,
     ) {}
 
     public function provides(string $id): bool
@@ -31,11 +31,7 @@ final class SessionServiceProvider extends AbstractServiceProvider
         $container = $this->getContainer();
 
         $container->add(SessionInterface::class, function (): Session {
-            $storage = new NativeSessionStorage(
-                $this->sessionOptions,
-                new NativeFileSessionHandler($this->savePath),
-            );
-
+            $storage = new NativeSessionStorage($this->sessionOptions, $this->handler);
             $session = new Session($storage, flashes: new FlashBag());
 
             if (!$session->isStarted()) {
