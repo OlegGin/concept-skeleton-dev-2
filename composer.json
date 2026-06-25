@@ -52,6 +52,13 @@
         },
         {
             "type": "path",
+            "url": "src/Extensions/ViewPlates",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
             "url": "src/Extensions/SessionSymfony",
             "options": {
                 "symlink": true
@@ -79,6 +86,7 @@
         "php-concept/extension-validation-rakit": "@dev",
         "php-concept/extension-view": "@dev",
         "php-concept/extension-view-twig": "@dev",
+        "php-concept/extension-view-plates": "@dev",
         "php-concept/extension-session-symfony": "@dev"
     },
     "scripts": {

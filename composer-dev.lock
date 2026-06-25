@@ -945,6 +945,56 @@
             "time": "2026-04-29T09:35:06+00:00"
         },
         {
+            "name": "illuminate/pagination",
+            "version": "v13.17.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/illuminate/pagination.git",
+                "reference": "0e788e59a857f4c6fd6f084fc4848714c8cd5bbb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/illuminate/pagination/zipball/0e788e59a857f4c6fd6f084fc4848714c8cd5bbb",
+                "reference": "0e788e59a857f4c6fd6f084fc4848714c8cd5bbb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-filter": "*",
+                "illuminate/collections": "^13.0",
+                "illuminate/contracts": "^13.0",
+                "illuminate/support": "^13.0",
+                "php": "^8.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "13.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Illuminate\\Pagination\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "The Illuminate Pagination package.",
+            "homepage": "https://laravel.com",
+            "support": {
+                "issues": "https://github.com/laravel/framework/issues",
+                "source": "https://github.com/laravel/framework"
+            },
+            "time": "2026-05-13T14:00:22+00:00"
+        },
+        {
             "name": "illuminate/pipeline",
             "version": "v13.17.0",
             "source": {
@@ -2047,17 +2097,19 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/DatabaseEloquent",
-                "reference": "ac1ead08f2efa694c85922b212ea78eac296d033"
+                "reference": "7f0d270a78594bf225b9a68f8dc0f85d9d44f581"
             },
             "require": {
                 "illuminate/container": "^13.1",
                 "illuminate/database": "^13.1",
                 "illuminate/events": "^13.1",
                 "illuminate/filesystem": "^13.1",
+                "illuminate/pagination": "^13.1",
                 "league/container": "^5.1",
                 "monolog/monolog": "^3",
                 "php": "^8.4",
                 "php-concept/extension-data-masker": "@dev",
+                "psr/http-message": "^2.0",
                 "symfony/console": "^7.2|^8.0"
             },
             "type": "library",

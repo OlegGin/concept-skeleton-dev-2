@@ -11,6 +11,7 @@ use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
 use Concept\Extensions\DatabaseEloquent\DatabaseEloquentServiceProvider;
+use Concept\Extensions\DatabaseEloquent\PaginationConfiguratorServiceProvider;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
@@ -45,6 +46,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $this->registerSessionProvider();
         $container->addServiceProvider(new CsrfServiceProvider());
         $this->registerRoutingProvider();
+        $container->addServiceProvider(new PaginationConfiguratorServiceProvider());
         $container->addServiceProvider(new HttpServiceProvider());
         $this->registerViewProvider();
         $this->registerTwigViewProvider();
