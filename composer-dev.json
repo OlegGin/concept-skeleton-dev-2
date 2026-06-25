@@ -135,7 +135,8 @@
         "php-concept/extension-data-masker": "@dev",
         "php-concept/extension-logger-monolog": "@dev",
         "php-concept/extension-database-eloquent": "@dev",
-        "php-concept/extension-console-symfony": "@dev"
+        "php-concept/extension-console-symfony": "@dev",
+        "vlucas/phpdotenv": "^5.6"
     },
     "scripts": {
         "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G",

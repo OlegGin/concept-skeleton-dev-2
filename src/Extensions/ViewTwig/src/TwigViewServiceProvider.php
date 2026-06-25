@@ -4,6 +4,8 @@ namespace Concept\Extensions\ViewTwig;
 
 use Concept\Extensions\View\Contracts\ViewInterface;
 use Concept\Extensions\View\Registry\ViewRegistry;
+use Concept\Extensions\ViewTwig\Commands\ViewClearCommand;
+use Illuminate\Filesystem\Filesystem;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -27,17 +29,29 @@ final class TwigViewServiceProvider extends AbstractServiceProvider
 
     public function provides(string $id): bool
     {
-        return $id === ViewInterface::class;
+        return in_array($id, [ViewInterface::class, ViewClearCommand::class], true);
     }
 
     public function register(): void
     {
         $container = $this->getContainer();
 
+        $container->add(Filesystem::class, fn (): Filesystem => new Filesystem())->setShared(true);
+
+        $container->add(ViewClearCommand::class, function () use ($container): ViewClearCommand {
+            /** @var Filesystem $filesystem */
+            $filesystem = $container->get(Filesystem::class);
+
+            return new ViewClearCommand(
+                cacheDir: $this->cacheDir,
+                filesystem: $filesystem,
+            );
+        })->setShared(true);
+
         $container->add(ViewInterface::class, function () use ($container): TwigView {
             $loader = new FilesystemLoader($this->viewsPath);
             $twig = new Environment($loader, [
-                'cache' => $this->debug ? $this->cacheDir : false,
+                'cache' => $this->debug ? false : $this->cacheDir,
                 'debug' => $this->debug,
             ]);
 

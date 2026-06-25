@@ -3,6 +3,8 @@
 use Concept\App\Providers\ApplicationServiceProvider;
 use Concept\Core\App;
 
+require __DIR__ . '/env.php';
+
 $app = App::create();
 $app->registerServiceProviders([
     fn () => new ApplicationServiceProvider(dirname(__DIR__)),
