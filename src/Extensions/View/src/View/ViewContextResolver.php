@@ -14,7 +14,7 @@ final class ViewContextResolver
         $path = '/' . ltrim($request->getUri()->getPath(), '/');
         /** @var array<string, string> $namespacesMap */
         $namespacesMap = $this->viewContextRegistry->all();
-        uksort($namespacesMap, fn (string $a, string $b): int => strlen($b) <=> strlen($a));
+        uksort($namespacesMap, fn(string $a, string $b): int => strlen($b) <=> strlen($a));
 
         foreach ($namespacesMap as $prefix => $namespace) {
             if (str_starts_with($path, $prefix)) {

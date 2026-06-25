@@ -41,7 +41,7 @@ final class HttpServiceProvider extends AbstractServiceProvider
             return new RouteDescriptor($router);
         })->setShared(true);
 
-        $container->add(RequestFormat::class, fn () => new RequestFormat())->setShared(true);
+        $container->add(RequestFormat::class, fn() => new RequestFormat())->setShared(true);
 
         $container->add(ResponseFactoryInterface::class, function () use ($container) {
             /** @var UrlGeneratorInterface $urlGenerator */

@@ -17,7 +17,7 @@ final class FormRequestServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(FormRequestFactoryInterface::class, fn () => new FormRequestFactory($container))
+        $container->add(FormRequestFactoryInterface::class, fn() => new FormRequestFactory($container))
             ->setShared(true);
     }
 }

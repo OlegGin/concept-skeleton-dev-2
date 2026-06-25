@@ -57,7 +57,7 @@ final class DbMigrationListCommand extends Command
         $migrations = $this->capsule->getConnection()->table($this->migrationsTable)
             ->limit($limit)
             ->get()
-            ->map(fn ($item) => (array) $item)
+            ->map(fn($item) => (array) $item)
             ->toArray();
 
         if ($migrations === []) {

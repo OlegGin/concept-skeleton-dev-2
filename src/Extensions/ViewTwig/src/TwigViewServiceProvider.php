@@ -36,7 +36,7 @@ final class TwigViewServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(Filesystem::class, fn (): Filesystem => new Filesystem())->setShared(true);
+        $container->add(Filesystem::class, fn(): Filesystem => new Filesystem())->setShared(true);
 
         $container->add(ViewClearCommand::class, function () use ($container): ViewClearCommand {
             /** @var Filesystem $filesystem */

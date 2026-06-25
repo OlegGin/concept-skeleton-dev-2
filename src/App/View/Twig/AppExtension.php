@@ -14,10 +14,7 @@ final class AppExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction(
-                'app_name',
-                fn(): string => $this->config->getString(ConfigKey::APP_NAME),
-            ),
+            new TwigFunction( 'app_name', fn(): string => $this->config->getString(ConfigKey::APP_NAME)),
         ];
     }
 }

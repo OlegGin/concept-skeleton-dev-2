@@ -52,7 +52,7 @@ final class RouteListCommand extends Command
 
         usort(
             $routes,
-            static fn (Route $left, Route $right): int => [$left->getPath(), $left->getMethod()] <=>
+            static fn(Route $left, Route $right): int => [$left->getPath(), $left->getMethod()] <=>
                 [$right->getPath(), $right->getMethod()],
         );
 
