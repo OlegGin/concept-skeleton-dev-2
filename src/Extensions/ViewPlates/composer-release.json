@@ -1,0 +1,18 @@
+{
+    "name": "php-concept/extension-view-plates",
+    "description": "Concept View Plates engine — PlatesView implementation",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\ViewPlates\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "php-concept/core-2": "^1.0",
+        "php-concept/extension-view": "^1.0",
+        "league/plates": "^3.6",
+        "league/container": "^5.1"
+    }
+}

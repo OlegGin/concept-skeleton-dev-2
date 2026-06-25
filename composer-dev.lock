@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5ff086fa871a2ea7c36ba501eec5138a",
+    "content-hash": "ae110e6631cab706af8ea4f6f5828ba8",
     "packages": [
         {
             "name": "brick/math",
@@ -1356,6 +1356,70 @@
             "time": "2026-03-19T18:52:39+00:00"
         },
         {
+            "name": "league/plates",
+            "version": "v3.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/plates.git",
+                "reference": "12ee65166adbc6fb5916fb80b0c0758e49a2d996"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/plates/zipball/12ee65166adbc6fb5916fb80b0c0758e49a2d996",
+                "reference": "12ee65166adbc6fb5916fb80b0c0758e49a2d996",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "^1.6",
+                "phpunit/phpunit": "^11.4",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Plates\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jonathan Reinink",
+                    "email": "jonathan@reinink.ca",
+                    "role": "Developer"
+                },
+                {
+                    "name": "RJ Garcia",
+                    "email": "ragboyjr@icloud.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Plates, the native PHP template system that's fast, easy to use and easy to extend.",
+            "homepage": "https://platesphp.com",
+            "keywords": [
+                "league",
+                "package",
+                "templates",
+                "templating",
+                "views"
+            ],
+            "support": {
+                "issues": "https://github.com/thephpleague/plates/issues",
+                "source": "https://github.com/thephpleague/plates/tree/v3.6.0"
+            },
+            "time": "2024-11-02T15:03:35+00:00"
+        },
+        {
             "name": "league/route",
             "version": "6.2.0",
             "source": {
@@ -1912,7 +1976,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/DatabaseEloquent",
-                "reference": "28e49efa7f8cad800362167a02981bee1eb041c3"
+                "reference": "ac1ead08f2efa694c85922b212ea78eac296d033"
             },
             "require": {
                 "illuminate/container": "^13.1",
@@ -1922,7 +1986,8 @@
                 "league/container": "^5.1",
                 "monolog/monolog": "^3",
                 "php": "^8.4",
-                "php-concept/extension-data-masker": "@dev"
+                "php-concept/extension-data-masker": "@dev",
+                "symfony/console": "^7.2|^8.0"
             },
             "type": "library",
             "autoload": {
@@ -2145,6 +2210,36 @@
                 "MIT"
             ],
             "description": "Concept View extension — view contracts, response factory, registries",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "php-concept/extension-view-plates",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "src/Extensions/ViewPlates",
+                "reference": "dc6abfaf56d436dbd962e0e2e8d002e7654cf5ad"
+            },
+            "require": {
+                "league/container": "^5.1",
+                "league/plates": "^3.6",
+                "php": "^8.4",
+                "php-concept/core-2": "@dev",
+                "php-concept/extension-view": "@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\ViewPlates\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept View Plates engine — PlatesView implementation",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -4485,6 +4580,7 @@
         "php-concept/extension-validation-rakit": 20,
         "php-concept/extension-view": 20,
         "php-concept/extension-view-twig": 20,
+        "php-concept/extension-view-plates": 20,
         "php-concept/extension-session-symfony": 20,
         "php-concept/extension-csrf": 20,
         "php-concept/extension-json": 20,
