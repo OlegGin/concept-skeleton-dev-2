@@ -112,6 +112,13 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/ErrorHandlerWhoops",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {
@@ -145,6 +152,7 @@
         "php-concept/extension-logger-monolog": "@dev",
         "php-concept/extension-database-eloquent": "@dev",
         "php-concept/extension-console-symfony": "@dev",
+        "php-concept/extension-error-handler-whoops": "@dev",
         "vlucas/phpdotenv": "^5.6"
     },
     "scripts": {

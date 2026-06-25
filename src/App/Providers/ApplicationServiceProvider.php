@@ -11,6 +11,7 @@ use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
 use Concept\Extensions\DatabaseEloquent\DatabaseEloquentServiceProvider;
+use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
@@ -48,6 +49,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $this->registerViewProvider();
         $this->registerTwigViewProvider();
         $this->registerConsoleProvider();
+        $this->registerErrorHandlerProvider();
     }
 
     public function register(): void
@@ -218,6 +220,15 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             viewsPath: $this->root . '/resources/views',
             debug: $this->appDebug(),
             cacheDir: $this->root . '/storage/cache/views',
+        ));
+    }
+
+    private function registerErrorHandlerProvider(): void
+    {
+        $this->getContainer()->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
+            root: $this->root,
+            debug: $this->appDebug(),
+            errorsFallbackPath: $this->root . '/resources/views/errors/fallback',
         ));
     }
 
