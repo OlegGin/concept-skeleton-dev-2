@@ -2,7 +2,7 @@
 
 namespace Concept\Extensions\ViewTwig;
 
-use Concept\Core\Events\View\TemplateRendered;
+use Concept\Extensions\View\Events\TemplateRendered;
 use Concept\Extensions\View\Contracts\ViewInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Twig\Environment as Twig;

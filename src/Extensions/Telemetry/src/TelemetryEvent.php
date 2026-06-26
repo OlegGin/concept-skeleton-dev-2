@@ -4,7 +4,6 @@ namespace Concept\Extensions\Telemetry;
 
 final class TelemetryEvent
 {
-    public const string FRAMEWORK_SERVICE_AWAKENING = 'framework.service_awakening';
     public const string FRAMEWORK_COMPONENT_REGISTERED = 'framework.component_registered';
     public const string FRAMEWORK_ROUTES_REGISTERED = 'framework.routes_registered';
     public const string HTTP_ROUTE_INTERCEPTOR_EXECUTED = 'http.route_interceptor_executed';

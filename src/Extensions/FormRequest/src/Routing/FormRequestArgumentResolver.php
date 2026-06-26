@@ -3,7 +3,7 @@
 namespace Concept\Extensions\FormRequest\Routing;
 
 use Concept\Core\Http\Contracts\ArgumentResolverInterface;
-use Concept\Core\Events\Http\FormRequestValidated;
+use Concept\Extensions\FormRequest\Events\FormRequestValidated;
 use Concept\Extensions\FormRequest\Contracts\FormRequestFactoryInterface;
 use Concept\Extensions\FormRequest\Contracts\FormRequestInterface;
 use Concept\Extensions\ValidationRakit\Exceptions\ValidationException;

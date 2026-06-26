@@ -5,14 +5,15 @@ namespace Concept\Components\DebugBar\Support;
 use Concept\Extensions\Telemetry\Contracts\TelemetryItemInterface;
 use Concept\Extensions\Telemetry\TelemetryCollector;
 use Concept\Extensions\Telemetry\TelemetryEvent;
+use Concept\Extensions\Telemetry\TelemetryKey;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 
-final class ServicesDataCollector extends DataCollector implements Renderable
+final class ComponentsDataCollector extends DataCollector implements Renderable
 {
     use DataFormaterTrait;
 
-    private const string NAME = 'services';
+    private const string NAME = 'components';
 
     public function __construct(
         private readonly TelemetryCollector $telemetryCollector,
@@ -29,18 +30,17 @@ final class ServicesDataCollector extends DataCollector implements Renderable
     public function collect(): array
     {
         $data = [];
-        $servicesAwakening = $this->telemetryCollector->items(TelemetryEvent::FRAMEWORK_SERVICE_AWAKENING);
-        foreach ($servicesAwakening as $serviceAwakening) {
-            /** @var TelemetryItemInterface $serviceAwakening */
-            $name = $this->getContextAttribute($serviceAwakening, 'name');
-            $key = $this->shortClassName($name);
-            $value = sprintf('%s (%s)', $this->formatStartedAt($serviceAwakening->getStartedAt()), $name);
-            $data[$key] = $value;
+        $registered = $this->telemetryCollector->items(TelemetryEvent::FRAMEWORK_COMPONENT_REGISTERED);
+        foreach ($registered as $item) {
+            /** @var TelemetryItemInterface $item */
+            $componentName = $this->stringValue($item->getContext(), TelemetryKey::NAME);
+            $componentClass = $this->stringValue($item->getContext(), TelemetryKey::HANDLER);
+            $data[$componentName] = $componentClass;
         }
 
         return [
             'data' => $data,
-            'count' => count($servicesAwakening),
+            'count' => count($registered),
         ];
     }
 
@@ -51,7 +51,7 @@ final class ServicesDataCollector extends DataCollector implements Renderable
     {
         return [
             self::NAME => [
-                'icon' => 'tags',
+                'icon' => 'puzzle-piece',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => self::NAME . '.data',
                 'default' => '{}',
@@ -63,10 +63,13 @@ final class ServicesDataCollector extends DataCollector implements Renderable
         ];
     }
 
-    private function shortClassName(string $service): string
+    /**
+     * @param array<mixed> $context
+     */
+    private function stringValue(array $context, string $key): string
     {
-        $segments = explode('\\', $service);
+        $value = $context[$key] ?? '';
 
-        return end($segments) ?: $service;
+        return is_string($value) ? $value : '';
     }
 }

@@ -308,9 +308,10 @@ flowchart TD
 
 | Шар | Відповідальність |
 |-----|------------------|
-| **Core** | Lifecycle event DTO (`Concept\Core\Events\Http\*`); `?EventDispatcherInterface` у `RouteStrategy` / `HttpServiceProvider` |
+| **Core** | Lifecycle event DTO (`Concept\Core\Events\Http\*` only); `?EventDispatcherInterface` у `RouteStrategy` / `HttpServiceProvider` |
+| **Extensions** | Власні event DTO (`DatabaseQueryExecuted`, `FormRequestValidated`, `TemplateRendered`, `ComponentRegistered`, …) — dispatch у своєму коді |
 | **Extension Event** | `League\Event\EventDispatcher`, `EventServiceProvider`, реєстрація `ListenerSubscriber` |
-| **Extension Telemetry** | `TelemetryCollector`, `TelemetryEventSubscriber` → слухає core events → пише в collector |
+| **Extension Telemetry** | `TelemetryCollector`, `TelemetryEventSubscriber` → слухає core + extension events → пише в collector |
 | **Glue** | Читає config → передає dispatcher або `null`; реєструє subscribers |
 | **DebugBar** | Consumer `TelemetryCollector` (без змін у логіці collectors) |
 
@@ -343,17 +344,17 @@ Core залежить лише від `psr/event-dispatcher`. Реалізаці
 
 ### HTTP lifecycle (повний набір для DebugBar Timeline)
 
-| Core event | Джерело |
-|------------|---------|
-| `RouteInterceptorInvoked` | `RouteStrategy` |
-| `RouteHandlerInvoked` | `RouteStrategy` |
-| `FormRequestValidated` | `FormRequestArgumentResolver` |
-| `RequestHandled` | `App::handle()` (dispatcher з `public/index.php`) |
-| `TemplateRendered` | `TwigView` |
-| `DatabaseQueryExecuted` | `DatabaseEloquentServiceProvider` |
-| `ComponentRegistered` / `ComponentRoutesRegistered` | `ComponentsServiceProvider` |
+| Event | Namespace | Джерело |
+|-------|-----------|---------|
+| `RouteInterceptorInvoked` | `Concept\Core\Events\Http` | `RouteStrategy` |
+| `RouteHandlerInvoked` | `Concept\Core\Events\Http` | `RouteStrategy` |
+| `RequestHandled` | `Concept\Core\Events\Http` | `App::handle()` |
+| `FormRequestValidated` | `Concept\Extensions\FormRequest\Events` | `FormRequestArgumentResolver` |
+| `TemplateRendered` | `Concept\Extensions\View\Events` | `TwigView` (і майбутній `PlatesView`) |
+| `DatabaseQueryExecuted` | `Concept\Extensions\DatabaseEloquent\Events` | `DatabaseEloquentServiceProvider` |
+| `ComponentRegistered` / `ComponentRoutesRegistered` | `Concept\Extensions\Components\Events` | `ComponentsServiceProvider` |
 
-`FRAMEWORK_SERVICE_AWAKENING` навмисно не відновлюємо — шум від container bindings.
+DebugBar **Components** tab — список зареєстрованих компонентів (`FRAMEWORK_COMPONENT_REGISTERED`), без awakening.
 
 ### Порядок boot (events)
 

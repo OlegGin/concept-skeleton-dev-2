@@ -2,14 +2,14 @@
 
 namespace Concept\Extensions\Telemetry\Subscribers;
 
-use Concept\Core\Events\Database\DatabaseQueryExecuted;
-use Concept\Core\Events\Framework\ComponentRegistered;
-use Concept\Core\Events\Framework\ComponentRoutesRegistered;
-use Concept\Core\Events\Http\FormRequestValidated;
 use Concept\Core\Events\Http\RequestHandled;
 use Concept\Core\Events\Http\RouteHandlerInvoked;
 use Concept\Core\Events\Http\RouteInterceptorInvoked;
-use Concept\Core\Events\View\TemplateRendered;
+use Concept\Extensions\Components\Events\ComponentRegistered;
+use Concept\Extensions\Components\Events\ComponentRoutesRegistered;
+use Concept\Extensions\DatabaseEloquent\Events\DatabaseQueryExecuted;
+use Concept\Extensions\FormRequest\Events\FormRequestValidated;
+use Concept\Extensions\View\Events\TemplateRendered;
 use Concept\Extensions\Telemetry\TelemetryCollector;
 use Concept\Extensions\Telemetry\TelemetryEvent;
 use Concept\Extensions\Telemetry\TelemetryKey;
@@ -101,7 +101,10 @@ final class TelemetryEventSubscriber implements ListenerSubscriber
 
     private function onComponentRegistered(ComponentRegistered $event): void
     {
-        $this->collector->mark(TelemetryEvent::FRAMEWORK_COMPONENT_REGISTERED, $event->componentClass);
+        $this->collector->record(TelemetryEvent::FRAMEWORK_COMPONENT_REGISTERED, [
+            TelemetryKey::NAME => $event->componentName,
+            TelemetryKey::HANDLER => $event->componentClass,
+        ]);
     }
 
     private function onComponentRoutesRegistered(ComponentRoutesRegistered $event): void

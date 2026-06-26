@@ -6,7 +6,7 @@ use Concept\Components\DebugBar\Support\ConfigDataCollector;
 use Concept\Components\DebugBar\Support\CustomDebugBar;
 use Concept\Components\DebugBar\Support\DatabaseDataCollector;
 use Concept\Components\DebugBar\Support\RouteDataCollector;
-use Concept\Components\DebugBar\Support\ServicesDataCollector;
+use Concept\Components\DebugBar\Support\ComponentsDataCollector;
 use Concept\Components\DebugBar\Support\TimelineDataCollector;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
@@ -54,7 +54,7 @@ class DebugBarServiceProvider extends AbstractServiceProvider
 
             $debugBar->addCollector(new DatabaseDataCollector($telemetryCollector));
             $debugBar->addCollector(new RouteDataCollector($telemetryCollector, $routeDescriptor));
-            $debugBar->addCollector(new ServicesDataCollector($telemetryCollector));
+            $debugBar->addCollector(new ComponentsDataCollector($telemetryCollector));
             $debugBar->addCollector(new TimelineDataCollector($telemetryCollector));
             $debugBar->addCollector(new ConfigDataCollector($config, $masker));
 

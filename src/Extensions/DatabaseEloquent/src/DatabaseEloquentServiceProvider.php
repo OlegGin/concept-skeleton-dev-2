@@ -2,7 +2,7 @@
 
 namespace Concept\Extensions\DatabaseEloquent;
 
-use Concept\Core\Events\Database\DatabaseQueryExecuted;
+use Concept\Extensions\DatabaseEloquent\Events\DatabaseQueryExecuted;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\DatabaseEloquent\Commands\DbMigrationListCommand;
 use Concept\Extensions\DatabaseEloquent\Contracts\DatabaseInterface;
