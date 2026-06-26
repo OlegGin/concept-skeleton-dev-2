@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Concept\App\Telemetry;
+namespace Concept\Extensions\Telemetry;
 
-use Concept\App\Telemetry\Contracts\TelemetryItemInterface;
+use Concept\Extensions\Telemetry\Contracts\TelemetryItemInterface;
 
 final class TelemetryCollector
 {
@@ -30,10 +30,20 @@ final class TelemetryCollector
     /**
      * @param array<mixed> $context
      */
-    public function record(string $telemetryEventName, array $context = [], ?float $duration = null): string
-    {
-        $id = $this->start($telemetryEventName, $context, $duration);
-        $this->finish($telemetryEventName, $id);
+    public function record(
+        string $telemetryEventName,
+        array $context = [],
+        ?float $duration = null,
+        ?float $startedAt = null,
+    ): string {
+        $id = uniqid();
+        $this->telemetryItems[$telemetryEventName][$id] = new TelemetryItem(
+            $telemetryEventName,
+            $context,
+            $duration,
+            $startedAt,
+        );
+        $this->telemetryItems[$telemetryEventName][$id]->finish();
 
         return $id;
     }

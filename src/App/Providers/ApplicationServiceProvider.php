@@ -11,7 +11,6 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
-use Concept\App\Telemetry\TelemetryCollector;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Config\Foundation\PathManager;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
@@ -21,11 +20,15 @@ use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
 use Concept\Extensions\DatabaseEloquent\DatabaseEloquentServiceProvider;
 use Concept\Extensions\DatabaseEloquent\PaginationConfiguratorServiceProvider;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
+use Concept\Extensions\Event\EventServiceProvider;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
+use Concept\Extensions\Telemetry\Subscribers\TelemetryEventSubscriber;
+use Concept\Extensions\Telemetry\TelemetryCollector;
+use Concept\Extensions\Telemetry\TelemetryServiceProvider;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use Concept\Extensions\View\ViewServiceProvider;
@@ -33,7 +36,9 @@ use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
 use InvalidArgumentException;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use League\Event\ListenerSubscriber;
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use SessionHandlerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
@@ -77,7 +82,8 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         /** @var PathManager $pathManager */
         $pathManager = $container->get(PathManager::class);
 
-        $container->add(TelemetryCollector::class, fn(): TelemetryCollector => new TelemetryCollector())->setShared(true);
+        $container->addServiceProvider(new TelemetryServiceProvider());
+        $eventDispatcher = $this->registerEventDispatcher($config);
 
         /** @var list<class-string> $transformerClasses */
         $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];
@@ -144,6 +150,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             routePaths: $this->relativeToAbsolutePath($pathManager, $routesList),
             resolvers: $this->getArgumentResolvers($container),
             interceptors: $interceptors,
+            dispatcher: $eventDispatcher,
         ));
 
         $container->addServiceProvider(new PaginationConfiguratorServiceProvider(
@@ -196,6 +203,30 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             fn(string $path): string => $pathManager->root($path),
             $flatList,
         );
+    }
+
+    private function registerEventDispatcher(ConfigInterface $config): ?EventDispatcherInterface
+    {
+        if (!$config->getBool(ConfigKey::EVENTS_ENABLED)) {
+            return null;
+        }
+
+        $container = $this->getContainer();
+
+        /** @var list<ListenerSubscriber> $subscribers */
+        $subscribers = [];
+        if ($config->getBool(ConfigKey::TELEMETRY_ENABLED)) {
+            /** @var TelemetryCollector $collector */
+            $collector = $container->get(TelemetryCollector::class);
+            $subscribers[] = new TelemetryEventSubscriber($collector);
+        }
+
+        $container->addServiceProvider(new EventServiceProvider($subscribers));
+
+        /** @var EventDispatcherInterface $dispatcher */
+        $dispatcher = $container->get(EventDispatcherInterface::class);
+
+        return $dispatcher;
     }
 
     /**

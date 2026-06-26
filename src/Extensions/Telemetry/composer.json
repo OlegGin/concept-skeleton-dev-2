@@ -1,0 +1,34 @@
+{
+    "name": "php-concept/extension-telemetry",
+    "description": "Concept Telemetry extension — in-request collector and event subscribers",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\Telemetry\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "php-concept/core-2": "@dev",
+        "php-concept/extension-event": "@dev",
+        "league/container": "^5.1",
+        "league/event": "^3.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/concept-core-2",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Event",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+}

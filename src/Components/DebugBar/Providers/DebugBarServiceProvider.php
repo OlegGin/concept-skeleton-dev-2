@@ -12,7 +12,7 @@ use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\Http\Routing\RouteDescriptor;
 use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
-use Concept\App\Telemetry\TelemetryCollector;
+use Concept\Extensions\Telemetry\TelemetryCollector;
 use DebugBar\JavascriptRenderer;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Psr\Http\Message\ServerRequestInterface;

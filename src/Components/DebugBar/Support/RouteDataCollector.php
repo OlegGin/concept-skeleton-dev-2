@@ -3,10 +3,10 @@
 namespace Concept\Components\DebugBar\Support;
 
 use Concept\Extensions\Http\Routing\RouteDescriptor;
-use Concept\App\Telemetry\Contracts\TelemetryItemInterface;
-use Concept\App\Telemetry\TelemetryCollector;
-use Concept\App\Telemetry\TelemetryEvent;
-use Concept\App\Telemetry\TelemetryKey;
+use Concept\Extensions\Telemetry\Contracts\TelemetryItemInterface;
+use Concept\Extensions\Telemetry\TelemetryCollector;
+use Concept\Extensions\Telemetry\TelemetryEvent;
+use Concept\Extensions\Telemetry\TelemetryKey;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use League\Route\Route;

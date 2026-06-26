@@ -1,0 +1,27 @@
+{
+    "name": "php-concept/extension-event",
+    "description": "Concept Event extension — League Event dispatcher wiring",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\Event\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "php-concept/core-2": "@dev",
+        "league/container": "^5.1",
+        "league/event": "^3.0",
+        "psr/event-dispatcher": "^1.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/concept-core-2",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+}

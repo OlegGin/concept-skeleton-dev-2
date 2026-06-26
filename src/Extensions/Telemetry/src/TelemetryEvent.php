@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\App\Telemetry;
-
-use Concept\App\Telemetry\Contracts\TelemetryItemInterface;
+namespace Concept\Extensions\Telemetry;
 
 final class TelemetryEvent
 {

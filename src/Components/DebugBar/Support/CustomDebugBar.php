@@ -4,7 +4,7 @@ namespace Concept\Components\DebugBar\Support;
 
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
-use Concept\App\Telemetry\TelemetryCollector;
+use Concept\Extensions\Telemetry\TelemetryCollector;
 use DebugBar\DataCollector\MemoryCollector;
 use DebugBar\DataCollector\PhpInfoCollector;
 use DebugBar\DataCollector\TimeDataCollector;

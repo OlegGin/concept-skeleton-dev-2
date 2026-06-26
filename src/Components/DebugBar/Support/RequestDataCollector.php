@@ -4,9 +4,9 @@ namespace Concept\Components\DebugBar\Support;
 
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
-use Concept\App\Telemetry\Contracts\TelemetryItemInterface;
-use Concept\App\Telemetry\TelemetryCollector;
-use Concept\App\Telemetry\TelemetryEvent;
+use Concept\Extensions\Telemetry\Contracts\TelemetryItemInterface;
+use Concept\Extensions\Telemetry\TelemetryCollector;
+use Concept\Extensions\Telemetry\TelemetryEvent;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use Psr\Http\Message\ServerRequestInterface;

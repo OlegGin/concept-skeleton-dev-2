@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Concept\App\Telemetry;
+namespace Concept\Extensions\Telemetry;
 
-use Concept\App\Telemetry\Contracts\TelemetryItemInterface;
+use Concept\Extensions\Telemetry\Contracts\TelemetryItemInterface;
 
 final class TelemetryItem implements TelemetryItemInterface
 {
@@ -12,7 +12,7 @@ final class TelemetryItem implements TelemetryItemInterface
     private const string FINISHED_AT = 'finished_at';
     private const string DURATION = 'duration';
 
-    private ?float $startedAt = null;
+    private float $startedAt;
     private ?float $finishedAt = null;
 
     /**
@@ -22,8 +22,12 @@ final class TelemetryItem implements TelemetryItemInterface
         private readonly string $name,
         private readonly array $context = [],
         private readonly ?float $duration = null,
+        ?float $startedAt = null,
     ) {
-        $this->startedAt = microtime(true);
+        $this->startedAt = $startedAt ?? microtime(true);
+        if ($duration !== null) {
+            $this->finishedAt = $this->startedAt + $duration;
+        }
     }
 
     public function finish(): void
@@ -43,7 +47,7 @@ final class TelemetryItem implements TelemetryItemInterface
         return $this->context;
     }
 
-    public function getStartedAt(): ?float
+    public function getStartedAt(): float
     {
         return $this->startedAt;
     }
@@ -59,7 +63,7 @@ final class TelemetryItem implements TelemetryItemInterface
             return $this->duration;
         }
 
-        if ($this->startedAt && $this->finishedAt) {
+        if ($this->finishedAt !== null) {
             return $this->finishedAt - $this->startedAt;
         }
 

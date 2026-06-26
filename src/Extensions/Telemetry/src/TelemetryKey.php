@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\App\Telemetry;
+namespace Concept\Extensions\Telemetry;
 
 final class TelemetryKey
 {

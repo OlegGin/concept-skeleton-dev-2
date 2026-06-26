@@ -133,6 +133,20 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Event",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Telemetry",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {
@@ -172,6 +186,8 @@
         "php-concept/extension-error-handler-whoops": "@dev",
         "php-concept/extension-config": "@dev",
         "php-concept/extension-components": "@dev",
+        "php-concept/extension-event": "@dev",
+        "php-concept/extension-telemetry": "@dev",
         "laminas/laminas-permissions-acl": "^2.18",
         "vlucas/phpdotenv": "^5.6"
     },

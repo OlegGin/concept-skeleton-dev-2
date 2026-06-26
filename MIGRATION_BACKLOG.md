@@ -302,6 +302,52 @@ flowchart TD
 
 ---
 
+## Event bus + Telemetry ([league/event](https://event.thephpleague.com/))
+
+### Архітектура
+
+| Шар | Відповідальність |
+|-----|------------------|
+| **Core** | Lifecycle event DTO (`Concept\Core\Events\Http\*`); `?EventDispatcherInterface` у `RouteStrategy` / `HttpServiceProvider` |
+| **Extension Event** | `League\Event\EventDispatcher`, `EventServiceProvider`, реєстрація `ListenerSubscriber` |
+| **Extension Telemetry** | `TelemetryCollector`, `TelemetryEventSubscriber` → слухає core events → пише в collector |
+| **Glue** | Читає config → передає dispatcher або `null`; реєструє subscribers |
+| **DebugBar** | Consumer `TelemetryCollector` (без змін у логіці collectors) |
+
+Core залежить лише від `psr/event-dispatcher`. Реалізація — `league/event` v3 у extension.
+
+### Політика вкл./викл. (config → glue → explicit params)
+
+**Extensions не читають config для events.** Glue вирішує:
+
+| Config key | Ефект |
+|------------|--------|
+| `events.enabled` | `false` → `dispatcher = null` у core/extensions; події не dispatch |
+| `telemetry.enabled` | `false` → `TelemetryEventSubscriber` не реєструється |
+| `telemetry.db_queries` | (наступний крок) `emitQueryEvents` у `DatabaseEloquentServiceProvider` |
+| `telemetry.logs` | (наступний крок) `TelemetryLogHandler` у LoggerMonolog |
+
+Файли: `config/events.php`, `config/telemetry.php`, overlays у `config/dev/`.
+
+### Поточний стан реалізації
+
+- [x] Core: `RouteInterceptorInvoked`, `RouteHandlerInvoked` + dispatch у `RouteStrategy`
+- [x] Extension Event: `EventServiceProvider` + `league/event`
+- [x] Extension Telemetry: collector + `TelemetryEventSubscriber`
+- [x] Glue: `ApplicationServiceProvider::registerEventDispatcher()`
+- [ ] DB query events (`telemetry.db_queries`)
+- [ ] Template render events (`ViewTwig`)
+- [ ] Component registered events (`ComponentsServiceProvider`)
+- [ ] Log events (`telemetry.logs`)
+
+### Порядок boot (events)
+
+1. `TelemetryServiceProvider` — collector (завжди; легкий in-memory store)
+2. `EventServiceProvider` — dispatcher + subscribers (якщо `events.enabled`)
+3. `CoreHttpServiceProvider` — отримує `?EventDispatcherInterface`
+
+---
+
 ## Швидка перевірка
 
 ```bash
@@ -334,4 +380,4 @@ php bin/console.php component:publish-assets
 
 ---
 
-*Останнє оновлення: 2026-06-26 — backlog з критики post-migration review (manifest validation, контракти на межах).*
+*Останнє оновлення: 2026-06-26 — event bus (league/event) + telemetry subscriber; enable policy у config/glue.*
