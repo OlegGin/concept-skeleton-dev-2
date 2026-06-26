@@ -2,7 +2,7 @@
 
 namespace Concept\Extensions\ViewTwig\Commands;
 
-use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -38,7 +38,7 @@ final class ViewClearCommand extends Command
 
         try {
             if ($this->filesystem->exists($this->cacheDir)) {
-                $this->filesystem->cleanDirectory($this->cacheDir);
+                $this->filesystem->remove($this->cacheDir);
             }
 
             $io->success(self::MSG_SUCCESS);

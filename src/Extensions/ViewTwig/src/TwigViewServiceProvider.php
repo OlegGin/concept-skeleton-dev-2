@@ -6,7 +6,7 @@ use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\View\Contracts\ViewInterface;
 use Concept\Extensions\View\Registry\ViewRegistry;
 use Concept\Extensions\ViewTwig\Commands\ViewClearCommand;
-use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Filesystem;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;

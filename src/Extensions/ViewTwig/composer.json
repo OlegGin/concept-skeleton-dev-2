@@ -15,7 +15,7 @@
         "php-concept/extension-event": "@dev",
         "twig/twig": "^3.0",
         "symfony/console": "^7.2|^8.0",
-        "illuminate/filesystem": "^13.1",
+        "symfony/filesystem": "^7.2|^8.0",
         "league/container": "^5.1"
     },
     "repositories": [
