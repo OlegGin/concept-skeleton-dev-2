@@ -3,9 +3,11 @@
 use Concept\Components\Acl\AclComponent;
 use Concept\Components\AuthAdmin\AuthAdminComponent;
 use Concept\Components\SettingsManager\SettingsManagerComponent;
+use Concept\Components\Telemetry\TelemetryComponent;
 
 return [
     'components' => [
+        TelemetryComponent::class => TelemetryComponent::class,
         AclComponent::class => AclComponent::class,
         AuthAdminComponent::class => AuthAdminComponent::class,
         SettingsManagerComponent::class => SettingsManagerComponent::class,

@@ -75,6 +75,7 @@ final class ConfigKey
     public const string VIEW_CONTEXTS = 'view.contexts';
 
     public const string EVENTS_ENABLED = 'events.enabled';
+    public const string EVENTS_SUBSCRIBERS = 'events.subscribers';
 
     public const string TELEMETRY_ENABLED = 'telemetry.enabled';
     public const string TELEMETRY_DB_QUERIES = 'telemetry.db_queries';

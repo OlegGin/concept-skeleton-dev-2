@@ -6,9 +6,9 @@ use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Extensions\FormRequest\Events\FormRequestValidated;
 use Concept\Extensions\FormRequest\Contracts\FormRequestFactoryInterface;
 use Concept\Extensions\FormRequest\Contracts\FormRequestInterface;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\ValidationRakit\Exceptions\ValidationException;
 use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -22,10 +22,7 @@ final class FormRequestArgumentResolver implements ArgumentResolverInterface
 
     private ?FormRequestFactoryInterface $factory = null;
 
-    public function __construct(
-        private readonly ContainerInterface $container,
-        private readonly ?EventDispatcherInterface $dispatcher = null,
-    ) {}
+    public function __construct(private readonly ContainerInterface $container) {}
 
     public function supports(ReflectionParameter $parameter, array $vars): bool
     {
@@ -57,7 +54,7 @@ final class FormRequestArgumentResolver implements ArgumentResolverInterface
                 throw new ValidationException($formRequest->errors(), $formRequest->all());
             }
         } finally {
-            $this->dispatcher?->dispatch(new FormRequestValidated(
+            EventDispatcherResolver::optional($this->container)?->dispatch(new FormRequestValidated(
                 formRequestClass: $className,
                 startedAt: $startedAt,
                 duration: microtime(true) - $startedAt,

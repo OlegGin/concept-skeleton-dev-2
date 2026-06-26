@@ -311,9 +311,10 @@ flowchart TD
 | **Core** | Lifecycle event DTO (`Concept\Core\Events\Http\*` only); `?EventDispatcherInterface` у `RouteStrategy` / `HttpServiceProvider` |
 | **Extensions** | Власні event DTO (`DatabaseQueryExecuted`, `FormRequestValidated`, `TemplateRendered`, `ComponentRegistered`, …) — dispatch у своєму коді |
 | **Extension Event** | `League\Event\EventDispatcher`, `EventServiceProvider`, реєстрація `ListenerSubscriber` |
-| **Extension Telemetry** | `TelemetryCollector`, `TelemetryEventSubscriber` → слухає core + extension events → пише в collector |
-| **Glue** | Читає config → передає dispatcher або `null`; реєструє subscribers |
-| **DebugBar** | Consumer `TelemetryCollector` (без змін у логіці collectors) |
+| **Extension Telemetry** | `TelemetryCollector` + `TelemetryEventSubscriber` (лише core HTTP) |
+| **Telemetry component** (glue) | `TelemetryServiceProvider`, bridge subscribers, config, `EventSubscriberCollector` |
+| **DebugBar component** (glue) | UI consumer `TelemetryCollector` |
+| **Bootstrap** | `TelemetryServiceProvider` реєструється до `ApplicationServiceProvider` (event bus до components boot) |
 
 Core залежить лише від `psr/event-dispatcher`. Реалізація — `league/event` v3 у extension.
 
@@ -328,14 +329,14 @@ Core залежить лише від `psr/event-dispatcher`. Реалізаці
 | `telemetry.db_queries` | `false` → без `DatabaseQueryExecuted`; `true` + dispatcher → emit у `DatabaseEloquentServiceProvider` |
 | `telemetry.logs` | `false` → без `TelemetryLogHandler`; `true` → handler на `LoggerMonolog` |
 
-Файли: `config/events.php`, `config/telemetry.php`, overlays у `config/dev/`.
+Файли: `src/Components/Telemetry/config/telemetry.php` (re-export у `config/telemetry.php`), `config/events.php`, overlays у `config/dev/`.
 
 ### Поточний стан реалізації
 
 - [x] Core: `RouteInterceptorInvoked`, `RouteHandlerInvoked` + dispatch у `RouteStrategy`
 - [x] Extension Event: `EventServiceProvider` + `league/event`
 - [x] Extension Telemetry: collector + `TelemetryEventSubscriber`
-- [x] Glue: `ApplicationServiceProvider::registerEventDispatcher()`
+- [x] Telemetry component: `TelemetryServiceProvider` (collector, event bus, log handler, subscribers)
 - [x] DB query events (`telemetry.db_queries`)
 - [x] Template render events (`ViewTwig`)
 - [x] Component registered events (`ComponentsServiceProvider`)
@@ -358,9 +359,10 @@ DebugBar **Components** tab — список зареєстрованих ком
 
 ### Порядок boot (events)
 
-1. `TelemetryServiceProvider` — collector (завжди; легкий in-memory store)
-2. `EventServiceProvider` — dispatcher + subscribers (якщо `events.enabled`)
-3. `CoreHttpServiceProvider` — отримує `?EventDispatcherInterface`
+1. `bootstrap/providers.php` — `TelemetryServiceProvider` (до logger і components)
+2. `TelemetryServiceProvider::register()` — extension `TelemetryCollector`
+3. `TelemetryServiceProvider::boot()` — subscribers + `EventServiceProvider` (якщо `telemetry.enabled` + `events.enabled`)
+4. Extensions з `EventDispatcherResolver::optional($container)` — без прокидання dispatcher у glue
 
 ---
 

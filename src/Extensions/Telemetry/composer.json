@@ -12,10 +12,6 @@
         "php": "^8.4",
         "php-concept/core-2": "@dev",
         "php-concept/extension-event": "@dev",
-        "php-concept/extension-components": "@dev",
-        "php-concept/extension-database-eloquent": "@dev",
-        "php-concept/extension-form-request": "@dev",
-        "php-concept/extension-view": "@dev",
         "league/container": "^5.1",
         "league/event": "^3.0",
         "monolog/monolog": "^3"
@@ -31,34 +27,6 @@
         {
             "type": "path",
             "url": "src/Extensions/Event",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/Components",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/DatabaseEloquent",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/FormRequest",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/View",
             "options": {
                 "symlink": true
             }

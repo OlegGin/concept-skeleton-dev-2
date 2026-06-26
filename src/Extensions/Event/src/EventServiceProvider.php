@@ -10,9 +10,9 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 final class EventServiceProvider extends AbstractServiceProvider
 {
     /**
-     * @param list<ListenerSubscriber> $subscribers
+     * @param list<class-string<ListenerSubscriber>> $subscriberClasses
      */
-    public function __construct(private readonly array $subscribers = []) {}
+    public function __construct(private readonly array $subscriberClasses = []) {}
 
     public function provides(string $id): bool
     {
@@ -22,10 +22,13 @@ final class EventServiceProvider extends AbstractServiceProvider
     public function register(): void
     {
         $container = $this->getContainer();
+        $subscriberClasses = $this->subscriberClasses;
 
-        $container->add(EventDispatcherInterface::class, function (): EventDispatcher {
+        $container->add(EventDispatcherInterface::class, function () use ($container, $subscriberClasses): EventDispatcher {
             $dispatcher = new EventDispatcher();
-            foreach ($this->subscribers as $subscriber) {
+            foreach ($subscriberClasses as $subscriberClass) {
+                /** @var ListenerSubscriber $subscriber */
+                $subscriber = $container->get($subscriberClass);
                 $dispatcher->subscribeListenersFrom($subscriber);
             }
 

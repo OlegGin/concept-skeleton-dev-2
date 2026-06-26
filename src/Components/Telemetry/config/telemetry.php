@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
 return [
-    'events' => [
+    'telemetry' => [
         'enabled' => false,
-        'subscribers' => [],
+        'db_queries' => false,
+        'logs' => false,
     ],
 ];

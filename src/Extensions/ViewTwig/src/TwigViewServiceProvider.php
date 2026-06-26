@@ -2,6 +2,7 @@
 
 namespace Concept\Extensions\ViewTwig;
 
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\View\Contracts\ViewInterface;
 use Concept\Extensions\View\Registry\ViewRegistry;
 use Concept\Extensions\ViewTwig\Commands\ViewClearCommand;
@@ -9,7 +10,6 @@ use Illuminate\Filesystem\Filesystem;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Extension\DebugExtension;
@@ -26,7 +26,6 @@ final class TwigViewServiceProvider extends AbstractServiceProvider
         private readonly string $cacheDir = '',
         private readonly bool $debug = false,
         private readonly string $defaultExtension = self::DEFAULT_EXTENSION,
-        private readonly ?EventDispatcherInterface $dispatcher = null,
     ) {}
 
     public function provides(string $id): bool
@@ -63,7 +62,11 @@ final class TwigViewServiceProvider extends AbstractServiceProvider
             $this->addPaths($loader, $this->root, $viewRegistry->paths()->all());
             $this->addFallbackPath($loader, $this->viewsPath);
 
-            return new TwigView($twig, $this->defaultExtension, $this->dispatcher);
+            return new TwigView(
+                $twig,
+                $this->defaultExtension,
+                EventDispatcherResolver::optional($container),
+            );
         })->setShared(true);
     }
 

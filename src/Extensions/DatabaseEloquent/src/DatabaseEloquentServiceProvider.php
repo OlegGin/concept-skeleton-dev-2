@@ -3,6 +3,7 @@
 namespace Concept\Extensions\DatabaseEloquent;
 
 use Concept\Extensions\DatabaseEloquent\Events\DatabaseQueryExecuted;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\DatabaseEloquent\Commands\DbMigrationListCommand;
 use Concept\Extensions\DatabaseEloquent\Contracts\DatabaseInterface;
@@ -21,7 +22,6 @@ use Monolog\Handler\RotatingFileHandler;
 use Monolog\Level;
 use Monolog\Logger as Monolog;
 use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
 
 class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -40,7 +40,6 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
         private readonly string $migrationsTable = self::DEFAULT_TABLE_NAME,
         private readonly array $migrationPaths = [],
         private readonly array $seeders = [],
-        private readonly ?EventDispatcherInterface $dispatcher = null,
         private readonly bool $emitQueryEvents = false,
     ) {}
 
@@ -141,7 +140,7 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
 
         $capsuleManager->getConnection()->listen(function(QueryExecuted $query) use ($container): void {
             $this->logQueries($container, $query);
-            $this->dispatchQueryExecuted($query);
+            $this->dispatchQueryExecuted($container, $query);
         });
 
         $container->add(CapsuleManager::class, $capsuleManager);
@@ -162,13 +161,18 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
         $queryLogger->log($query);
     }
 
-    private function dispatchQueryExecuted(QueryExecuted $query): void
+    private function dispatchQueryExecuted(ContainerInterface $container, QueryExecuted $query): void
     {
-        if (!$this->emitQueryEvents || $this->dispatcher === null) {
+        if (!$this->emitQueryEvents) {
             return;
         }
 
-        $this->dispatcher->dispatch(new DatabaseQueryExecuted(
+        $dispatcher = EventDispatcherResolver::optional($container);
+        if ($dispatcher === null) {
+            return;
+        }
+
+        $dispatcher->dispatch(new DatabaseQueryExecuted(
             sql: $query->sql,
             rawSql: $query->toRawSql(),
             bindings: [...$query->bindings],
