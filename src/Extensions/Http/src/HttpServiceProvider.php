@@ -2,6 +2,7 @@
 
 namespace Concept\Extensions\Http;
 
+use Concept\Core\Http\Contracts\RequestContextInterface;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Contracts\UrlGeneratorInterface;
 use Concept\Extensions\Http\Requests\RequestFormat;
@@ -46,8 +47,10 @@ final class HttpServiceProvider extends AbstractServiceProvider
         $container->add(ResponseFactoryInterface::class, function() use ($container) {
             /** @var UrlGeneratorInterface $urlGenerator */
             $urlGenerator = $container->get(UrlGeneratorInterface::class);
+            /** @var RequestContextInterface $requestContext */
+            $requestContext = $container->get(RequestContextInterface::class);
 
-            return new ResponseFactory($urlGenerator);
+            return new ResponseFactory($urlGenerator, $requestContext);
         })->setShared(true);
     }
 }

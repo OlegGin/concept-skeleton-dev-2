@@ -7,9 +7,9 @@ use Concept\Components\Acl\Database\Seeders\AclSeeder;
 use Concept\Components\Acl\Database\Seeders\AssignUserAclRolesSeeder;
 use Concept\Components\Acl\Extensions\TwigExtension;
 use Concept\Components\Acl\Providers\AclServiceProvider;
-use Concept\Core\Foundation\PathManager;
-use Concept\Core\Services\Component\Contracts\ComponentInterface;
-use Concept\Core\Services\Database\Contracts\SeederInterface;
+use Concept\Extensions\Config\Foundation\PathManager;
+use Concept\Extensions\Components\Contracts\ComponentInterface;
+use Concept\Extensions\DatabaseEloquent\Contracts\SeederInterface;
 use Symfony\Component\Console\Command\Command;
 
 class AclComponent implements ComponentInterface

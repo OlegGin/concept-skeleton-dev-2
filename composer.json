@@ -63,11 +63,82 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Csrf",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Json",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Web",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/DataMasker",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/LoggerMonolog",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/DatabaseEloquent",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/ConsoleSymfony",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/ErrorHandlerWhoops",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Config",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Components",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {
         "psr-4": {
-            "Concept\\": "src/"
+            "Concept\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
@@ -76,7 +147,8 @@
         }
     },
     "require-dev": {
-        "phpstan/phpstan": "^2.1"
+        "phpstan/phpstan": "^2.1",
+        "php-debugbar/php-debugbar": "^3.7"
     },
     "require": {
         "php-concept/core-2": "@dev",
@@ -89,7 +161,19 @@
         "php-concept/extension-view": "@dev",
         "php-concept/extension-view-twig": "@dev",
         "php-concept/extension-view-plates": "@dev",
-        "php-concept/extension-session-symfony": "@dev"
+        "php-concept/extension-session-symfony": "@dev",
+        "php-concept/extension-csrf": "@dev",
+        "php-concept/extension-json": "@dev",
+        "php-concept/extension-web": "@dev",
+        "php-concept/extension-data-masker": "@dev",
+        "php-concept/extension-logger-monolog": "@dev",
+        "php-concept/extension-database-eloquent": "@dev",
+        "php-concept/extension-console-symfony": "@dev",
+        "php-concept/extension-error-handler-whoops": "@dev",
+        "php-concept/extension-config": "@dev",
+        "php-concept/extension-components": "@dev",
+        "laminas/laminas-permissions-acl": "^2.18",
+        "vlucas/phpdotenv": "^5.6"
     },
     "scripts": {
         "post-install-cmd": [

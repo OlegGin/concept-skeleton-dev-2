@@ -3,10 +3,10 @@
 namespace Concept\Components\Acl\Middlewares;
 
 use Concept\Components\Acl\Authorization\Exceptions\AccessDeniedException;
-use Concept\Core\Http\Contracts\ResponseFactoryInterface;
-use Concept\Core\Http\Protocol\HttpStatusCode;
-use Concept\Core\Http\Requests\RequestFormat;
-use Concept\Core\Services\Session\Contracts\FlashBagInterface;
+use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
+use Concept\Extensions\Http\Protocol\HttpStatusCode;
+use Concept\Extensions\Http\Requests\RequestFormat;
+use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -34,7 +34,7 @@ final class HandleAccessDeniedMiddleware implements MiddlewareInterface
 
             $this->flashBag->addError($exception->getMessage());
 
-            return $this->responseFactory->back(HttpStatusCode::FOUND, $exception->redirectRouteName());
+            return $this->responseFactory->redirectByName($exception->redirectRouteName());
         }
     }
 }

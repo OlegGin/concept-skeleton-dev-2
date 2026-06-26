@@ -5,7 +5,7 @@ namespace Concept\Components\Acl\Requests\Rules;
 use Concept\Components\Acl\Dto\Rule\RuleDto;
 use Concept\Components\Acl\Enums\AclPrivilege;
 use Concept\Components\Acl\Enums\AclRuleType;
-use Concept\Core\Http\Requests\FormRequest;
+use Concept\Extensions\FormRequest\Requests\FormRequest;
 
 /** @extends FormRequest<RuleDto> */
 class StoreRuleRequest extends FormRequest

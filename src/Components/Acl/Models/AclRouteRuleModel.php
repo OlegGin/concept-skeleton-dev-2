@@ -2,7 +2,7 @@
 
 namespace Concept\Components\Acl\Models;
 
-use Concept\Common\Models\BaseModel;
+use Concept\App\Models\BaseModel;
 use Concept\Components\Acl\Enums\AclPrivilege;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

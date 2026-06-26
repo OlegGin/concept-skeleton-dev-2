@@ -2,8 +2,8 @@
 
 namespace Concept\Components\SettingsManager\Dto;
 
-use Concept\Core\Services\Dto\Contracts\DtoInterface;
-use Concept\Core\Services\Dto\Dto;
+use Concept\Extensions\CastingValinor\Contracts\DtoInterface;
+use Concept\Extensions\CastingValinor\Dto\Dto;
 
 class StoreSettingDto extends Dto implements DtoInterface
 {

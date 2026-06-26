@@ -9,6 +9,7 @@ return [
         ],
         'paths' => [
             'frontend' => '/resources/views/frontend',
+            'dashboard' => '/resources/views/dashboard',
         ],
         'contexts' => [
         ],

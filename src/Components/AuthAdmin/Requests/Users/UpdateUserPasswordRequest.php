@@ -3,7 +3,7 @@
 namespace Concept\Components\AuthAdmin\Requests\Users;
 
 use Concept\Components\AuthAdmin\Dto\User\UpdateUserPasswordDto;
-use Concept\Core\Http\Requests\FormRequest;
+use Concept\Extensions\FormRequest\Requests\FormRequest;
 
 /** @extends FormRequest<UpdateUserPasswordDto> */
 class UpdateUserPasswordRequest extends FormRequest

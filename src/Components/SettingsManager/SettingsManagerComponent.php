@@ -5,10 +5,10 @@ namespace Concept\Components\SettingsManager;
 use Concept\Components\SettingsManager\Database\Seeders\SettingsSeeder;
 use Concept\Components\SettingsManager\Extensions\TwigExtension;
 use Concept\Components\SettingsManager\Providers\SettingsManagerServiceProvider;
-use Concept\Core\Foundation\PathManager;
-use Concept\Core\Foundation\PathName;
-use Concept\Core\Services\Component\Contracts\ComponentInterface;
-use Concept\Core\Services\Database\Contracts\SeederInterface;
+use Concept\App\Foundation\PathName;
+use Concept\Extensions\Components\Contracts\ComponentInterface;
+use Concept\Extensions\Config\Foundation\PathManager;
+use Concept\Extensions\DatabaseEloquent\Contracts\SeederInterface;
 
 class SettingsManagerComponent implements ComponentInterface
 {

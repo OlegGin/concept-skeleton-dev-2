@@ -2,7 +2,7 @@
 
 namespace Concept\Components\Acl\Mappers;
 
-use Concept\Common\Mappers\FormValueNormalizer;
+use Concept\App\Mappers\FormValueNormalizer;
 use Concept\Components\Acl\Dto\Rule\RuleDto;
 use Concept\Components\Acl\Models\AclRuleModel;
 

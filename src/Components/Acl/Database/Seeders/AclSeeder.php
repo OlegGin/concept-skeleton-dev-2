@@ -7,7 +7,7 @@ use Concept\Components\Acl\Enums\AclRuleType;
 use Concept\Components\Acl\Models\AclResourceModel;
 use Concept\Components\Acl\Models\AclRoleModel;
 use Concept\Components\Acl\Models\AclRuleModel;
-use Concept\Core\Services\Database\Contracts\SeederInterface;
+use Concept\Extensions\DatabaseEloquent\Contracts\SeederInterface;
 use Illuminate\Database\Capsule\Manager as CapsuleManager;
 use Illuminate\Database\Seeder;
 

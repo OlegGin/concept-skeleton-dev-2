@@ -11,6 +11,7 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
+use Concept\App\Telemetry\TelemetryCollector;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Config\Foundation\PathManager;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
@@ -75,6 +76,8 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $config = $container->get(ConfigInterface::class);
         /** @var PathManager $pathManager */
         $pathManager = $container->get(PathManager::class);
+
+        $container->add(TelemetryCollector::class, fn(): TelemetryCollector => new TelemetryCollector())->setShared(true);
 
         /** @var list<class-string> $transformerClasses */
         $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];

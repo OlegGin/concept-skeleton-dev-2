@@ -1,44 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Concept Framework | Elegant PHP Skeleton{% endblock %}</title>
+    {% include '@frontend/partials/_title.twig' with { page_title: block('title') } %}
+    {% block meta %}
+        <meta name="description" content="{% block meta_description %}{% endblock %}">
+        <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+    {% endblock %}
 
-    <!-- Bootstrap 5.3 CSS -->
+    <link href="/assets/frontend/img/favicon.png" rel="icon">
+    <link href="/assets/frontend/img/apple-touch-icon.png" rel="apple-touch-icon">
+
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.css">
-
-    <!-- Highlight.js -->
-    <link rel="stylesheet" href="/libs/highlight/styles/github-dark.min.css">
-
-    <!-- Custom Frontend Styles -->
-    <link rel="stylesheet" href="/assets/css/frontend.css">
-
-    <link rel="icon" href="/assets/images/favicon.png" sizes="32x32" />
+    <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/libs/aos/aos.css" rel="stylesheet">
+    <link href="/libs/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="/libs/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="/assets/frontend/css/main.css" rel="stylesheet">
 
     {% block stylesheets %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 
-{% include '@frontend/partials/_navbar.twig' %}
+{% include '@frontend/partials/_header.twig' %}
 
-<main>
-    {% block body %}{% endblock %}
+<main class="main{% if main_class is defined and main_class %} {{ main_class }}{% endif %}">
+    {% block  body %}{% endblock %}
 </main>
 
 {% include '@frontend/partials/_footer.twig' %}
-
-<!-- Bootstrap 5.3 JS Bundle -->
-<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Highlight.js -->
-<script src="/libs/highlight/highlight.min.js"></script>
-
-<!-- Custom Frontend Scripts -->
-<script src="/assets/js/frontend.js"></script>
+{% include '@frontend/partials/_scroll_top.twig' %}
+{% include '@frontend/partials/_preloader.twig' %}
+{% include '@frontend/partials/_scripts.twig' %}
 
 {% block scripts %}{% endblock %}
 </body>

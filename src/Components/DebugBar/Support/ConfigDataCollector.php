@@ -2,8 +2,8 @@
 
 namespace Concept\Components\DebugBar\Support;
 
-use Concept\Core\Services\Config\Contracts\ConfigInterface;
-use Concept\Core\Services\DataMasker\Contracts\DataMaskerInterface;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 

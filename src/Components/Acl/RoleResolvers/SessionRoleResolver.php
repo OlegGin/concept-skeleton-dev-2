@@ -6,7 +6,7 @@ use Concept\Components\Acl\Contracts\RoleResolverInterface;
 use Concept\Components\Acl\Services\AclEntityLookup;
 use Concept\Components\AuthAdmin\Models\UserModel;
 use Concept\Components\AuthAdmin\Services\AuthService;
-use Concept\Core\Services\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
 
 final class SessionRoleResolver implements RoleResolverInterface
 {

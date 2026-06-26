@@ -6,7 +6,7 @@ use Concept\Components\Acl\Authorization\Exceptions\AccessDeniedException;
 use Concept\Components\Acl\Contracts\AclInterface;
 use Concept\Components\Acl\Services\AclRouteRulesService;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
-use Concept\Core\Services\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
 use League\Route\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -40,6 +40,10 @@ final class AclRouteAuthorization implements RouteInterceptorInterface
         $redirectRouteName = $rule['redirect_route_name'] ?? null;
         if (!is_string($redirectRouteName) || $redirectRouteName === '') {
             $redirectRouteName = $this->config->getString('acl.redirect_route_name', 'admin.dashboard');
+        }
+
+        if ($redirectRouteName === $routeName) {
+            $redirectRouteName = 'admin.login';
         }
 
         throw new AccessDeniedException(

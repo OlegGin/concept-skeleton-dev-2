@@ -16,6 +16,8 @@ final class ConfigKey
 
     public const string COMMANDS = 'commands';
 
+    public const string COMPONENTS = 'components';
+
     public const string ROUTES_LIST = 'routes.list';
     public const string ROUTES_INTERCEPTORS = 'routes.interceptors';
 

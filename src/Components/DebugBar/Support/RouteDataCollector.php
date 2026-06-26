@@ -2,11 +2,11 @@
 
 namespace Concept\Components\DebugBar\Support;
 
-use Concept\Core\Http\Routing\RouteDescriptor;
-use Concept\Core\Services\Telemetry\Contracts\TelemetryItemInterface;
-use Concept\Core\Services\Telemetry\TelemetryCollector;
-use Concept\Core\Services\Telemetry\TelemetryEvent;
-use Concept\Core\Services\Telemetry\TelemetryKey;
+use Concept\Extensions\Http\Routing\RouteDescriptor;
+use Concept\App\Telemetry\Contracts\TelemetryItemInterface;
+use Concept\App\Telemetry\TelemetryCollector;
+use Concept\App\Telemetry\TelemetryEvent;
+use Concept\App\Telemetry\TelemetryKey;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use League\Route\Route;

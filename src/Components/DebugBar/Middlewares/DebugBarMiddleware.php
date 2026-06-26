@@ -2,8 +2,8 @@
 
 namespace Concept\Components\DebugBar\Middlewares;
 
-use Concept\Core\Http\Requests\RequestFormat;
-use Concept\Core\Services\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Http\Requests\RequestFormat;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
 use DebugBar\JavascriptRenderer;
 use Laminas\Diactoros\StreamFactory;
 use Psr\Http\Message\ResponseInterface;

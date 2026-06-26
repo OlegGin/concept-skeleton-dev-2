@@ -38,7 +38,7 @@ final class HandleValidationExceptionMiddleware implements MiddlewareInterface
             $this->flashBag->set(SessionKey::VALIDATION_ERRORS, $e->getErrors());
             $this->flashBag->set(SessionKey::VALIDATION_DATA, $e->getOldData());
 
-            return $this->responseFactory->redirectBack($request);
+            return $this->responseFactory->redirectBack();
         }
     }
 }

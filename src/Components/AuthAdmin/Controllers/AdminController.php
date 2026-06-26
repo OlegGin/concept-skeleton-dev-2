@@ -6,9 +6,9 @@ use Concept\Components\AuthAdmin\Constants\RouteName;
 use Concept\Components\AuthAdmin\Constants\ViewName;
 use Concept\Components\AuthAdmin\Requests\LoginRequest;
 use Concept\Components\AuthAdmin\Services\AuthService;
-use Concept\Core\Http\Contracts\ResponseFactoryInterface;
-use Concept\Core\Services\Session\Contracts\FlashBagInterface;
-use Concept\Core\Services\View\Contracts\ViewResponseFactoryInterface;
+use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
+use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;
+use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class AdminController

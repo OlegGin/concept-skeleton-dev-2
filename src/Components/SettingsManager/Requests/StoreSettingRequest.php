@@ -5,7 +5,7 @@ namespace Concept\Components\SettingsManager\Requests;
 use Concept\Components\SettingsManager\Dto\StoreSettingDto;
 use Concept\Components\SettingsManager\Enums\SettingDataType;
 use Concept\Components\SettingsManager\Enums\SettingGroup;
-use Concept\Core\Http\Requests\FormRequest;
+use Concept\Extensions\FormRequest\Requests\FormRequest;
 
 /** @extends FormRequest<StoreSettingDto> */
 class StoreSettingRequest extends FormRequest

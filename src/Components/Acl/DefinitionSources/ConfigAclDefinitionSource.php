@@ -3,7 +3,7 @@
 namespace Concept\Components\Acl\DefinitionSources;
 
 use Concept\Components\Acl\Contracts\AclDefinitionSourceInterface;
-use Concept\Core\Services\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
 
 final class ConfigAclDefinitionSource implements AclDefinitionSourceInterface
 {

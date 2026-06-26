@@ -10,10 +10,10 @@ use Concept\Components\Acl\Models\AclRoleModel;
 use Concept\Components\Acl\Requests\Roles\StoreRoleRequest;
 use Concept\Components\Acl\Requests\Roles\UpdateRoleRequest;
 use Concept\Components\Acl\Support\AclListQuery;
-use Concept\Core\Http\Contracts\ResponseFactoryInterface;
-use Concept\Core\Services\Config\Contracts\ConfigInterface;
-use Concept\Core\Services\Session\Contracts\FlashBagInterface;
-use Concept\Core\Services\View\Contracts\ViewResponseFactoryInterface;
+use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;
+use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

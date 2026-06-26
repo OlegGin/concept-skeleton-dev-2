@@ -3,7 +3,7 @@
 namespace Concept\Components\Acl\Requests\Roles;
 
 use Concept\Components\Acl\Dto\Role\RoleDto;
-use Concept\Core\Http\Requests\FormRequest;
+use Concept\Extensions\FormRequest\Requests\FormRequest;
 
 /** @extends FormRequest<RoleDto> */
 class StoreRoleRequest extends FormRequest

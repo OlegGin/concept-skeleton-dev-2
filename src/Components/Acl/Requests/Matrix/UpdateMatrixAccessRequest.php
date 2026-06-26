@@ -4,7 +4,7 @@ namespace Concept\Components\Acl\Requests\Matrix;
 
 use Concept\Components\Acl\Enums\AclPrivilege;
 use Concept\Components\Acl\Dto\ValidatedArrayDto;
-use Concept\Core\Http\Requests\FormRequest;
+use Concept\Extensions\FormRequest\Requests\FormRequest;
 
 /** @extends FormRequest<ValidatedArrayDto> */
 class UpdateMatrixAccessRequest extends FormRequest

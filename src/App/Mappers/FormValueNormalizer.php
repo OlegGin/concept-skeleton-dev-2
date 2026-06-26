@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Common\Mappers;
+namespace Concept\App\Mappers;
 
 final class FormValueNormalizer
 {

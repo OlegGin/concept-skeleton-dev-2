@@ -4,7 +4,7 @@ namespace Concept\Components\Acl\Database\Seeders;
 
 use Concept\Components\Acl\Models\AclRoleModel;
 use Concept\Components\AuthAdmin\Models\UserModel;
-use Concept\Core\Services\Database\Contracts\SeederInterface;
+use Concept\Extensions\DatabaseEloquent\Contracts\SeederInterface;
 use Illuminate\Database\Seeder;
 
 class AssignUserAclRolesSeeder extends Seeder implements SeederInterface

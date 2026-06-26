@@ -5,7 +5,7 @@ namespace Concept\Components\SettingsManager\Database\Seeders;
 use Concept\Components\SettingsManager\Enums\SettingGroup;
 use Concept\Components\SettingsManager\Models\SettingModel;
 use Concept\Components\SettingsManager\Services\Contracts\SettingsManagerInterface;
-use Concept\Core\Services\Database\Contracts\SeederInterface;
+use Concept\Extensions\DatabaseEloquent\Contracts\SeederInterface;
 use Illuminate\Database\Seeder;
 
 class SettingsSeeder extends Seeder implements SeederInterface

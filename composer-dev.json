@@ -126,6 +126,13 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "src/Extensions/Components",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {
@@ -140,7 +147,8 @@
         }
     },
     "require-dev": {
-        "phpstan/phpstan": "^2.1"
+        "phpstan/phpstan": "^2.1",
+        "php-debugbar/php-debugbar": "^3.7"
     },
     "require": {
         "php-concept/core-2": "@dev",
@@ -163,6 +171,8 @@
         "php-concept/extension-console-symfony": "@dev",
         "php-concept/extension-error-handler-whoops": "@dev",
         "php-concept/extension-config": "@dev",
+        "php-concept/extension-components": "@dev",
+        "laminas/laminas-permissions-acl": "^2.18",
         "vlucas/phpdotenv": "^5.6"
     },
     "scripts": {

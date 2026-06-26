@@ -4,7 +4,7 @@ namespace Concept\Components\AuthAdmin\Requests\Users;
 
 use Concept\Components\AuthAdmin\Enums\UserStatus;
 use Concept\Components\AuthAdmin\Dto\User\UpdateUserDto;
-use Concept\Core\Http\Requests\FormRequest;
+use Concept\Extensions\FormRequest\Requests\FormRequest;
 
 /** @extends FormRequest<UpdateUserDto> */
 class UpdateUserRequest extends FormRequest

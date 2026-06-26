@@ -2,8 +2,8 @@
 
 namespace Concept\Components\Acl\Dto\Rule;
 
-use Concept\Core\Services\Dto\Contracts\DtoInterface;
-use Concept\Core\Services\Dto\Dto;
+use Concept\Extensions\CastingValinor\Contracts\DtoInterface;
+use Concept\Extensions\CastingValinor\Dto\Dto;
 
 final class RuleDto extends Dto implements DtoInterface
 {

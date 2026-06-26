@@ -2,8 +2,8 @@
 
 namespace Concept\Components\Acl\Support;
 
-use Concept\Common\Models\BaseModel;
-use Concept\Common\Support\ListQuery;
+use Concept\App\Models\BaseModel;
+use Concept\App\Support\ListQuery;
 use Concept\Components\Acl\Enums\AclPrivilege;
 use Concept\Components\Acl\Enums\AclRuleType;
 use Concept\Components\Acl\Models\AclResourceModel;

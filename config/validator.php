@@ -6,8 +6,8 @@ use Concept\App\Validation\Rules\UniqueRule;
 return [
     'validator' => [
         'rules' => [
-            ExistsRule::class,
-            UniqueRule::class,
+            'exists' => ExistsRule::class,
+            'unique' => UniqueRule::class,
         ],
         'log_enabled' => false,
         'log_path' => 'validation.log',

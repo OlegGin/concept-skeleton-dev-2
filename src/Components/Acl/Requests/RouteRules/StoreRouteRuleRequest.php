@@ -4,7 +4,7 @@ namespace Concept\Components\Acl\Requests\RouteRules;
 
 use Concept\Components\Acl\Dto\RouteRule\RouteRuleDto;
 use Concept\Components\Acl\Enums\AclPrivilege;
-use Concept\Core\Http\Requests\FormRequest;
+use Concept\Extensions\FormRequest\Requests\FormRequest;
 
 /** @extends FormRequest<RouteRuleDto> */
 class StoreRouteRuleRequest extends FormRequest

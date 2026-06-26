@@ -10,7 +10,7 @@ use Concept\Components\Acl\Contracts\RoleResolverInterface;
 use Concept\Components\Acl\DefinitionSources\ConfigAclDefinitionSource;
 use Concept\Components\Acl\DefinitionSources\DatabaseAclDefinitionSource;
 use Concept\Components\Acl\RoleResolvers\DefaultRoleResolver;
-use Concept\Core\Services\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Laminas\Permissions\Acl\Acl;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 

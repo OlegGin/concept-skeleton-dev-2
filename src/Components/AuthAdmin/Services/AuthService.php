@@ -3,7 +3,7 @@
 namespace Concept\Components\AuthAdmin\Services;
 
 use Concept\Components\AuthAdmin\Models\UserModel;
-use Concept\Core\Services\Session\Contracts\SessionInterface;
+use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 
 class AuthService
 {

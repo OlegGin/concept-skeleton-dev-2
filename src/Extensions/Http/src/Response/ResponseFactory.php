@@ -2,6 +2,7 @@
 
 namespace Concept\Extensions\Http\Response;
 
+use Concept\Core\Http\Contracts\RequestContextInterface;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Contracts\UrlGeneratorInterface;
 use Concept\Extensions\Http\Protocol\HttpHeader;
@@ -24,7 +25,10 @@ final class ResponseFactory implements ResponseFactoryInterface
     private const string PAYLOAD_STATUS_SUCCESS = 'success';
     private const string PAYLOAD_STATUS_ERROR = 'error';
 
-    public function __construct(private readonly UrlGeneratorInterface $urlGenerator) {}
+    public function __construct(
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly RequestContextInterface $requestContext,
+    ) {}
 
     public function createResponse(int $code = HttpStatusCode::OK, string $reasonPhrase = ''): ResponseInterface
     {
@@ -79,19 +83,20 @@ final class ResponseFactory implements ResponseFactoryInterface
     }
 
     public function redirectByName(
-        ServerRequestInterface $request,
         string $urlName,
         array $parameters = [],
-        int $status = HttpStatusCode::FOUND
+        int $status = HttpStatusCode::FOUND,
     ): ResponseInterface {
-        return $this->redirect($this->urlGenerator->url($request, $urlName, $parameters), $status);
+        return $this->redirect($this->urlGenerator->uri($urlName, $parameters), $status);
     }
 
-    public function redirectBack(
-        ServerRequestInterface $request,
-        int $status = HttpStatusCode::FOUND,
-        string $fallback = '/'
-    ): ResponseInterface {
+    public function redirectBack(int $status = HttpStatusCode::FOUND, string $fallback = '/'): ResponseInterface
+    {
+        $request = $this->requestContext->current();
+        if ($request === null) {
+            return $this->redirect($fallback, $status);
+        }
+
         $url = $request->getHeaderLine(HttpHeader::REFERER);
 
         if ($url === '') {

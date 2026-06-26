@@ -44,14 +44,6 @@
                 </li>
                 {% endif %}
 
-
-                <li class="nav-item">
-                    <a href="{{ uri('admin.menu') }}" class="nav-link {{ dash_active == 'menu' ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-gear-fill"></i>
-                        <p>Menu</p>
-                    </a>
-                </li>
-
                 {% if has_component('Acl') and acl_allowed('admin.acl') %}
                 <li class="nav-item {{ dash_active starts with 'acl_' ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ dash_active starts with 'acl_' ? 'active' : '' }}">

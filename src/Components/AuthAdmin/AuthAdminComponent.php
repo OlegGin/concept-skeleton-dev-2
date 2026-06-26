@@ -5,10 +5,10 @@ namespace Concept\Components\AuthAdmin;
 use Concept\Components\AuthAdmin\Commands\UserListCommand;
 use Concept\Components\AuthAdmin\Database\Seeders\UserSeeder;
 use Concept\Components\AuthAdmin\Extensions\TwigExtension;
-use Concept\Core\Foundation\PathManager;
-use Concept\Core\Foundation\PathName;
-use Concept\Core\Services\Component\Contracts\ComponentInterface;
-use Concept\Core\Services\Database\Contracts\SeederInterface;
+use Concept\App\Foundation\PathName;
+use Concept\Extensions\Components\Contracts\ComponentInterface;
+use Concept\Extensions\Config\Foundation\PathManager;
+use Concept\Extensions\DatabaseEloquent\Contracts\SeederInterface;
 use Symfony\Component\Console\Command\Command;
 
 class AuthAdminComponent implements ComponentInterface

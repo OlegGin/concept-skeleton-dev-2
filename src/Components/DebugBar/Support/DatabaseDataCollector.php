@@ -2,8 +2,8 @@
 
 namespace Concept\Components\DebugBar\Support;
 
-use Concept\Core\Services\Telemetry\TelemetryCollector;
-use Concept\Core\Services\Telemetry\TelemetryEvent;
+use Concept\App\Telemetry\TelemetryCollector;
+use Concept\App\Telemetry\TelemetryEvent;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 

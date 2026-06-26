@@ -7,10 +7,10 @@ use Concept\Components\Acl\Constants\ViewName;
 use Concept\Components\Acl\Enums\AclPrivilege;
 use Concept\Components\Acl\Requests\Matrix\UpdateMatrixAccessRequest;
 use Concept\Components\Acl\Services\AclMatrixService;
-use Concept\Core\Http\Routing\Contracts\UrlGeneratorInterface;
-use Concept\Core\Services\View\Contracts\ViewResponseFactoryInterface;
-use Concept\Core\Http\Contracts\ResponseFactoryInterface;
-use Concept\Core\Services\Session\Contracts\FlashBagInterface;
+use Concept\Extensions\Http\Contracts\UrlGeneratorInterface;
+use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
+use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
+use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

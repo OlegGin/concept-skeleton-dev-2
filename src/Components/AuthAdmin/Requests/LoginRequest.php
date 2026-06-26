@@ -3,7 +3,7 @@
 namespace Concept\Components\AuthAdmin\Requests;
 
 use Concept\Components\AuthAdmin\Dto\LoginDto;
-use Concept\Core\Http\Requests\FormRequest;
+use Concept\Extensions\FormRequest\Requests\FormRequest;
 
 /** @extends FormRequest<LoginDto> */
 class LoginRequest extends FormRequest

@@ -2,7 +2,7 @@
 
 namespace Concept\Components\DebugBar\Support;
 
-use Concept\Core\Services\Telemetry\Contracts\TelemetryItemInterface;
+use Concept\App\Telemetry\Contracts\TelemetryItemInterface;
 use DateTimeImmutable;
 
 trait DataFormaterTrait

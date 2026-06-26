@@ -3,7 +3,7 @@
 namespace Concept\Components\Acl\Requests\Resources;
 
 use Concept\Components\Acl\Dto\Resource\ResourceDto;
-use Concept\Core\Http\Requests\FormRequest;
+use Concept\Extensions\FormRequest\Requests\FormRequest;
 
 /** @extends FormRequest<ResourceDto> */
 class UpdateResourceRequest extends FormRequest

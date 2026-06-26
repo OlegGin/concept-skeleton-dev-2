@@ -5,6 +5,8 @@ use Concept\Extensions\ConsoleSymfony\Commands\DbRollbackCommand;
 use Concept\Extensions\ConsoleSymfony\Commands\DbSeedCommand;
 use Concept\Extensions\ConsoleSymfony\Commands\DbSeedersListCommand;
 use Concept\Extensions\ConsoleSymfony\Commands\RouteListCommand;
+use Concept\Extensions\Components\Commands\ComponentListCommand;
+use Concept\Extensions\Components\Commands\ComponentPublishAssetsCommand;
 use Concept\Extensions\DatabaseEloquent\Commands\DbMigrationListCommand;
 use Concept\Extensions\ViewTwig\Commands\ViewClearCommand;
 
@@ -17,5 +19,7 @@ return [
         DbSeedersListCommand::class,
         RouteListCommand::class,
         ViewClearCommand::class,
+        ComponentListCommand::class,
+        ComponentPublishAssetsCommand::class,
     ],
 ];

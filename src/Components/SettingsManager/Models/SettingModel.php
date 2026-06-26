@@ -2,7 +2,7 @@
 
 namespace Concept\Components\SettingsManager\Models;
 
-use Concept\Common\Models\BaseModel;
+use Concept\App\Models\BaseModel;
 use Concept\Components\SettingsManager\Enums\SettingGroup;
 
 class SettingModel extends BaseModel

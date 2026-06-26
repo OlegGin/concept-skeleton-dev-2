@@ -2,17 +2,12 @@
 
 namespace Concept\Components\DebugBar;
 
-use Concept\Components\AuthAdmin\Commands\UserListCommand;
-use Concept\Components\AuthAdmin\Database\Seeders\UserSeeder;
-use Concept\Components\AuthAdmin\Extensions\TwigExtension;
 use Concept\Components\DebugBar\Providers\DebugBarServiceProvider;
-use Concept\Core\Foundation\PathManager;
-use Concept\Core\Foundation\PathName;
-use Concept\Core\Services\Component\Contracts\ComponentInterface;
-use Concept\Core\Services\Database\Contracts\SeederInterface;
-use Symfony\Component\Console\Command\Command;
+use Concept\App\Foundation\PathName;
+use Concept\Extensions\Components\Contracts\ComponentInterface;
+use Concept\Extensions\Config\Foundation\PathManager;
 
-class DebugBarComponent implements ComponentInterface
+final class DebugBarComponent implements ComponentInterface
 {
     private const string NAME = 'DebugBar';
     private const string VERSION = '1.0.0';

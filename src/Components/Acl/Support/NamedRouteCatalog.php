@@ -2,7 +2,7 @@
 
 namespace Concept\Components\Acl\Support;
 
-use Concept\Core\Http\Routing\RouteDescriptor;
+use Concept\Extensions\Http\Routing\RouteDescriptor;
 
 final class NamedRouteCatalog
 {

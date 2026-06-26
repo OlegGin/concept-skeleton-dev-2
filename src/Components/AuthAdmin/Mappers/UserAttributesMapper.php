@@ -2,7 +2,7 @@
 
 namespace Concept\Components\AuthAdmin\Mappers;
 
-use Concept\Common\Mappers\FormValueNormalizer;
+use Concept\App\Mappers\FormValueNormalizer;
 use Concept\Components\AuthAdmin\Dto\User\StoreUserDto;
 use Concept\Components\AuthAdmin\Dto\User\UpdateUserDto;
 use Concept\Components\AuthAdmin\Dto\User\UpdateUserPasswordDto;

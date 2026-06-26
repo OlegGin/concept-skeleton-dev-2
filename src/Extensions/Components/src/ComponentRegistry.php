@@ -26,7 +26,24 @@ final class ComponentRegistry
         private readonly ContainerInterface $container,
         array $componentClasses,
     ) {
-        $this->componentClasses = $componentClasses;
+        $this->componentClasses = self::normalizeComponentClasses($componentClasses);
+    }
+
+    /**
+     * @param array<class-string<ComponentInterface>, class-string<ComponentInterface>>|list<class-string<ComponentInterface>> $componentClasses
+     * @return list<class-string<ComponentInterface>>
+     */
+    private static function normalizeComponentClasses(array $componentClasses): array
+    {
+        if ($componentClasses === []) {
+            return [];
+        }
+
+        $classes = array_is_list($componentClasses)
+            ? $componentClasses
+            : array_values($componentClasses);
+
+        return array_values(array_unique($classes));
     }
 
     /**

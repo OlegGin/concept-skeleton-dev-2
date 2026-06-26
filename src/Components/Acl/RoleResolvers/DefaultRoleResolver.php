@@ -3,7 +3,7 @@
 namespace Concept\Components\Acl\RoleResolvers;
 
 use Concept\Components\Acl\Contracts\RoleResolverInterface;
-use Concept\Core\Services\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
 
 final class DefaultRoleResolver implements RoleResolverInterface
 {

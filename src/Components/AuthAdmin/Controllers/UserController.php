@@ -11,16 +11,16 @@ use Concept\Components\AuthAdmin\Requests\Users\UpdateUserRequest;
 use Concept\Components\AuthAdmin\Dto\User\StoreUserDto;
 use Concept\Components\AuthAdmin\Dto\User\UpdateUserDto;
 use Concept\Components\AuthAdmin\Dto\User\UpdateUserPasswordDto;
-use Concept\Common\Models\BaseModel;
+use Concept\App\Models\BaseModel;
 use Concept\Components\AuthAdmin\Mappers\UserAttributesMapper;
 use Concept\Components\AuthAdmin\Models\UserModel;
 use Concept\Components\AuthAdmin\Services\AuthService;
 use Concept\Components\AuthAdmin\Services\UserService;
 use Concept\Components\Acl\Models\AclRoleModel;
-use Concept\Core\Services\Config\Contracts\ConfigInterface;
-use Concept\Core\Services\Session\Contracts\FlashBagInterface;
-use Concept\Core\Services\View\Contracts\ViewResponseFactoryInterface;
-use Concept\Core\Http\Contracts\ResponseFactoryInterface;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;
+use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
+use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class UserController

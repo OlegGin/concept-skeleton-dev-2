@@ -2,7 +2,7 @@
 
 namespace Concept\Components\AuthAdmin\Models;
 
-use Concept\Common\Models\BaseModel;
+use Concept\App\Models\BaseModel;
 use Concept\Components\Acl\Models\AclRoleModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;

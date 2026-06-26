@@ -2,7 +2,7 @@
 
 namespace Concept\Components\SettingsManager\Controllers;
 
-use Concept\Common\Mappers\FormValueNormalizer;
+use Concept\App\Mappers\FormValueNormalizer;
 use Concept\Components\SettingsManager\Constants\RouteName;
 use Concept\Components\SettingsManager\Constants\ViewName;
 use Concept\Components\SettingsManager\Dto\StoreSettingDto;
@@ -14,10 +14,10 @@ use Concept\Components\SettingsManager\Models\SettingModel;
 use Concept\Components\SettingsManager\Requests\StoreSettingRequest;
 use Concept\Components\SettingsManager\Requests\UpdateSettingRequest;
 use Concept\Components\SettingsManager\Services\Contracts\SettingsManagerInterface;
-use Concept\Core\Http\Contracts\ResponseFactoryInterface;
-use Concept\Core\Services\Config\Contracts\ConfigInterface;
-use Concept\Core\Services\Session\Contracts\FlashBagInterface;
-use Concept\Core\Services\View\Contracts\ViewResponseFactoryInterface;
+use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;
+use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -3,6 +3,7 @@
 namespace Concept\App\View\Twig;
 
 use Concept\App\Foundation\ConfigKey;
+use Concept\Extensions\Components\ComponentRegistry;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Http\Contracts\UrlGeneratorInterface;
 use Concept\Extensions\View\View\ViewContextResolver;
@@ -21,6 +22,7 @@ class AppExtension extends AbstractExtension
         private readonly ViewContextResolver $routeNamespaceResolver,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly ServerRequestInterface $request,
+        private readonly ComponentRegistry $componentRegistry,
     ) {}
 
     /**
@@ -41,11 +43,12 @@ class AppExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('app_name', fn(): string => $this->config->getString(ConfigKey::APP_NAME)),
+            new TwigFunction('config', [$this->config, 'get']),
             new TwigFunction('route_namespace', fn(): ?string => $this->routeNamespaceResolver->resolve($this->request)),
             new TwigFunction('uri', [$this->urlGenerator, 'uri']),
             new TwigFunction('url', [$this->urlGenerator, 'url']),
             new TwigFunction('base_url', [$this->urlGenerator, 'base']),
+            new TwigFunction('has_component', fn(string $name): bool => $this->componentRegistry->has($name)),
         ];
     }
 }

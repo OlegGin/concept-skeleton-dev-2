@@ -2,9 +2,9 @@
 
 namespace Concept\Components\DebugBar\Support;
 
-use Concept\Core\Services\DataMasker\Contracts\DataMaskerInterface;
-use Concept\Core\Services\Session\Contracts\SessionInterface;
-use Concept\Core\Services\Telemetry\TelemetryCollector;
+use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
+use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
+use Concept\App\Telemetry\TelemetryCollector;
 use DebugBar\DataCollector\MemoryCollector;
 use DebugBar\DataCollector\PhpInfoCollector;
 use DebugBar\DataCollector\TimeDataCollector;

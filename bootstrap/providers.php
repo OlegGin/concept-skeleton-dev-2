@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Concept\App\Foundation\PathName;
+use Concept\App\Providers\ApplicationComponentsServiceProvider;
 use Concept\App\Providers\ApplicationRuntimeServiceProvider;
 use Concept\App\Providers\ApplicationServiceProvider;
 use Concept\Extensions\Config\ConfigServiceProvider;
@@ -19,5 +20,6 @@ return function(string $root, array $paths): array {
         ),
         fn() => new ApplicationRuntimeServiceProvider(),
         fn() => new ApplicationServiceProvider($root),
+        fn() => new ApplicationComponentsServiceProvider($root),
     ];
 };

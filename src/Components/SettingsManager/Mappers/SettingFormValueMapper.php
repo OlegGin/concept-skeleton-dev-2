@@ -2,7 +2,7 @@
 
 namespace Concept\Components\SettingsManager\Mappers;
 
-use Concept\Common\Mappers\FormValueNormalizer;
+use Concept\App\Mappers\FormValueNormalizer;
 use Concept\Components\SettingsManager\Enums\SettingDataType;
 use Concept\Components\SettingsManager\Models\SettingModel;
 use Concept\Components\SettingsManager\Support\SettingValueCodec;

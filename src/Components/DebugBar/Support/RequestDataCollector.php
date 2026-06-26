@@ -2,11 +2,11 @@
 
 namespace Concept\Components\DebugBar\Support;
 
-use Concept\Core\Services\DataMasker\Contracts\DataMaskerInterface;
-use Concept\Core\Services\Session\Contracts\SessionInterface;
-use Concept\Core\Services\Telemetry\Contracts\TelemetryItemInterface;
-use Concept\Core\Services\Telemetry\TelemetryCollector;
-use Concept\Core\Services\Telemetry\TelemetryEvent;
+use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
+use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
+use Concept\App\Telemetry\Contracts\TelemetryItemInterface;
+use Concept\App\Telemetry\TelemetryCollector;
+use Concept\App\Telemetry\TelemetryEvent;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use Psr\Http\Message\ServerRequestInterface;

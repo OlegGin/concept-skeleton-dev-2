@@ -2,7 +2,7 @@
 
 namespace Concept\Components\AuthAdmin\Database\Seeders;
 
-use Concept\Core\Services\Database\Contracts\SeederInterface;
+use Concept\Extensions\DatabaseEloquent\Contracts\SeederInterface;
 use Illuminate\Database\Capsule\Manager as CapsuleManager;
 use Illuminate\Database\Seeder;
 

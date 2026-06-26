@@ -1,0 +1,22 @@
+<header id="header" class="header d-flex align-items-center {{ header_class|default('sticky-top') }}">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+        <a href="{{ uri('home') }}" class="logo d-flex align-items-center me-auto">
+            <h1 class="sitename">Concept</h1>
+        </a>
+
+        <nav id="navmenu" class="navmenu">
+            <ul>
+                <li><a href="{{ uri('home') }}" class="{{ nav_active|default('') == 'home' ? 'active' : '' }}">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+
+        <a class="btn-getstarted" href="#about">Get Started</a>
+
+    </div>
+</header>
