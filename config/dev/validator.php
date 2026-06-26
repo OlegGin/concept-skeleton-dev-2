@@ -2,6 +2,6 @@
 
 return [
     'validator' => [
-        'log_validation_data' => true,
+        'log_enabled' => true,
     ],
 ];

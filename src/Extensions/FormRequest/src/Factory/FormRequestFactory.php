@@ -6,6 +6,7 @@ use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\FormRequest\Contracts\FormRequestFactoryInterface;
 use Concept\Extensions\FormRequest\Contracts\FormRequestInterface;
 use Concept\Extensions\ValidationRakit\Contracts\ValidatorInterface;
+use Concept\Extensions\ValidationRakit\ValidationLogger;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -38,7 +39,11 @@ final class FormRequestFactory implements FormRequestFactoryInterface
             ? $this->resolveCaster()
             : null;
 
-        return new $className($request, $validator, $caster);
+        $validationLogger = $this->container->has(ValidationLogger::class)
+            ? $this->container->get(ValidationLogger::class)
+            : null;
+
+        return new $className($request, $validator, $caster, $validationLogger);
     }
 
     private function resolveCaster(): CasterInterface

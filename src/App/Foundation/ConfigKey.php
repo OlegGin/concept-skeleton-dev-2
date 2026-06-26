@@ -37,7 +37,10 @@ final class ConfigKey
     public const string LOG_LEVEL = 'log.level';
     public const string LOG_MAX_FILES = 'log.max_files';
 
-    public const string VALIDATOR_LOG_VALIDATION_DATA = 'validator.log_validation_data';
+    public const string VALIDATOR_RULES = 'validator.rules';
+    public const string VALIDATOR_LOG_ENABLED = 'validator.log_enabled';
+    public const string VALIDATOR_LOG_PATH = 'validator.log_path';
+    public const string VALIDATOR_LOG_MAX_FILES = 'validator.log_max_files';
 
     public const string CASTER_TRANSFORMERS = 'caster.transformers';
 

@@ -26,6 +26,7 @@ use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
+use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
@@ -47,6 +48,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     private const string LOG_APP_FILE = 'app.log';
     private const string LOG_QUERY_FILE = 'query.log';
+    private const string LOG_VALIDATION_FILE = 'validation.log';
 
     private const string DEFAULT_MIGRATIONS_TABLE = 'migrations';
 
@@ -125,7 +127,15 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             seeders: $seeders,
         ));
 
-        $container->addServiceProvider(new ValidationServiceProvider());
+        /** @var array<string, class-string<RuleInterface>> $validatorRules */
+        $validatorRules = $config->get(ConfigKey::VALIDATOR_RULES) ?? [];
+        $container->addServiceProvider(new ValidationServiceProvider(
+            customRules: $validatorRules,
+            logEnabled: $config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED),
+            logPath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::VALIDATOR_LOG_PATH, self::LOG_VALIDATION_FILE)),
+            logMaxFiles: $config->getInt(ConfigKey::VALIDATOR_LOG_MAX_FILES, 7),
+        ));
+
         $container->addServiceProvider(new FormRequestServiceProvider());
         $container->addServiceProvider(new SessionServiceProvider(
             sessionOptions: $this->getSessionOptions($config),

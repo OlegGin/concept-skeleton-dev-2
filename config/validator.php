@@ -3,6 +3,8 @@
 return [
     'validator' => [
         'rules' => [],
-        'log_validation_data' => true,
+        'log_enabled' => false,
+        'log_path' => 'validation.log',
+        'log_max_files' => 7,
     ],
 ];

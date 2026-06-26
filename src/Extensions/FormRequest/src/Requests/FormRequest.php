@@ -9,6 +9,7 @@ use Concept\Extensions\FormRequest\Contracts\FormRequestInterface;
 use Concept\Extensions\Csrf\Protocol\CsrfField;
 use Concept\Extensions\ValidationRakit\Contracts\ValidationInterface;
 use Concept\Extensions\ValidationRakit\Contracts\ValidatorInterface;
+use Concept\Extensions\ValidationRakit\ValidationLogger;
 use Concept\Extensions\ValidationRakit\Exceptions\ValidationCastException;
 use Concept\Extensions\ValidationRakit\Exceptions\ValidationLogicException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -54,6 +55,7 @@ abstract class FormRequest implements FormRequestInterface
         protected readonly ServerRequestInterface $request,
         protected readonly ValidatorInterface $validator,
         protected readonly ?CasterInterface $caster = null,
+        protected readonly ?ValidationLogger $validationLogger = null,
     ) {}
 
     public function httpRequest(): ServerRequestInterface
@@ -95,6 +97,15 @@ abstract class FormRequest implements FormRequestInterface
         }
 
         $this->validation->validate();
+
+        if ($this->validationLogger instanceof ValidationLogger) {
+            $this->validationLogger->logResult(
+                static::class,
+                $this->validation->isValid(),
+                $this->validation->getValidData(),
+                $this->validation->getErrors(),
+            );
+        }
 
         return $this->validation->isValid();
     }
@@ -145,8 +156,17 @@ abstract class FormRequest implements FormRequestInterface
     {
         $body = $this->request->getParsedBody();
         $parsedBody = is_array($body) ? $body : (is_object($body) ? (array) $body : []);
+        $data = array_merge($this->request->getQueryParams(), $parsedBody);
 
-        return array_merge($this->request->getQueryParams(), $parsedBody);
+        if ($this->validationLogger instanceof ValidationLogger) {
+            $this->validationLogger->logIncoming(
+                static::class,
+                $this->request->getUri()->getPath(),
+                $data,
+            );
+        }
+
+        return $data;
     }
 
     /**
