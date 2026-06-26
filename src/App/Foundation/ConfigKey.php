@@ -28,7 +28,10 @@ final class ConfigKey
     public const string DB_CHARSET = 'db.charset';
     public const string DB_COLLATION = 'db.collation';
     public const string DB_PREFIX = 'db.prefix';
-    public const string DB_LOG_QUERIES = 'db.log_queries';
+
+    public const string DB_LOG_ENABLED = 'db.log_enabled';
+    public const string DB_LOG_PATH = 'db.log_path';
+    public const string DB_LOG_MAX_FILES = 'db.log_max_files';
 
     public const string LOG_NAME = 'log.name';
     public const string LOG_LEVEL = 'log.level';

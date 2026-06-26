@@ -26,14 +26,14 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
     private const string DEFAULT_TABLE_NAME = 'migrations';
 
     /**
-     * @param array<string, string|integer> $connection
+     * @param array<string, mixed> $connection
      * @param list<string> $migrationPaths
      * @param list<class-string> $seeders
      */
     public function __construct(
         private readonly array $connection,
-        private readonly bool $logDbQueries,
-        private readonly string $queryLogPath,
+        private readonly bool $logEnabled,
+        private readonly string $logPath,
         private readonly int $logMaxFiles,
         private readonly string $migrationsTable = self::DEFAULT_TABLE_NAME,
         private readonly array $migrationPaths = [],
@@ -110,7 +110,7 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
         $container->add(QueryLogger::class, function () use ($container): QueryLogger {
             $monolog = new Monolog('query');
             $monolog->pushHandler(new RotatingFileHandler(
-                $this->queryLogPath,
+                $this->logPath,
                 $this->logMaxFiles,
                 Level::Debug,
             ));
@@ -144,7 +144,7 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
 
     private function logQueries(ContainerInterface $container, QueryExecuted $query): void
     {
-        if (!$this->logDbQueries) {
+        if (!$this->logEnabled) {
             return;
         }
 

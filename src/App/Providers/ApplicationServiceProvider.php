@@ -10,7 +10,6 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
-use Concept\App\Session\SessionHandlerFactory;
 use Concept\Extensions\Config\ConfigServiceProvider;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Config\Foundation\PathManager;
@@ -32,7 +31,9 @@ use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 use Psr\Container\ContainerInterface;
+use SessionHandlerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 
 final class ApplicationServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -43,7 +44,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private const string CACHE_VIEWS_DIR = 'views';
 
     private const string LOG_APP_FILE = 'app.log';
-    private const string LOG_QUERY_FILE = 'query.log';
+    private const string LOG_FILE = 'query';
 
     private const string STORAGE_SESSIONS_DIR = 'sessions';
 
@@ -116,9 +117,9 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $seeders = $config->get(ConfigKey::SEEDERS_LIST) ?? [];
         $container->addServiceProvider(new DatabaseEloquentServiceProvider(
             connection: $this->getConnectionOptions($config),
-            logDbQueries: $config->getBool(ConfigKey::DB_LOG_QUERIES),
-            queryLogPath: $pathManager->get(PathName::LOGS, self::LOG_QUERY_FILE),
-            logMaxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
+            logEnabled: $config->getBool(ConfigKey::DB_LOG_ENABLED),
+            logPath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::DB_LOG_PATH, self::LOG_FILE)),
+            logMaxFiles: $config->getInt(ConfigKey::DB_LOG_MAX_FILES, 7),
             migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
             migrationPaths: $this->relativeToAbsolutePath($pathManager, $migrationPaths),
             seeders: $seeders,
@@ -126,15 +127,10 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
         $container->addServiceProvider(new ValidationServiceProvider());
         $container->addServiceProvider(new FormRequestServiceProvider());
-
-        $sessionHandlerFactory = new SessionHandlerFactory(
-            defaultFilePath: $pathManager->get(PathName::STORAGE, self::STORAGE_SESSIONS_DIR),
-        );
         $container->addServiceProvider(new SessionServiceProvider(
-            sessionOptions: $sessionHandlerFactory->createSessionOptions($config),
-            handler: $sessionHandlerFactory->create($config),
+            sessionOptions: $this->getSessionOptions($config),
+            handler: $this->getSessionHandler($config, $pathManager),
         ));
-
         $container->addServiceProvider(new CsrfServiceProvider());
         /** @var list<string> $routesList */
         $routesList = $config->get(ConfigKey::ROUTES_LIST) ?? [];
@@ -206,8 +202,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     }
 
     /**
-     * @param ConfigInterface $config
-     * @return array<string, string|integer>
+     * @return array<string, mixed>
      */
     private function getConnectionOptions(ConfigInterface $config): array
     {
@@ -222,5 +217,40 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             'collation' => $config->getString(ConfigKey::DB_COLLATION, self::DEFAULT_DB_COLLATION),
             'prefix' => $config->getString(ConfigKey::DB_PREFIX),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getSessionOptions(ConfigInterface $config): array
+    {
+        return [
+            'cookie_lifetime' => $config->getInt(ConfigKey::SESSION_COOKIE_LIFETIME, 0),
+            'cookie_path' => $config->getString(ConfigKey::SESSION_COOKIE_PATH, '/'),
+            'cookie_secure' => $config->getBool(ConfigKey::SESSION_COOKIE_SECURE, false),
+            'cookie_httponly' => $config->getBool(ConfigKey::SESSION_COOKIE_HTTPONLY, true),
+            'cookie_domain' => $config->getString(ConfigKey::SESSION_COOKIE_DOMAIN, ''),
+            'cookie_samesite' => $config->getString(ConfigKey::SESSION_COOKIE_SAMESITE, 'Lax'),
+            'use_only_cookies' => $config->getBool(ConfigKey::SESSION_OPTIONS_USE_ONLY_COOKIES, true),
+            'use_strict_mode' => $config->getBool(ConfigKey::SESSION_OPTIONS_USE_STRICT_MODE, true),
+        ];
+    }
+
+    private function getSessionHandler(ConfigInterface $config, PathManager $pathManager): SessionHandlerInterface
+    {
+        $path = $config->get(ConfigKey::SESSION_FILE_PATH);
+
+        if ($path === null) {
+            return new NativeFileSessionHandler($pathManager->get(PathName::STORAGE, self::STORAGE_SESSIONS_DIR));
+        }
+
+        if (!is_string($path)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Session file path must be a string or null, %s given.',
+                get_debug_type($path),
+            ));
+        }
+
+        return new NativeFileSessionHandler($path !== '' ? $path : null);
     }
 }

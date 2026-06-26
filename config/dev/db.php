@@ -2,6 +2,6 @@
 
 return [
     'db' => [
-        'log_queries' => true,
+        'log_enabled' => true,
     ],
 ];
