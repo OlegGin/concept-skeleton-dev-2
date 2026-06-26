@@ -21,15 +21,5 @@ return [
         'file' => [
             'path' => null,
         ],
-
-        'redis' => [
-            'url' => 'redis://127.0.0.1:6379',
-            'prefix' => 'sess_',
-        ],
-
-        'pdo' => [
-            'dsn' => '',
-            'table' => 'sessions',
-        ],
     ],
 ];
