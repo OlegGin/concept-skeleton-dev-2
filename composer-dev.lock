@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a04cf8f482d11a6bd2974c2e7d1d48ff",
+    "content-hash": "5ba45195270128936f9012ffbe5328c9",
     "packages": [
         {
             "name": "brick/math",
@@ -719,16 +719,16 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v13.16.1",
+            "version": "v13.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
-                "reference": "874c81d9fe7b0458d19add1fbefd7c880b847123"
+                "reference": "0b719e8cac0dcdb021e0ddfee5ef65410fe53000"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/contracts/zipball/874c81d9fe7b0458d19add1fbefd7c880b847123",
-                "reference": "874c81d9fe7b0458d19add1fbefd7c880b847123",
+                "url": "https://api.github.com/repos/illuminate/contracts/zipball/0b719e8cac0dcdb021e0ddfee5ef65410fe53000",
+                "reference": "0b719e8cac0dcdb021e0ddfee5ef65410fe53000",
                 "shasum": ""
             },
             "require": {
@@ -763,7 +763,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-06-15T15:36:54+00:00"
+            "time": "2026-06-22T12:59:19+00:00"
         },
         {
             "name": "illuminate/database",
@@ -1998,7 +1998,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/www/concept-core-2",
-                "reference": "c2bd45d3aa408dd8d7cd2b570b9a1de5771d7e1b"
+                "reference": "a38c89863ab9b8e099d5049ecef14e8b03c0c37a"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
@@ -4514,6 +4514,95 @@
             "time": "2026-01-05T13:30:16+00:00"
         },
         {
+            "name": "twbs/bootstrap",
+            "version": "v5.3.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/bootstrap.git",
+                "reference": "25aa8cc0b32f0d1a54be575347e6d84b70b1acd7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/25aa8cc0b32f0d1a54be575347e6d84b70b1acd7",
+                "reference": "25aa8cc0b32f0d1a54be575347e6d84b70b1acd7",
+                "shasum": ""
+            },
+            "replace": {
+                "twitter/bootstrap": "self.version"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mark Otto",
+                    "email": "markdotto@gmail.com"
+                },
+                {
+                    "name": "Jacob Thornton",
+                    "email": "jacobthornton@gmail.com"
+                }
+            ],
+            "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+            "homepage": "https://getbootstrap.com/",
+            "keywords": [
+                "JS",
+                "css",
+                "framework",
+                "front-end",
+                "mobile-first",
+                "responsive",
+                "sass",
+                "web"
+            ],
+            "support": {
+                "issues": "https://github.com/twbs/bootstrap/issues",
+                "source": "https://github.com/twbs/bootstrap/tree/v5.3.8"
+            },
+            "time": "2025-08-26T02:01:02+00:00"
+        },
+        {
+            "name": "twbs/bootstrap-icons",
+            "version": "v1.13.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/icons.git",
+                "reference": "ce0e49dd063243118a115f17ad1fe1fe7576d552"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/icons/zipball/ce0e49dd063243118a115f17ad1fe1fe7576d552",
+                "reference": "ce0e49dd063243118a115f17ad1fe1fe7576d552",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mark Otto",
+                    "email": "markdotto@gmail.com"
+                }
+            ],
+            "description": "Official open source SVG icon library for Bootstrap",
+            "homepage": "https://icons.getbootstrap.com/",
+            "keywords": [
+                "bootstrap",
+                "icon font",
+                "icons",
+                "svg"
+            ],
+            "support": {
+                "issues": "https://github.com/twbs/icons/issues",
+                "source": "https://github.com/twbs/icons/tree/v1.13.1"
+            },
+            "time": "2025-05-09T23:01:19+00:00"
+        },
+        {
             "name": "twig/twig",
             "version": "v3.27.1",
             "source": {
@@ -4822,27 +4911,27 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "php-concept/core-2": 20,
-        "php-concept/extension-http": 20,
         "php-concept/extension-casting-valinor": 20,
+        "php-concept/extension-config": 20,
+        "php-concept/extension-console-symfony": 20,
+        "php-concept/extension-csrf": 20,
+        "php-concept/extension-data-masker": 20,
+        "php-concept/extension-database-eloquent": 20,
+        "php-concept/extension-error-handler-whoops": 20,
         "php-concept/extension-form-request": 20,
+        "php-concept/extension-http": 20,
+        "php-concept/extension-json": 20,
+        "php-concept/extension-logger-monolog": 20,
+        "php-concept/extension-session-symfony": 20,
         "php-concept/extension-validation-rakit": 20,
         "php-concept/extension-view": 20,
-        "php-concept/extension-view-twig": 20,
         "php-concept/extension-view-plates": 20,
-        "php-concept/extension-session-symfony": 20,
-        "php-concept/extension-csrf": 20,
-        "php-concept/extension-json": 20,
-        "php-concept/extension-web": 20,
-        "php-concept/extension-data-masker": 20,
-        "php-concept/extension-logger-monolog": 20,
-        "php-concept/extension-database-eloquent": 20,
-        "php-concept/extension-console-symfony": 20,
-        "php-concept/extension-error-handler-whoops": 20,
-        "php-concept/extension-config": 20
+        "php-concept/extension-view-twig": 20,
+        "php-concept/extension-web": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "platform": {},
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }

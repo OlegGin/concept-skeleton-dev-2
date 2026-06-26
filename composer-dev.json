@@ -144,6 +144,8 @@
     },
     "require": {
         "php-concept/core-2": "@dev",
+        "twbs/bootstrap": "^5.3",
+        "twbs/bootstrap-icons": "^1.13",
         "php-concept/extension-http": "@dev",
         "php-concept/extension-casting-valinor": "@dev",
         "php-concept/extension-form-request": "@dev",
@@ -164,6 +166,19 @@
         "vlucas/phpdotenv": "^5.6"
     },
     "scripts": {
+        "post-install-cmd": [
+            "@publish-assets"
+        ],
+        "post-update-cmd": [
+            "@publish-assets"
+        ],
+        "publish-assets": [
+            "mkdir -p public/vendor/bootstrap",
+            "cp -R vendor/twbs/bootstrap/dist/. public/vendor/bootstrap/",
+
+            "mkdir -p public/vendor/bootstrap-icons",
+            "cp -R vendor/twbs/bootstrap-icons/font/. public/vendor/bootstrap-icons/"
+        ],
         "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G",
         "console": "php bin/console.php"
     }

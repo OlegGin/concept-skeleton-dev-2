@@ -3,4 +3,5 @@
 /.phpunit.cache
 /storage
 /vendor
+/public/vendor
 .env

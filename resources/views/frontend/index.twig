@@ -1,0 +1,973 @@
+{% extends '@frontend/layouts/base.twig' %}
+
+{% block title %}Concept Core — Minimal PHP framework skeleton{% endblock %}
+
+{% block body %}
+{# ── Hero ── #}
+<section class="landing-hero" id="top">
+    <div class="container text-center position-relative">
+        <div class="landing-hero__badge">
+            <span class="landing-hero__badge-dot" aria-hidden="true"></span>
+            <a href="https://github.com/php-concept/concept-skeleton" class="text-decoration-none text-reset" target="_blank" rel="noopener">
+                concept-skeleton
+            </a>
+            <span class="text-muted" aria-hidden="true">·</span>
+            concept-core · PSR-compatibility · PHP 8.4+
+        </div>
+        <h1 class="hero-title">
+            Build fast.<br>
+            <span class="text-underline">Stay minimal.</span>
+        </h1>
+        <p class="hero-subtitle mx-auto">
+            <strong>Concept Core</strong> is a thin orchestration layer: League Container, League Route,
+            Laminas PSR-7, Twig or Plates, Monolog, Whoops, and Illuminate DB — wired through service providers,
+            not hidden behind magic.
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="#quickstart" class="btn btn-dark btn-lg px-4 rounded-pill">Quick start</a>
+            <a href="#features" class="btn btn-outline-dark btn-lg px-4 rounded-pill">Explore features</a>
+            <a href="https://php-concept.github.io/concept-docs/en/index.html"
+               class="btn btn-outline-dark btn-lg px-4 rounded-pill"
+               target="_blank" rel="noopener">
+                Documentation <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+            </a>
+        </div>
+        <div class="landing-stats">
+            <div class="landing-stat">
+                <strong>&approx; 120</strong>
+                <span>core source classes</span>
+            </div>
+            <div class="landing-stat">
+                <strong>17</strong>
+                <span>Service providers</span>
+            </div>
+            <div class="landing-stat">
+                <strong>9</strong>
+                <span>console commands</span>
+            </div>
+            <div class="landing-stat">
+                <strong>6</strong>
+                <span>HTTP middlewares</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── Stack ── #}
+<section class="content-block pt-0 pb-5" id="stack">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="section-label">Under the hood</span>
+            <h2 class="fw-bold mb-3">Proven libraries, one opinionated glue</h2>
+        </div>
+        <div class="stack-strip">
+            <span class="stack-pill"><i class="bi bi-box-seam"></i> League Container</span>
+            <span class="stack-pill"><i class="bi bi-signpost-split"></i> League Route</span>
+            <span class="stack-pill"><i class="bi bi-globe2"></i> Laminas Diactoros</span>
+            <span class="stack-pill"><i class="bi bi-braces"></i> Twig</span>
+            <span class="stack-pill"><i class="bi bi-braces"></i> Plates</span>
+            <span class="stack-pill"><i class="bi bi-database"></i> Illuminate DB</span>
+            <span class="stack-pill"><i class="bi bi-journal-text"></i> Monolog</span>
+            <span class="stack-pill"><i class="bi bi-bug"></i> Whoops</span>
+            <span class="stack-pill"><i class="bi bi-shield-check"></i> CSRF</span>
+            <span class="stack-pill"><i class="bi bi-check2-square"></i> Rakit Validation</span>
+            <span class="stack-pill"><i class="bi bi-sliders"></i> Valinor</span>
+            <span class="stack-pill"><i class="bi bi-terminal"></i> Symfony Console</span>
+        </div>
+    </div>
+</section>
+
+{# ── Quick start ── #}
+<section class="content-block pt-0 pb-5" id="quickstart">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-label">Get running</span>
+            <h2 class="fw-bold mb-3">From clone to application</h2>
+            <p class="text-muted mx-auto mb-0" style="max-width: 640px;">
+                This skeleton ships a working HTTP + Twig demo. Clone it, configure <code>.env</code>,
+                point your web server at <code>public/</code>, and iterate.
+            </p>
+        </div>
+
+        <div class="row g-4 g-lg-5">
+            <div class="col-lg-4">
+                <article class="feature-card h-100 p-4 p-md-5 mb-0">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="pipeline-step__num">1</span>
+                        <h3 class="fw-bold h5 mb-0">Clone &amp; install</h3>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-window__bar">
+                            <span class="code-window__dot" style="background:#ff5f56"></span>
+                            <span class="code-window__dot" style="background:#ffbd2e"></span>
+                            <span class="code-window__dot" style="background:#27c93f"></span>
+                        </div>
+                        <pre><code class="language-bash">git clone https://github.com/php-concept/concept-skeleton.git app
+cd app
+composer install</code></pre>
+                    </div>
+                    <p class="text-muted small mb-0">Requires PHP 8.4+ and Composer 2.x.</p>
+                </article>
+            </div>
+
+            <div class="col-lg-4">
+                <article class="feature-card h-100 p-4 p-md-5 mb-0">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="pipeline-step__num">2</span>
+                        <h3 class="fw-bold h5 mb-0">Configure environment</h3>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-window__bar">
+                            <span class="code-window__dot" style="background:#ff5f56"></span>
+                            <span class="code-window__dot" style="background:#ffbd2e"></span>
+                            <span class="code-window__dot" style="background:#27c93f"></span>
+                        </div>
+                        <pre><code class="language-bash">cp .env.example .env
+# APP_ENV, APP_DEBUG, database credentials…</code></pre>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Env-specific overrides live in <code>config/dev/</code> and <code>config/production/</code>.
+                    </p>
+                </article>
+            </div>
+
+            <div class="col-lg-4">
+                <article class="feature-card h-100 p-4 p-md-5 mb-0">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="pipeline-step__num">3</span>
+                        <h3 class="fw-bold h5 mb-0">Serve &amp; explore</h3>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-window__bar">
+                            <span class="code-window__dot" style="background:#ff5f56"></span>
+                            <span class="code-window__dot" style="background:#ffbd2e"></span>
+                            <span class="code-window__dot" style="background:#27c93f"></span>
+                        </div>
+                        <pre><code class="language-bash"># Document root → public/
+php bin/console route:list</code></pre>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Docker setup is included — see <code>docker-compose.yml.example</code> in the repo.
+                    </p>
+                </article>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="https://php-concept.github.io/concept-docs/en/installation.html"
+               class="btn btn-outline-dark btn-sm rounded-pill"
+               target="_blank" rel="noopener">
+                Read more <i class="bi bi-box-arrow-up-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+{# ── Bento features ── #}
+<section class="content-block bg-light" id="features">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-label">Core capabilities</span>
+            <h2 class="fw-bold">Everything in <code>vendor/php-concept/core/src</code></h2>
+            <p class="text-muted mx-auto" style="max-width: 640px;">
+                Fifteen HTTP providers are enabled by default in <code>bootstrap/providers/app.php</code>.
+                Comment out modules you do not need yet — DB, validation, components, and the rest stay wired and ready.
+            </p>
+        </div>
+
+        <div class="bento-grid">
+            <article class="bento-card bento-card--wide">
+                <div class="bento-card__icon"><i class="bi bi-diagram-3"></i></div>
+                <h3 class="fw-bold h4 mb-2">HTTP &amp; routing</h3>
+                <p class="text-muted mb-3">
+                    <code>HttpServiceProvider</code> registers PSR-7 requests, <code>League\Route\Router</code>,
+                    <code>RouteStrategy</code> for controller method injection, <code>ResponseFactory</code>,
+                    JSON-aware <code>RequestFormat</code>, and <code>UrlGenerator</code> exposed in Twig (Plates) as
+                    <code>uri()</code>, <code>url()</code>, <code>base_url()</code>.
+                </p>
+                <div class="code-window">
+                    <div class="code-window__bar">
+                        <span class="code-window__dot" style="background:#ff5f56"></span>
+                        <span class="code-window__dot" style="background:#ffbd2e"></span>
+                        <span class="code-window__dot" style="background:#27c93f"></span>
+                    </div>
+                    <pre><code class="language-php">// routes/web.php
+$router->get('/', [IndexController::class, 'index'])->setName('home');</code></pre>
+                </div>
+                <p class="text-muted small mb-0 mt-3">
+                    <a href="https://php-concept.github.io/concept-docs/en/routing.html"
+                       class="text-decoration-none" target="_blank" rel="noopener">
+                        Read more <i class="bi bi-box-arrow-up-right ms-1"></i>
+                    </a>
+                </p>
+            </article>
+
+            <article class="bento-card">
+                <div class="bento-card__icon"><i class="bi bi-box"></i></div>
+                <h3 class="fw-bold h5">PSR-11 container</h3>
+                <p class="text-muted small mb-0">
+                    League Container with reflection delegate, shared services, and bootable providers.
+                    Register bindings in provider <code>register()</code>, wire routes in <code>boot()</code>.
+                </p>
+            </article>
+
+            <article class="bento-card">
+                <div class="bento-card__icon"><i class="bi bi-gear"></i></div>
+                <h3 class="fw-bold h5">Config &amp; .env</h3>
+                <p class="text-muted small mb-0">
+                    <code>ConfigServiceProvider</code> loads PHP config dirs, merges <code>.env</code>,
+                    applies <code>dev/</code> and <code>production/</code> overrides from <code>APP_ENV</code>.
+                </p>
+            </article>
+
+            <article class="bento-card bento-card--wide">
+                <div class="bento-card__icon"><i class="bi bi-layers"></i></div>
+                <h3 class="fw-bold h5">HTTP middleware</h3>
+                <p class="text-muted small mb-0">
+                    Six PSR-15 middlewares ship with Core: CSRF, JSON body parsing, validation exceptions,
+                    shared view data, forced JSON responses, and previous URL storage. Stack them on routes or groups.
+                </p>
+            </article>
+
+            <article class="bento-card">
+                <div class="bento-card__icon"><i class="bi bi-layout-text-window"></i></div>
+                <h3 class="fw-bold h5">Twig views</h3>
+                <p class="text-muted small mb-0">
+                    <code>ViewRegistryServiceProvider</code> + <code>TwigServiceProvider</code>: namespaced paths
+                    (<code>@frontend/…</code>), optional view cache, context resolver per route, extension registry,
+                    and <code>ViewResponseFactory</code> for clean controllers.
+                </p>
+            </article>
+
+            <article class="bento-card">
+                <div class="bento-card__icon"><i class="bi bi-filetype-php"></i></div>
+                <h3 class="fw-bold h5">Plates views</h3>
+                <p class="text-muted small mb-0">
+                    <code>PlatesServiceProvider</code> swaps Twig for native <code>.php</code> templates —
+                    <code>frontend::…</code> namespaces, layouts, and <code>$this-&gt;e()</code> escaping.
+                    Register one view engine only.
+                </p>
+            </article>
+
+            <article class="bento-card">
+                <div class="bento-card__icon"><i class="bi bi-exclamation-triangle"></i></div>
+                <h3 class="fw-bold h5">Error handling</h3>
+                <p class="text-muted small mb-0">
+                    Early bootstrap Whoops + fallback PHP views; production Twig (Plates) error pages;
+                    <code>ErrorLogHandler</code> writes to rotating <code>storage/logs</code>.
+                </p>
+            </article>
+
+            <article class="bento-card bento-card--wide">
+                <div class="bento-card__icon"><i class="bi bi-database"></i></div>
+                <h3 class="fw-bold h4 mb-2">Database layer</h3>
+                <p class="text-muted mb-0">
+                    <code>DatabaseServiceProvider</code> brings Illuminate Connection / Eloquent, migration and seeder
+                    registries, and CLI commands: <code>db:migrate</code>, <code>db:rollback</code>, <code>db:seed</code>,
+                    <code>migration:list</code>. Comment it out in <code>bootstrap/providers/app.php</code> if you do not need persistence yet.
+                </p>
+            </article>
+
+            <article class="bento-card">
+                <div class="bento-card__icon"><i class="bi bi-check2-square"></i></div>
+                <h3 class="fw-bold h5">Validation</h3>
+                <p class="text-muted small mb-0">
+                    Rakit-backed <code>Validator</code>, <code>FormRequest</code> with casting hooks,
+                    and middleware that maps failures to JSON or redirect responses.
+                </p>
+            </article>
+
+            <article class="bento-card">
+                <div class="bento-card__icon"><i class="bi bi-puzzle"></i></div>
+                <h3 class="fw-bold h5">Components</h3>
+                <p class="text-muted small mb-0">
+                    Pluggable <code>ComponentInterface</code> packages, asset publishing command,
+                    and a registry for third-party UI or admin modules.
+                </p>
+            </article>
+
+            <article class="bento-card">
+                <div class="bento-card__icon"><i class="bi bi-eye-slash"></i></div>
+                <h3 class="fw-bold h5">Log masking</h3>
+                <p class="text-muted small mb-0">
+                    <code>DataMaskerServiceProvider</code> redacts sensitive fields in Monolog context
+                    before they hit disk — passwords, tokens, PII patterns.
+                </p>
+            </article>
+
+            <article class="bento-card">
+                <div class="bento-card__icon"><i class="bi bi-broadcast"></i></div>
+                <h3 class="fw-bold h5">Telemetry</h3>
+                <p class="text-muted small mb-0">
+                    <code>TelemetryServiceProvider</code> wires <code>TelemetryCollector</code> for bootstrap milestones,
+                    HTTP/view/DB lifecycle marks, and in-request spans when <code>telemetry.enabled</code> is true.
+                </p>
+            </article>
+        </div>
+    </div>
+</section>
+
+{# ── Source layout ── #}
+<section class="content-block" id="structure">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-label">Application code</span>
+            <h2 class="fw-bold mb-3">Organize <code>src</code> your way</h2>
+            <p class="text-muted mx-auto" style="max-width: 720px;">
+                Concept Core does not impose a folder layout. Every path — including <code>src</code> —
+                is configurable in <code>bootstrap/paths.php</code> and PSR-4 autoloading in
+                <code>composer.json</code>. Below are two common patterns; pick one and evolve as the app grows.
+            </p>
+        </div>
+
+        <div class="row g-4 g-lg-5">
+            <div class="col-lg-6">
+                <article class="feature-card h-100 p-4 p-md-5">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="bento-card__icon mb-0 flex-shrink-0"><i class="bi bi-layers"></i></div>
+                        <div>
+                            <span class="component-badge">Package by layer</span>
+                            <h3 class="fw-bold h4 mb-2">Layered MVC</h3>
+                            <p class="text-muted small mb-0">
+                                Code grouped by <em>type</em> — controllers, models, requests — directly under
+                                <code>src/</code>. A classic fit for small apps and a single domain.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-window__bar">
+                            <span class="code-window__dot" style="background:#ff5f56"></span>
+                            <span class="code-window__dot" style="background:#ffbd2e"></span>
+                            <span class="code-window__dot" style="background:#27c93f"></span>
+                        </div>
+                        <pre><code class="language-bash">src/
+├── Controllers/       # Concept\Controllers\*
+├── Models/            # Concept\Models\*
+├── Requests/          # FormRequest, DTO input
+├── Validation/
+│   └── Rules/
+├── Extensions/
+│   └── Twig/
+├── Services/          # optional business logic
+└── Middlewares/       # optional HTTP middleware</code></pre>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        <strong>Composer:</strong> <code>"Concept\\": "src/"</code> —
+                        flat namespace mapped to layered folders.
+                    </p>
+                </article>
+            </div>
+
+            <div class="col-lg-6">
+                <article class="feature-card h-100 p-4 p-md-5">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="bento-card__icon mb-0 flex-shrink-0"><i class="bi bi-puzzle"></i></div>
+                        <div>
+                            <span class="component-badge">Modular monolith</span>
+                            <h3 class="fw-bold h4 mb-2">Components</h3>
+                            <p class="text-muted small mb-0">
+                                Shared <code>App/</code> core plus isolated feature modules under
+                                <code>Components/</code> — each with routes, views, migrations, and assets.
+                                This skeleton starts with <code>src/App/</code>.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-window__bar">
+                            <span class="code-window__dot" style="background:#ff5f56"></span>
+                            <span class="code-window__dot" style="background:#ffbd2e"></span>
+                            <span class="code-window__dot" style="background:#27c93f"></span>
+                        </div>
+                        <pre><code class="language-bash">src/
+├── App/                          # shared application code
+│   ├── Controllers/
+│   ├── Models/
+│   ├── Requests/
+│   ├── Validation/Rules/
+│   └── Extensions/Twig/
+└── Components/                   # feature modules
+    ├── AuthAdmin/
+    │   ├── Controllers/
+    │   ├── Models/
+    │   ├── Views/
+    │   ├── routes.php
+    │   ├── config.php
+    │   ├── Database/Migrations/
+    │   └── AuthAdminComponent.php
+    ├── UserCabinet/
+    └── ProjectManager/</code></pre>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Register modules in <code>config/components.php</code>.
+                        <code>ComponentsServiceProvider</code> is already enabled in this skeleton.
+                    </p>
+                </article>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-1">
+            <div class="col-md-4">
+                <div class="text-center px-2">
+                    <h4 class="fw-bold h6 mb-2">Small → medium</h4>
+                    <p class="text-muted small mb-0">Layered MVC — one domain, familiar Symfony/Laravel-style folders.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center px-2">
+                    <h4 class="fw-bold h6 mb-2">Medium → large</h4>
+                    <p class="text-muted small mb-0">Components — admin, cabinet, public areas as isolated modules.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center px-2">
+                    <h4 class="fw-bold h6 mb-2">Switch anytime</h4>
+                    <p class="text-muted small mb-0">Update <code>paths.php</code>, <code>composer.json</code>, and config — no lock-in.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="https://php-concept.github.io/concept-docs/en/directory-structure.html"
+               class="btn btn-outline-dark btn-sm rounded-pill mt-2"
+               target="_blank" rel="noopener">
+                Read more <i class="bi bi-box-arrow-up-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+{# ── Service providers ── #}
+<section class="content-block bg-light" id="providers">
+    <div class="container">
+        <div class="row align-items-end mb-5">
+            <div class="col-lg-8">
+                <span class="section-label">Modular boot</span>
+                <h2 class="fw-bold mb-3">Service providers</h2>
+                <p class="text-muted mb-0">
+                    Each provider registers a slice of the framework. Toggle modules below to preview how
+                    <code>bootstrap/providers/app.php</code> changes — disabled providers are omitted from the array.
+                    CLI commands use a separate stack in <code>bootstrap/providers/console.php</code>
+                    (<code>ConsoleServiceProvider</code> is not part of the HTTP boot).
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4 g-lg-5 align-items-start">
+            <div class="col-lg-7">
+                <div class="provider-board" id="provider-board">
+                    {% set providers = [
+                        'ConfigServiceProvider',
+                        'LocaleServiceProvider',
+                        'TelemetryServiceProvider',
+                        'ErrorHandlerServiceProvider',
+                        'HttpServiceProvider',
+                        'SessionServiceProvider',
+                        'DataMaskerServiceProvider',
+                        'LogServiceProvider',
+                        'ViewRegistryServiceProvider',
+                        'PlatesServiceProvider',
+                        'TwigServiceProvider',
+                        'ValidationServiceProvider',
+                        'DatabaseServiceProvider',
+                        'CastingServiceProvider',
+                        'DebugLoggerServiceProvider',
+                        'ComponentsServiceProvider',
+                    ] %}
+                    {% for provider in providers %}
+                    <div class="provider-chip {{ provider == 'PlatesServiceProvider' ? 'provider-chip--off' : 'provider-chip--on' }}">
+                        <span class="provider-chip__label">{{ provider }}</span>
+                        <label class="provider-switch">
+                            <input type="checkbox"
+                                   class="provider-toggle"
+                                   data-provider="{{ provider }}"
+                                   {% if provider in ['PlatesServiceProvider', 'TwigServiceProvider'] %}
+                                   data-exclusive-group="view-engine"
+                                   {% endif %}
+                                   {% if provider != 'PlatesServiceProvider' %}checked{% endif %}
+                                   aria-label="Toggle {{ provider }}">
+                            <span class="provider-switch__track" aria-hidden="true">
+                                <span class="provider-switch__thumb"></span>
+                            </span>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="code-window provider-code-window">
+                    <div class="code-window__bar">
+                        <span class="code-window__dot" style="background:#ff5f56"></span>
+                        <span class="code-window__dot" style="background:#ffbd2e"></span>
+                        <span class="code-window__dot" style="background:#27c93f"></span>
+                        <span class="code-window__title">bootstrap/providers/app.php</span>
+                    </div>
+                    <pre><code class="language-php" id="provider-code">return [
+    ConfigServiceProvider::class,
+    LocaleServiceProvider::class,
+    TelemetryServiceProvider::class,
+    ErrorHandlerServiceProvider::class,
+    HttpServiceProvider::class,
+    SessionServiceProvider::class,
+    DataMaskerServiceProvider::class,
+    LogServiceProvider::class,
+    ViewRegistryServiceProvider::class,
+    TwigServiceProvider::class,
+    ValidationServiceProvider::class,
+    DatabaseServiceProvider::class,
+    CastingServiceProvider::class,
+    DebugLoggerServiceProvider::class,
+    ComponentsServiceProvider::class,
+];</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="https://php-concept.github.io/concept-docs/en/service-providers.html#registration"
+           class="btn btn-outline-dark btn-sm rounded-pill"
+           target="_blank" rel="noopener">
+            Read more <i class="bi bi-box-arrow-up-right ms-1"></i>
+        </a>
+    </div>
+</section>
+
+{# ── Middleware pipeline ── #}
+<section class="content-block" id="middleware">
+    <div class="container">
+        <div class="row g-5 align-items-start">
+            <div class="col-lg-5">
+                <span class="section-label">Request pipeline</span>
+                <h2 class="fw-bold mb-3">HTTP middlewares</h2>
+                <p class="text-muted">
+                    PSR-15 style middlewares ship with Core. Stack them on routes or groups for
+                    cross-cutting concerns without polluting controllers.
+                </p>
+                <ul class="list-unstyled text-muted small">
+                    <li class="mb-2"><i class="bi bi-check-lg text-dark me-2"></i><code>ParseJsonBodyMiddleware</code></li>
+                    <li class="mb-2"><i class="bi bi-check-lg text-dark me-2"></i><code>VerifyCsrfTokenMiddleware</code></li>
+                    <li class="mb-2"><i class="bi bi-check-lg text-dark me-2"></i><code>HandleValidationExceptionMiddleware</code></li>
+                    <li class="mb-2"><i class="bi bi-check-lg text-dark me-2"></i><code>ShareViewDataMiddleware</code></li>
+                    <li class="mb-2"><i class="bi bi-check-lg text-dark me-2"></i><code>ForceJsonResponseMiddleware</code></li>
+                    <li class="mb-0"><i class="bi bi-check-lg text-dark me-2"></i><code>StorePreviousUrlMiddleware</code></li>
+                </ul>
+                <a href="https://php-concept.github.io/concept-docs/en/middleware.html"
+                   class="btn btn-outline-dark btn-sm rounded-pill mt-4"
+                   target="_blank" rel="noopener">
+                    Read more <i class="bi bi-box-arrow-up-right ms-1"></i>
+                </a>
+            </div>
+            <div class="col-lg-7">
+                <div class="feature-card p-4 p-md-5">
+                    <div class="pipeline">
+                        <div class="pipeline-step">
+                            <span class="pipeline-step__num">1</span>
+                            <div>
+                                <h6 class="fw-bold mb-1">Incoming PSR-7 request</h6>
+                                <p class="text-muted small mb-0">Built from globals via Laminas <code>ServerRequestFactory</code>.</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <span class="pipeline-step__num">2</span>
+                            <div>
+                                <h6 class="fw-bold mb-1">Middleware chain</h6>
+                                <p class="text-muted small mb-0">CSRF, JSON body, session flash, shared view data.</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <span class="pipeline-step__num">3</span>
+                            <div>
+                                <h6 class="fw-bold mb-1">RouteStrategy → controller</h6>
+                                <p class="text-muted small mb-0">Reflection invokes your action; dependencies resolved from the container.</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <span class="pipeline-step__num">4</span>
+                            <div>
+                                <h6 class="fw-bold mb-1">Response emit</h6>
+                                <p class="text-muted small mb-0">HTML via Twig or Plates, JSON via <code>ResponseFactory</code>, emitted with Laminas SAPI runner.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── Developer patterns ── #}
+<section class="content-block bg-light" id="patterns">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-label">Developer experience</span>
+            <h2 class="fw-bold">Patterns that match the codebase</h2>
+        </div>
+
+        <div class="row g-5 align-items-center mb-5">
+            <div class="col-lg-5">
+                <h3 class="fw-bold h4">Thin controllers</h3>
+                <p class="text-muted">
+                    No base controller class — inject what you need. Return a view response or PSR-7 response directly.
+                </p>
+            </div>
+            <div class="col-lg-7">
+                <div class="code-window">
+                    <div class="code-window__bar">
+                        <span class="code-window__dot" style="background:#ff5f56"></span>
+                        <span class="code-window__dot" style="background:#ffbd2e"></span>
+                        <span class="code-window__dot" style="background:#27c93f"></span>
+                    </div>
+                    <pre><code class="language-php">class IndexController
+{
+    public function __construct(
+        private readonly ViewResponseFactoryInterface $viewResponse,
+    ) {}
+
+    public function index(): ResponseInterface
+    {
+        return $this->viewResponse->create('@frontend/index');
+    }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5 align-items-center flex-lg-row-reverse">
+            <div class="col-lg-5">
+                <h3 class="fw-bold h4">DTOs &amp; casting</h3>
+                <p class="text-muted">
+                    <code>CastingServiceProvider</code> wires Valinor for mapping request input to immutable DTOs with clear validation boundaries.
+                </p>
+            </div>
+            <div class="col-lg-7">
+                <div class="code-window">
+                    <div class="code-window__bar">
+                        <span class="code-window__dot" style="background:#ff5f56"></span>
+                        <span class="code-window__dot" style="background:#ffbd2e"></span>
+                        <span class="code-window__dot" style="background:#27c93f"></span>
+                    </div>
+                    <pre><code class="language-php">// Concept\Core\Dto\Dto — typed data transfer
+final class CreateTaskDto extends Dto
+{
+    public function __construct(
+        public readonly string $title,
+        public readonly bool $completed = false,
+    ) {}
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── Views ── #}
+<section class="content-block" id="views">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-label">View engines</span>
+            <h2 class="fw-bold">Twig or Plates — pick one</h2>
+            <p class="text-muted mx-auto mb-0" style="max-width: 640px;">
+                Register <code>TwigServiceProvider</code> or <code>PlatesServiceProvider</code> in
+                <code>bootstrap/providers/app.php</code>. <code>ViewRegistryServiceProvider</code> and
+                <code>config/view.php</code> stay the same — paths, contexts, and extensions work with either engine.
+            </p>
+        </div>
+
+        <div class="row g-5 align-items-center mb-5">
+            <div class="col-lg-5">
+                <h3 class="fw-bold h4">Twig</h3>
+                <p class="text-muted">
+                    Default in this skeleton: <code>.twig</code> templates, compiled cache in production,
+                    and Twig extensions such as <code>AppExtension</code> for URL helpers.
+                </p>
+                <p class="text-muted small mb-0">
+                    Namespaced views use the <code>@frontend/…</code> syntax.
+                </p>
+            </div>
+            <div class="col-lg-7">
+                <div class="code-window">
+                    <div class="code-window__bar">
+                        <span class="code-window__dot" style="background:#ff5f56"></span>
+                        <span class="code-window__dot" style="background:#ffbd2e"></span>
+                        <span class="code-window__dot" style="background:#27c93f"></span>
+                        <span class="code-window__title">Twig</span>
+                    </div>
+                    <pre><code class="language-php">{% verbatim %}// bootstrap/providers/app.php
+ViewRegistryServiceProvider::class,
+TwigServiceProvider::class,
+
+// config/view.php
+'view' => [
+    'default_extension' => '.twig',
+    'extensions' => [
+        AppExtension::class,
+    ],
+    'paths' => [
+        'frontend' => '/resources/views/frontend',
+    ],
+    'contexts' => [
+        '/' => 'frontend',
+    ],
+    'cache_dir' => 'views',
+]{% endverbatim %}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5 align-items-center flex-lg-row-reverse">
+            <div class="col-lg-5">
+                <h3 class="fw-bold h4">Plates</h3>
+                <p class="text-muted">
+                    Swap to <code>PlatesServiceProvider</code> for native PHP templates — no compile step,
+                    familiar <code>.php</code> files with layout sections and escaping via <code>$this-&gt;e()</code>.
+                </p>
+                <p class="text-muted small mb-0">
+                    Namespaced views use the <code>frontend::…</code> syntax. Register one engine only, not both.
+                </p>
+            </div>
+            <div class="col-lg-7">
+                <div class="code-window">
+                    <div class="code-window__bar">
+                        <span class="code-window__dot" style="background:#ff5f56"></span>
+                        <span class="code-window__dot" style="background:#ffbd2e"></span>
+                        <span class="code-window__dot" style="background:#27c93f"></span>
+                        <span class="code-window__title">Plates</span>
+                    </div>
+                    <pre><code class="language-php">{% verbatim %}// bootstrap/providers/app.php
+ViewRegistryServiceProvider::class,
+PlatesServiceProvider::class,
+
+// config/view.php
+'view' => [
+    'default_extension' => '.php',
+    'extensions' => [
+        AppExtension::class,
+    ],
+    'paths' => [
+        'frontend' => '/resources/views/plates/frontend',
+    ],
+    'contexts' => [
+        '/' => 'frontend',
+    ],
+]{% endverbatim %}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── CLI ── #}
+<section class="content-block" id="cli">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-label">Symfony Console</span>
+            <h2 class="fw-bold">Ship with a full CLI toolkit</h2>
+            <p class="text-muted mx-auto" style="max-width: 560px;">
+                Run via <code>php bin/console</code>. Commands register through
+                <code>bootstrap/providers/console.php</code> — a leaner stack than the HTTP boot.
+                Inspect routes, migrations, components, and clear compiled views.
+            </p>
+        </div>
+        <div class="command-table">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>route:list</code></td>
+                        <td class="text-muted">List registered routes, methods, and names</td>
+                    </tr>
+                    <tr>
+                        <td><code>view:clear</code></td>
+                        <td class="text-muted">Clear compiled Twig cache under <code>storage/cache/views</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>db:migrate</code></td>
+                        <td class="text-muted">Run pending migrations from config registry</td>
+                    </tr>
+                    <tr>
+                        <td><code>db:rollback</code></td>
+                        <td class="text-muted">Rollback the last migration batch</td>
+                    </tr>
+                    <tr>
+                        <td><code>db:seed</code></td>
+                        <td class="text-muted">Execute database seeders</td>
+                    </tr>
+                    <tr>
+                        <td><code>migration:list</code></td>
+                        <td class="text-muted">Show migration status</td>
+                    </tr>
+                    <tr>
+                        <td><code>seeders:list</code></td>
+                        <td class="text-muted">List available seeders</td>
+                    </tr>
+                    <tr>
+                        <td><code>component:list</code></td>
+                        <td class="text-muted">Inspect registered components</td>
+                    </tr>
+                    <tr>
+                        <td><code>component:publish-assets</code></td>
+                        <td class="text-muted">Publish component static assets to <code>public/</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+{# ── Documentation ── #}
+<section class="content-block bg-light" id="docs">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-label">Learn more</span>
+            <h2 class="fw-bold mb-3">Concept Core documentation</h2>
+            <p class="text-muted mx-auto mb-0" style="max-width: 640px;">
+                Deep dives for routing, middleware, configuration, and project layout —
+                maintained alongside <a href="https://github.com/php-concept/concept-core" target="_blank" rel="noopener">php-concept/core</a>.
+            </p>
+        </div>
+
+        <div class="stack-strip mb-4">
+            <a href="https://php-concept.github.io/concept-docs/en/installation.html"
+               class="stack-pill text-decoration-none" target="_blank" rel="noopener">
+                <i class="bi bi-download"></i> Installation
+            </a>
+            <a href="https://php-concept.github.io/concept-docs/en/configuration.html"
+               class="stack-pill text-decoration-none" target="_blank" rel="noopener">
+                <i class="bi bi-sliders"></i> Configuration
+            </a>
+            <a href="https://php-concept.github.io/concept-docs/en/request-lifecycle.html"
+               class="stack-pill text-decoration-none" target="_blank" rel="noopener">
+                <i class="bi bi-arrow-repeat"></i> Request lifecycle
+            </a>
+            <a href="https://php-concept.github.io/concept-docs/en/routing.html"
+               class="stack-pill text-decoration-none" target="_blank" rel="noopener">
+                <i class="bi bi-signpost-split"></i> Routing
+            </a>
+            <a href="https://php-concept.github.io/concept-docs/en/middleware.html"
+               class="stack-pill text-decoration-none" target="_blank" rel="noopener">
+                <i class="bi bi-layers"></i> Middleware
+            </a>
+            <a href="https://php-concept.github.io/concept-docs/en/controllers.html"
+               class="stack-pill text-decoration-none" target="_blank" rel="noopener">
+                <i class="bi bi-code-square"></i> Controllers
+            </a>
+            <a href="https://php-concept.github.io/concept-docs/en/directory-structure.html"
+               class="stack-pill text-decoration-none" target="_blank" rel="noopener">
+                <i class="bi bi-folder2-open"></i> Directory structure
+            </a>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <article class="feature-card h-100 p-4 mb-0">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="bento-card__icon mb-0 flex-shrink-0"><i class="bi bi-box-seam"></i></div>
+                        <div>
+                            <h3 class="fw-bold h5 mb-2">concept-skeleton</h3>
+                            <p class="text-muted small mb-3">
+                                This starter app — landing page, <code>src/App/</code> layout, Docker, and default provider stack.
+                            </p>
+                            <a href="https://github.com/php-concept/concept-skeleton"
+                               class="btn btn-dark btn-sm rounded-pill" target="_blank" rel="noopener">
+                                <i class="bi bi-github me-1"></i> View repository
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div class="col-md-6 col-lg-5">
+                <article class="feature-card h-100 p-4 mb-0">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="bento-card__icon mb-0 flex-shrink-0"><i class="bi bi-cpu"></i></div>
+                        <div>
+                            <h3 class="fw-bold h5 mb-2">php-concept/core</h3>
+                            <p class="text-muted small mb-3">
+                                The framework package — providers, middlewares, console commands, and PSR integrations.
+                            </p>
+                            <a href="https://github.com/php-concept/concept-core"
+                               class="btn btn-outline-dark btn-sm rounded-pill" target="_blank" rel="noopener">
+                                <i class="bi bi-github me-1"></i> View core
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── Observability ── #}
+<section class="content-block" id="observability">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-12">
+                <span class="section-label">Observability</span>
+                <h2 class="fw-bold mb-3">Logs, telemetry, and safe failures</h2>
+                <p class="text-muted mb-4">
+                    Production errors render Twig (Plates) error templates per status code, then fall back to
+                    plain PHP views in <code>resources/views/errors/fallback/</code> if Twig (Plates) is unavailable.
+                </p>
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <div class="feature-card p-4 h-100 mb-0">
+                            <i class="bi bi-file-earmark-text feature-icon"></i>
+                            <h5 class="fw-bold">Rotating logs</h5>
+                            <p class="text-muted small mb-0">Monolog → <code>storage/logs/app-*.log</code> with level and retention from config.</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="feature-card p-4 h-100 mb-0">
+                            <i class="bi bi-activity feature-icon"></i>
+                            <h5 class="fw-bold">Lifecycle telemetry</h5>
+                            <p class="text-muted small mb-0">Provider awakening, template render, DB queries — recorded by <code>TelemetryCollector</code> when enabled.</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="feature-card p-4 h-100 mb-0">
+                            <i class="bi bi-shield-check feature-icon"></i>
+                            <h5 class="fw-bold">Safe failures</h5>
+                            <p class="text-muted small mb-0">
+                                Whoops in dev; production Twig (Plates) error pages per status code with PHP fallbacks in
+                                <code>resources/views/errors/fallback/</code> — no stack traces leaked to users.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── CTA ── #}
+<section class="container" id="start">
+    <div class="landing-cta text-center text-lg-start">
+        <div class="row align-items-center g-4 px-4 px-lg-5 py-2">
+            <div class="col-lg-8">
+                <h2 class="mb-3">Start from this skeleton.<br>Grow with Concept Core.</h2>
+                <p class="mb-0">
+                    Copy the repo, run <code class="text-white">composer install</code>,
+                    configure <code class="text-white">.env</code>, enable providers, and ship.
+                </p>
+            </div>
+            <div class="col-lg-4 d-flex flex-wrap gap-2 justify-content-center justify-content-lg-end">
+                <a href="https://php-concept.github.io/concept-docs/en/index.html"
+                   class="btn btn-light rounded-pill px-4"
+                   target="_blank" rel="noopener">
+                    Documentation
+                </a>
+                <a href="https://github.com/php-concept/concept-skeleton"
+                   class="btn btn-outline-light rounded-pill px-4"
+                   target="_blank" rel="noopener">
+                    <i class="bi bi-github me-1"></i> Skeleton
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

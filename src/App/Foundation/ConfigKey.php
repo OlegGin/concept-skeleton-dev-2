@@ -53,8 +53,6 @@ final class ConfigKey
 
     public const string SEEDERS_LIST = 'seeders.list';
 
-    public const string SESSION_DRIVER = 'session.driver';
-
     public const string SESSION_COOKIE_LIFETIME = 'session.cookie.lifetime';
     public const string SESSION_COOKIE_PATH = 'session.cookie.path';
     public const string SESSION_COOKIE_SECURE = 'session.cookie.secure';
@@ -66,12 +64,6 @@ final class ConfigKey
     public const string SESSION_OPTIONS_USE_STRICT_MODE = 'session.options.use_strict_mode';
 
     public const string SESSION_FILE_PATH = 'session.file.path';
-
-    public const string SESSION_REDIS_URL = 'session.redis.url';
-    public const string SESSION_REDIS_PREFIX = 'session.redis.prefix';
-
-    public const string SESSION_PDO_DSN = 'session.pdo.dsn';
-    public const string SESSION_PDO_TABLE = 'session.pdo.table';
 
     public const string PAGINATION_PER_PAGE = 'pagination.per_page';
     public const string PAGINATION_PAGE_NAME = 'pagination.page_name';

@@ -15,7 +15,7 @@ class IndexController
 
     public function index(): ResponseInterface
     {
-        return $this->view->create('home');
+        return $this->view->create('@frontend/index');
     }
 
     public function login(LoginRequest $form): ResponseInterface

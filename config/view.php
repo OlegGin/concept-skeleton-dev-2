@@ -4,12 +4,13 @@ use Concept\App\View\Twig\AppExtension;
 
 return [
     'view' => [
-        'paths' => [
-            'app' => 'resources/views',
-        ],
         'extensions' => [
             AppExtension::class,
         ],
-        'contexts' => [],
+        'paths' => [
+            'frontend' => '/resources/views/frontend',
+        ],
+        'contexts' => [
+        ],
     ],
 ];
