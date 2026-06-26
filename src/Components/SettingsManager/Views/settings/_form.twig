@@ -1,0 +1,68 @@
+<div class="row g-3">
+    <div class="col-md-6">
+        <label class="form-label" for="setting_key">Key <span class="text-danger">*</span></label>
+        <input id="setting_key" type="text" name="setting_key" class="form-control {{ errors.setting_key is defined and errors.setting_key ? 'is-invalid' : '' }}" value="{{ old.setting_key|default(setting ? setting.setting_key : '') }}" placeholder="app.name" required>
+        {% include '@dashboard/partials/_field_errors.twig' with { field: 'setting_key' } %}
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label" for="setting_group">Group <span class="text-danger">*</span></label>
+        <select id="setting_group" name="setting_group" class="form-select {{ errors.setting_group is defined and errors.setting_group ? 'is-invalid' : '' }}" required>
+            {% for group in setting_groups %}
+                <option value="{{ group.value }}" {{ old.setting_group|default(setting ? setting.setting_group : default_group|default('general')) == group.value ? 'selected' : '' }}>{{ group.value }}</option>
+            {% endfor %}
+        </select>
+        {% include '@dashboard/partials/_field_errors.twig' with { field: 'setting_group' } %}
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label" for="data_type">Data type <span class="text-danger">*</span></label>
+        <select id="data_type" name="data_type" class="form-select js-setting-data-type {{ errors.data_type is defined and errors.data_type ? 'is-invalid' : '' }}" required>
+            {% for type in data_types %}
+                <option value="{{ type.value }}" {{ old.data_type|default(setting ? setting.data_type : 'string') == type.value ? 'selected' : '' }}>{{ type.value }}</option>
+            {% endfor %}
+        </select>
+        {% include '@dashboard/partials/_field_errors.twig' with { field: 'data_type' } %}
+    </div>
+
+    <div class="col-12 js-setting-value-string">
+        <label class="form-label" for="setting_value_string">Value <span class="text-danger">*</span></label>
+        <input id="setting_value_string" type="text" class="form-control js-setting-value-input {{ errors.setting_value is defined and errors.setting_value ? 'is-invalid' : '' }}" value="{{ form_value }}">
+    </div>
+
+    <div class="col-12 js-setting-value-text d-none">
+        <label class="form-label" for="setting_value_text">Value <span class="text-danger">*</span></label>
+        <textarea id="setting_value_text" rows="6" class="form-control js-setting-value-input {{ errors.setting_value is defined and errors.setting_value ? 'is-invalid' : '' }}">{{ form_value }}</textarea>
+    </div>
+
+    <div class="col-12 js-setting-value-number d-none">
+        <label class="form-label" for="setting_value_number">Value <span class="text-danger">*</span></label>
+        <input id="setting_value_number" type="number" step="any" class="form-control js-setting-value-input {{ errors.setting_value is defined and errors.setting_value ? 'is-invalid' : '' }}" value="{{ form_value }}">
+    </div>
+
+    <div class="col-12 js-setting-value-bool d-none">
+        <label class="form-label" for="setting_value_bool">Value <span class="text-danger">*</span></label>
+        <select id="setting_value_bool" class="form-select js-setting-value-input {{ errors.setting_value is defined and errors.setting_value ? 'is-invalid' : '' }}">
+            <option value="1" {{ form_value == '1' ? 'selected' : '' }}>true</option>
+            <option value="0" {{ form_value != '1' ? 'selected' : '' }}>false</option>
+        </select>
+    </div>
+
+    <div class="col-12 js-setting-value-json d-none">
+        <label class="form-label" for="setting_value_json">Value (JSON) <span class="text-danger">*</span></label>
+        <textarea id="setting_value_json" rows="6" class="form-control font-monospace js-setting-value-input {{ errors.setting_value is defined and errors.setting_value ? 'is-invalid' : '' }}">{{ form_value }}</textarea>
+        <div class="form-text">Enter a valid JSON object or array.</div>
+    </div>
+
+    <input type="hidden" name="setting_value" id="setting_value" value="{{ form_value }}">
+
+    <div class="col-12">
+        {% include '@dashboard/partials/_field_errors.twig' with { field: 'setting_value' } %}
+    </div>
+
+    <div class="col-12">
+        <label class="form-label" for="description">Description</label>
+        <textarea id="description" name="description" rows="2" class="form-control {{ errors.description is defined and errors.description ? 'is-invalid' : '' }}">{{ old.description|default(setting ? setting.description : '') }}</textarea>
+        {% include '@dashboard/partials/_field_errors.twig' with { field: 'description' } %}
+    </div>
+</div>

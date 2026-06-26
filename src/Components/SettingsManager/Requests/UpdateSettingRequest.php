@@ -1,0 +1,40 @@
+<?php declare(strict_types=1);
+
+namespace Concept\Components\SettingsManager\Requests;
+
+use Concept\Components\SettingsManager\Dto\UpdateSettingDto;
+use Concept\Components\SettingsManager\Enums\SettingDataType;
+use Concept\Components\SettingsManager\Enums\SettingGroup;
+use Concept\Core\Http\Requests\FormRequest;
+
+/** @extends FormRequest<UpdateSettingDto> */
+class UpdateSettingRequest extends FormRequest
+{
+    protected ?string $dtoClass = UpdateSettingDto::class;
+
+    public function rules(): array
+    {
+        $id = $this->getRouteParam('id');
+        $exceptId = is_scalar($id) ? (string)$id : '';
+        $group = $this->resolveGroupFromInput();
+
+        return [
+            'setting_key' => [
+                'required',
+                'max:255',
+                'unique:settings,setting_key,' . $exceptId . ',id,setting_group,' . $group,
+            ],
+            'setting_group' => ['required', 'in:' . implode(',', array_column(SettingGroup::cases(), 'value'))],
+            'data_type' => ['required', 'in:' . implode(',', array_column(SettingDataType::cases(), 'value'))],
+            'setting_value' => ['required'],
+            'description' => ['nullable', 'max:65535'],
+        ];
+    }
+
+    private function resolveGroupFromInput(): string
+    {
+        $group = $this->all()['setting_group'] ?? SettingGroup::GENERAL->value;
+
+        return is_string($group) ? $group : SettingGroup::GENERAL->value;
+    }
+}

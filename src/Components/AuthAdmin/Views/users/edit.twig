@@ -1,0 +1,129 @@
+{% set dash_active = 'users' %}
+{% extends '@dashboard/layouts/base.twig' %}
+
+{% block title %}Edit: {{ user.name }}{% endblock %}
+{% block content_title %}Edit user{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ uri('admin.dashboard') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ uri('admin.users') }}">Users</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-primary card-outline mb-3">
+        <form action="{{ uri('admin.user.update', {id: user.id}) }}" method="POST">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" name="is_admin" value="1" id="is_admin" {{ old.is_admin|default(user.is_admin) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="is_admin">Administrator permissions</label>
+                        </div>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'is_admin' } %}
+                    </div>
+                    {% if has_component('Acl') %}
+                    <div class="col-md-6">
+                        <label class="form-label" for="acl_role_id">ACL role</label>
+                        <select id="acl_role_id" name="acl_role_id" class="form-select {{ errors.acl_role_id is defined and errors.acl_role_id ? 'is-invalid' : '' }}">
+                            <option value="">— none —</option>
+                            {% for role in acl_roles %}
+                                <option value="{{ role.id }}" {{ old.acl_role_id|default(user.acl_role_id)|default('') == role.id ? 'selected' : '' }}>{{ role.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Controls route and feature permissions inside the admin panel.</div>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'acl_role_id' } %}
+                    </div>
+                    {% endif %}
+                    <div class="col-md-6">
+                        <label class="form-label" for="status">Status <span class="text-danger">*</span></label>
+                        <select id="status" name="status" class="form-select {{ errors.status is defined and errors.status ? 'is-invalid' : '' }}" required>
+                            {% for status in statuses %}
+                                <option value="{{ status.value }}" {{ old.status|default(user.status) == status.value ? 'selected' : '' }}>{{ status.name|capitalize }}</option>
+                            {% endfor %}
+                        </select>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'status' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="name">Name <span class="text-danger">*</span></label>
+                        <input id="name" type="text" name="name" class="form-control {{ errors.name is defined and errors.name ? 'is-invalid' : '' }}" value="{{ old.name|default(user.name) }}" required>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'name' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="verification_token">Verification token</label>
+                        <div class="input-group">
+                            <input id="verification_token" type="text" name="verification_token" class="form-control {{ errors.verification_token is defined and errors.verification_token ? 'is-invalid' : '' }}" value="{{ old.verification_token|default(user.verification_token) }}">
+                            <button type="button" class="btn btn-outline-secondary btn-sm js-generate-token" data-target="verification_token">Generate</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm js-clear-token" data-target="verification_token">Clear</button>
+                        </div>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'verification_token' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="password_reset_token">Password reset token</label>
+                        <div class="input-group">
+                            <input id="password_reset_token" type="text" name="password_reset_token" class="form-control {{ errors.password_reset_token is defined and errors.password_reset_token ? 'is-invalid' : '' }}" value="{{ old.password_reset_token|default(user.password_reset_token) }}">
+                            <button type="button" class="btn btn-outline-secondary btn-sm js-generate-token" data-target="password_reset_token">Generate</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm js-clear-token" data-target="password_reset_token">Clear</button>
+                        </div>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'password_reset_token' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="reset_token_expires_at">Reset token expires at</label>
+                        <div class="input-group">
+                            <input id="reset_token_expires_at" type="datetime-local" name="reset_token_expires_at" class="form-control {{ errors.reset_token_expires_at is defined and errors.reset_token_expires_at ? 'is-invalid' : '' }}" value="{{ old.reset_token_expires_at|default(user.reset_token_expires_at ? user.reset_token_expires_at|date('Y-m-d\\TH:i') : '') }}">
+                            <button type="button" class="btn btn-outline-secondary btn-sm js-clear-token" data-target="reset_token_expires_at">Clear</button>
+                        </div>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'reset_token_expires_at' } %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <a href="{{ uri('admin.users') }}" class="btn btn-secondary">Back</a>
+                <button type="submit" class="btn btn-primary ms-auto">Update</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card card-secondary card-outline mb-3">
+        <div class="card-header"><h3 class="card-title mb-0">Change password</h3></div>
+        <form action="{{ uri('admin.user.password', {id: user.id}) }}" method="POST">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+            <div class="card-body row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="password">New password <span class="text-danger">*</span></label>
+                    <input id="password" type="password" name="password" class="form-control {{ errors.password is defined and errors.password ? 'is-invalid' : '' }}" autocomplete="new-password" required>
+                    {% include '@dashboard/partials/_field_errors.twig' with { field: 'password' } %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="password_confirmation">Confirm password <span class="text-danger">*</span></label>
+                    <input id="password_confirmation" type="password" name="password_confirmation" class="form-control {{ errors.password_confirmation is defined and errors.password_confirmation ? 'is-invalid' : '' }}" autocomplete="new-password" required>
+                    {% include '@dashboard/partials/_field_errors.twig' with { field: 'password_confirmation' } %}
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">Update password</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card border-danger">
+        <div class="card-body">
+            <p class="text-muted mb-3">This cannot be undone.</p>
+            <form action="{{ uri('admin.user.destroy', {id: user.id}) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-outline-danger">Delete user</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/components/auth-admin/js/admin-tokens.js"></script>
+{% endblock %}

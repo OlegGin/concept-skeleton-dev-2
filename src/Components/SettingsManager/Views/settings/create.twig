@@ -1,0 +1,32 @@
+{% set dash_active = 'settings' %}
+{% extends '@dashboard/layouts/base.twig' %}
+
+{% block title %}New setting{% endblock %}
+{% block content_title %}New setting{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ uri('admin.dashboard') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ uri('admin.settings') }}">Settings</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Create</li>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <form action="{{ uri('admin.settings.store') }}" method="POST">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+            <div class="card-body">
+                {% include '@settings-manager/settings/_form.twig' with { setting: null, form_value: old.setting_value|default('') } %}
+            </div>
+
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <a href="{{ uri('admin.settings') ~ (default_group is defined and default_group != 'general' ? '?group=' ~ default_group|url_encode : '') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary ms-auto">Save</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/components/settings-manager/js/settings-form.js"></script>
+{% endblock %}

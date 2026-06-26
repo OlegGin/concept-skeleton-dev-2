@@ -1,0 +1,109 @@
+{% set dash_active = 'users' %}
+{% extends '@dashboard/layouts/base.twig' %}
+
+{% block title %}New user{% endblock %}
+{% block content_title %}New user{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ uri('admin.dashboard') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ uri('admin.users') }}">Users</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Create</li>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <form action="{{ uri('admin.user.store') }}" method="POST">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="name">Name <span class="text-danger">*</span></label>
+                        <input id="name" type="text" name="name" class="form-control {{ errors.name is defined and errors.name ? 'is-invalid' : '' }}" value="{{ old.name|default('') }}" required>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'name' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
+                        <input id="email" type="email" name="email" class="form-control {{ errors.email is defined and errors.email ? 'is-invalid' : '' }}" value="{{ old.email|default('') }}" required>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'email' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
+                        <input id="password" type="password" name="password" class="form-control {{ errors.password is defined and errors.password ? 'is-invalid' : '' }}" required>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'password' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="password_confirmation">Confirm password <span class="text-danger">*</span></label>
+                        <input id="password_confirmation" type="password" name="password_confirmation" class="form-control {{ errors.password_confirmation is defined and errors.password_confirmation ? 'is-invalid' : '' }}" required>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'password_confirmation' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="status">Status <span class="text-danger">*</span></label>
+                        <select id="status" name="status" class="form-select {{ errors.status is defined and errors.status ? 'is-invalid' : '' }}" required>
+                            {% for status in statuses %}
+                                <option value="{{ status.value }}" {{ old.status|default('pending') == status.value ? 'selected' : '' }}>{{ status.name|capitalize }}</option>
+                            {% endfor %}
+                        </select>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'status' } %}
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="is_admin" value="1" id="is_admin" {{ old.is_admin ? 'checked' : '' }}>
+                            <label class="form-check-label" for="is_admin">Administrator permissions</label>
+                        </div>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'is_admin' } %}
+                    </div>
+                    {% if has_component('Acl') %}
+                    <div class="col-md-6">
+                        <label class="form-label" for="acl_role_id">ACL role</label>
+                        <select id="acl_role_id" name="acl_role_id" class="form-select {{ errors.acl_role_id is defined and errors.acl_role_id ? 'is-invalid' : '' }}">
+                            <option value="">— none —</option>
+                            {% for role in acl_roles %}
+                                <option value="{{ role.id }}" {{ old.acl_role_id|default('') == role.id ? 'selected' : '' }}>{{ role.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Controls route and feature permissions inside the admin panel.</div>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'acl_role_id' } %}
+                    </div>
+                    {% endif %}
+                    <div class="col-md-6">
+                        <label class="form-label" for="verification_token">Verification token</label>
+                        <div class="input-group">
+                            <input id="verification_token" type="text" name="verification_token" class="form-control {{ errors.verification_token is defined and errors.verification_token ? 'is-invalid' : '' }}" value="{{ old.verification_token|default('') }}">
+                            <button type="button" class="btn btn-outline-secondary btn-sm js-generate-token" data-target="verification_token">Generate</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm js-clear-token" data-target="verification_token">Clear</button>
+                        </div>
+                        <div class="form-text">Leave empty if not needed.</div>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'verification_token' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="password_reset_token">Password reset token</label>
+                        <div class="input-group">
+                            <input id="password_reset_token" type="text" name="password_reset_token" class="form-control {{ errors.password_reset_token is defined and errors.password_reset_token ? 'is-invalid' : '' }}" value="{{ old.password_reset_token|default('') }}">
+                            <button type="button" class="btn btn-outline-secondary btn-sm js-generate-token" data-target="password_reset_token">Generate</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm js-clear-token" data-target="password_reset_token">Clear</button>
+                        </div>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'password_reset_token' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="reset_token_expires_at">Reset token expires at</label>
+                        <div class="input-group">
+                            <input id="reset_token_expires_at" type="datetime-local" name="reset_token_expires_at" class="form-control {{ errors.reset_token_expires_at is defined and errors.reset_token_expires_at ? 'is-invalid' : '' }}" value="{{ old.reset_token_expires_at|default('') }}">
+                            <button type="button" class="btn btn-outline-secondary btn-sm js-clear-token" data-target="reset_token_expires_at">Clear</button>
+                        </div>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'reset_token_expires_at' } %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <a href="{{ uri('admin.users') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary ms-auto">Save</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/components/auth-admin/js/admin-tokens.js"></script>
+{% endblock %}
