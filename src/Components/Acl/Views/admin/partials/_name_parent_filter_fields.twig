@@ -1,0 +1,14 @@
+<div class="col-md-6">
+    <label class="form-label" for="filter_name">Name</label>
+    <input id="filter_name" type="text" name="name" class="form-control" value="{{ filters.name|default('') }}" placeholder="{{ name_placeholder|default('name') }}">
+</div>
+<div class="col-md-6">
+    <label class="form-label" for="filter_parent_id">Parent {{ entity_label|default('item') }}</label>
+    <select id="filter_parent_id" name="parent_id" class="form-select">
+        <option value="">— all —</option>
+        <option value="root" {{ filters.parent_id|default('') == 'root' ? 'selected' : '' }}>— root only —</option>
+        {% for parent in parents %}
+            <option value="{{ parent.id }}" {{ filters.parent_id|default('') == parent.id ? 'selected' : '' }}>{{ parent.name }}</option>
+        {% endfor %}
+    </select>
+</div>

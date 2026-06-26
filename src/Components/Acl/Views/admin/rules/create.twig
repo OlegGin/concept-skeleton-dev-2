@@ -1,0 +1,66 @@
+{% set dash_active = 'acl_rules' %}
+{% extends '@dashboard/layouts/base.twig' %}
+
+{% block title %}New ACL rule{% endblock %}
+{% block content_title %}New ACL rule{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ uri('admin.dashboard') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ uri('admin.acl.rules') }}">ACL Rules</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Create</li>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <form action="{{ uri('admin.acl.rule.store') }}" method="POST">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="type">Type <span class="text-danger">*</span></label>
+                        <select id="type" name="type" class="form-select" required>
+                            {% for type in types %}
+                                <option value="{{ type.value }}" {{ old.type|default('allow') == type.value ? 'selected' : '' }}>{{ type.name|capitalize }}</option>
+                            {% endfor %}
+                        </select>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'type' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="role_id">Role</label>
+                        <select id="role_id" name="role_id" class="form-select">
+                            <option value="">— all roles —</option>
+                            {% for role in roles %}
+                                <option value="{{ role.id }}" {{ old.role_id|default('') == role.id ? 'selected' : '' }}>{{ role.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'role_id' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="resource_id">Resource</label>
+                        <select id="resource_id" name="resource_id" class="form-select">
+                            <option value="">— all resources —</option>
+                            {% for resource in resources %}
+                                <option value="{{ resource.id }}" {{ old.resource_id|default('') == resource.id ? 'selected' : '' }}>{{ resource.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'resource_id' } %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include '@acl/admin/partials/_privilege_select.twig' with {
+                            field_id: 'privilege',
+                            privileges: privileges,
+                            selected: old.privilege|default('')
+                        } %}
+                        <div class="form-text">Leave empty to apply to all privileges on the resource.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <a href="{{ uri('admin.acl.rules') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary ms-auto">Create rule</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

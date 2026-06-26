@@ -1,0 +1,44 @@
+{% set dash_active = 'acl_roles' %}
+{% extends '@dashboard/layouts/base.twig' %}
+
+{% block title %}Edit ACL role{% endblock %}
+{% block content_title %}Edit role: {{ role.name }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ uri('admin.dashboard') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ uri('admin.acl.roles') }}">ACL Roles</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ role.name }}</li>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <form action="{{ uri('admin.acl.role.update', {id: role.id}) }}" method="POST">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="name">Name <span class="text-danger">*</span></label>
+                        <input id="name" type="text" name="name" class="form-control {{ errors.name is defined and errors.name ? 'is-invalid' : '' }}" value="{{ old.name|default(role.name) }}" required>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'name' } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="parent_id">Parent role</label>
+                        <select id="parent_id" name="parent_id" class="form-select">
+                            <option value="">— none —</option>
+                            {% for parent in roles %}
+                                <option value="{{ parent.id }}" {{ old.parent_id|default(role.parent_id)|default('') == parent.id ? 'selected' : '' }}>{{ parent.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'parent_id' } %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <a href="{{ uri('admin.acl.roles') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary ms-auto">Save changes</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

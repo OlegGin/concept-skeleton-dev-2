@@ -1,0 +1,4 @@
+{% if sortBy is defined and sortDirection is defined %}
+    <input type="hidden" name="sort_by" value="{{ sortBy }}">
+    <input type="hidden" name="sort_direction" value="{{ sortDirection }}">
+{% endif %}

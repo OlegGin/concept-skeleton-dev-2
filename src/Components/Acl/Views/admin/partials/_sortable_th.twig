@@ -1,0 +1,9 @@
+{% set nextDirection = (sortBy == column and sortDirection == 'asc') ? 'desc' : 'asc' %}
+<th{% if class is defined %} class="{{ class }}"{% endif %}>
+    <a href="{{ uri(route) ~ '?' ~ query|merge({sort_by: column, sort_direction: nextDirection})|url_encode }}">
+        {{ label }}
+        {% if sortBy == column %}
+            <i class="bi bi-arrow-{{ sortDirection == 'asc' ? 'up' : 'down' }}"></i>
+        {% endif %}
+    </a>
+</th>

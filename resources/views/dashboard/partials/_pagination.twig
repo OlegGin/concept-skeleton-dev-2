@@ -1,0 +1,30 @@
+{% if items.lastPage > 1 %}
+    <nav aria-label="Pagination">
+        <ul class="pagination pagination-sm m-0 float-end">
+            {# First Page Link #}
+            <li class="page-item {{ items.onFirstPage ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ items.url(1) }}" aria-label="First">
+                    <i class="bi bi-chevron-double-left"></i>
+                </a>
+            </li>
+
+            {# Pagination Elements #}
+            {% for element in items.linkCollection %}
+                {% if element.url is empty %}
+                    <li class="page-item disabled"><span class="page-link">{{ element.label|raw }}</span></li>
+                {% else %}
+                    <li class="page-item {{ element.active ? 'active' : '' }}">
+                        <a class="page-link" href="{{ element.url }}">{{ element.label|raw }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {# Last Page Link #}
+            <li class="page-item {{ items.currentPage == items.lastPage ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ items.url(items.lastPage) }}" aria-label="Last">
+                    <i class="bi bi-chevron-double-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endif %}

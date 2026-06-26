@@ -1,0 +1,11 @@
+<label class="form-label" for="{{ field_id }}">{{ label|default('Route name') }}{% if required|default(false) %} <span class="text-danger">*</span>{% endif %}</label>
+<select id="{{ field_id }}" name="{{ field_name|default('route_name') }}" class="form-select {{ errors[field_name|default('route_name')] is defined and errors[field_name|default('route_name')] ? 'is-invalid' : '' }}" {{ required|default(false) ? 'required' : '' }}>
+    {% if empty_option is defined %}
+        <option value="">{{ empty_option }}</option>
+    {% endif %}
+    {% set selected_value = selected|default('') %}
+    {% for item in route_tree %}
+        <option value="{{ item.name }}" {{ selected_value == item.name ? 'selected' : '' }}>{% for i in 1..item.depth %}&nbsp;&nbsp;{% endfor %}{{ item.name }}{% if item.path %} ({{ item.path }}){% endif %}</option>
+    {% endfor %}
+</select>
+{% include '@dashboard/partials/_field_errors.twig' with { field: field_name|default('route_name') } %}

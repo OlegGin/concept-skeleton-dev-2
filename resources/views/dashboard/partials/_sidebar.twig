@@ -1,0 +1,101 @@
+<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+    <div class="sidebar-brand">
+        <a href="{{ uri('admin.dashboard') }}" class="brand-link">
+            <i class="bi bi-code-slash fs-4"></i>
+            <span class="brand-text fw-light">Concept Admin</span>
+        </a>
+    </div>
+
+    <div class="sidebar-wrapper">
+        <nav class="mt-2" aria-label="Admin navigation">
+            <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" data-accordion="false" id="navigation">
+                {% if not has_component('Acl') or acl_allowed('admin') %}
+                <li class="nav-item">
+                    <a href="{{ uri('admin.dashboard') }}" class="nav-link {{ dash_active == 'dashboard' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-speedometer"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                {% endif %}
+                {% if not has_component('Acl') or acl_allowed('admin.users', 'view') %}
+                <li class="nav-item">
+                    <a href="{{ uri('admin.users') }}" class="nav-link {{ dash_active == 'users' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-people-fill"></i>
+                        <p>Users</p>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if has_component('ProjectManager') %}
+                <li class="nav-item">
+                    <a href="{{ uri('admin.projects') }}" class="nav-link {{ dash_active == 'projects' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-kanban-fill"></i>
+                        <p>Projects</p>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if has_component('SettingsManager') and (not has_component('Acl') or acl_allowed('admin.settings', 'view')) %}
+                <li class="nav-item">
+                    <a href="{{ uri('admin.settings') }}" class="nav-link {{ dash_active == 'settings' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-gear-fill"></i>
+                        <p>Settings</p>
+                    </a>
+                </li>
+                {% endif %}
+
+
+                <li class="nav-item">
+                    <a href="{{ uri('admin.menu') }}" class="nav-link {{ dash_active == 'menu' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-gear-fill"></i>
+                        <p>Menu</p>
+                    </a>
+                </li>
+
+                {% if has_component('Acl') and acl_allowed('admin.acl') %}
+                <li class="nav-item {{ dash_active starts with 'acl_' ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ dash_active starts with 'acl_' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-shield-lock-fill"></i>
+                        <p>
+                            ACL
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ uri('admin.acl.matrix') }}" class="nav-link {{ dash_active == 'acl_matrix' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Matrix</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ uri('admin.acl.roles') }}" class="nav-link {{ dash_active == 'acl_roles' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Roles</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ uri('admin.acl.resources') }}" class="nav-link {{ dash_active == 'acl_resources' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Resources</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ uri('admin.acl.rules') }}" class="nav-link {{ dash_active == 'acl_rules' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Rules</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ uri('admin.acl.route-rules') }}" class="nav-link {{ dash_active == 'acl_route_rules' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Route rules</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</aside>

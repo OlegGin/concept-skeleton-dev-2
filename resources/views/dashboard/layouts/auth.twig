@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    {% include '@dashboard/partials/_title.twig' with { page_title: block('title') } %}
+    {% include '@dashboard/partials/_head_theme_init.twig' %}
+    {% include '@dashboard/partials/_head_assets.twig' %}
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="login-page bg-body-secondary">
+    {% include '@dashboard/partials/_flash.twig' %}
+
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="{{ uri('home') }}"><b>Concept</b>Admin</a>
+        </div>
+        <div class="card">
+            <div class="card-body login-card-body">
+                {% block body %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="/libs/overlayscrollbars/browser/overlayscrollbars.browser.es6.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/dashboard/js/adminlte.min.js"></script>
+    {% include '@dashboard/partials/_theme_toggle_script.twig' %}
+    {% include '@dashboard/partials/_flash_scripts.twig' %}
+    {% block scripts %}{% endblock %}
+</body>
+</html>

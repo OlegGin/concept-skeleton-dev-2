@@ -1,0 +1,10 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.flash-toast-container .toast').forEach(function (toastEl) {
+        bootstrap.Toast.getOrCreateInstance(toastEl, {
+            autohide: true,
+            delay: 5000,
+        }).show();
+    });
+});
+</script>

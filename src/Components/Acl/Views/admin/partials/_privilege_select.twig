@@ -1,0 +1,8 @@
+<label class="form-label" for="{{ field_id }}">{{ label|default('Privilege') }}</label>
+<select id="{{ field_id }}" name="{{ field_name|default('privilege') }}" class="form-select {{ errors[field_name|default('privilege')] is defined and errors[field_name|default('privilege')] ? 'is-invalid' : '' }}" {{ required|default(false) ? 'required' : '' }}>
+    <option value="">{{ empty_label|default('— all privileges —') }}</option>
+    {% for privilege in privileges %}
+        <option value="{{ privilege.value }}" {{ selected|default('') == privilege.value ? 'selected' : '' }}>{{ privilege.name|capitalize }}</option>
+    {% endfor %}
+</select>
+{% include '@dashboard/partials/_field_errors.twig' with { field: field_name|default('privilege') } %}

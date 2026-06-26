@@ -1,0 +1,52 @@
+{
+    "name": "php-concept/extension-components",
+    "description": "Concept Components extension — plugin manifest registry and boot wiring",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\Components\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "php-concept/core-2": "@dev",
+        "php-concept/extension-config": "@dev",
+        "php-concept/extension-database-eloquent": "@dev",
+        "php-concept/extension-view": "@dev",
+        "league/container": "^5.1",
+        "league/route": "^6.2",
+        "symfony/console": "^7.2",
+        "symfony/filesystem": "^7.2"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/concept-core-2",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../Config",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../DatabaseEloquent",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../View",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+}

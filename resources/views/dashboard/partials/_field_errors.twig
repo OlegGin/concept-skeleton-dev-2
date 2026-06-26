@@ -1,0 +1,7 @@
+{% set bag = errors|default({}) %}
+{% set field_errors = attribute(bag, field) is defined ? attribute(bag, field) : [] %}
+{% if field_errors is not empty %}
+    <div class="invalid-feedback d-block" id="{{ field }}-error" role="alert">
+        {{ field_errors is iterable ? field_errors|join(', ') : field_errors }}
+    </div>
+{% endif %}

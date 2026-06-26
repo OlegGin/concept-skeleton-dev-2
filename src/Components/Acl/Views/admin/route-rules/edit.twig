@@ -1,0 +1,65 @@
+{% set dash_active = 'acl_route_rules' %}
+{% extends '@dashboard/layouts/base.twig' %}
+
+{% block title %}Edit ACL route rule{% endblock %}
+{% block content_title %}Edit route rule: {{ rule.route_name }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ uri('admin.dashboard') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ uri('admin.acl.route-rules') }}">ACL Route Rules</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <form action="{{ uri('admin.acl.route-rule.update', {id: rule.id}) }}" method="POST">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        {% include '@acl/admin/partials/_route_name_select.twig' with {
+                            field_id: 'route_name',
+                            label: 'Route name',
+                            required: true,
+                            route_tree: route_tree,
+                            selected: old.route_name|default(rule.route_name)
+                        } %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="resource_id">Resource <span class="text-danger">*</span></label>
+                        <select id="resource_id" name="resource_id" class="form-select" required>
+                            {% for resource in resources %}
+                                <option value="{{ resource.id }}" {{ (old.resource_id|default(rule.resource_id)) == resource.id ? 'selected' : '' }}>{{ resource.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% include '@dashboard/partials/_field_errors.twig' with { field: 'resource_id' } %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include '@acl/admin/partials/_privilege_select.twig' with {
+                            field_id: 'privilege',
+                            privileges: privileges,
+                            selected: old.privilege|default(rule.privilege|default('')),
+                            empty_label: '— none (resource-level) —'
+                        } %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include '@acl/admin/partials/_route_name_select.twig' with {
+                            field_id: 'redirect_route_name',
+                            field_name: 'redirect_route_name',
+                            label: 'Redirect route name',
+                            empty_option: '— use config default —',
+                            route_tree: route_tree,
+                            selected: old.redirect_route_name|default(rule.redirect_route_name|default(''))
+                        } %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <a href="{{ uri('admin.acl.route-rules') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary ms-auto">Save changes</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
