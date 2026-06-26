@@ -9,6 +9,5 @@ parameters:
         - src
 
     excludePaths:
-        - routes/*
         - */Models/*
         - vendor/*

@@ -4,6 +4,7 @@ namespace Concept\Components\AuthAdmin\Controllers;
 
 use Concept\Components\AuthAdmin\Constants\RouteName;
 use Concept\Components\AuthAdmin\Constants\ViewName;
+use Concept\Components\AuthAdmin\Dto\LoginDto;
 use Concept\Components\AuthAdmin\Requests\LoginRequest;
 use Concept\Components\AuthAdmin\Services\AuthService;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
@@ -36,12 +37,9 @@ class AdminController
 
     public function login(LoginRequest $request): ResponseInterface
     {
-        $success = false;
+        /** @var LoginDto $loginDto */
         $loginDto = $request->toDto();
-        if ($loginDto) {
-            $success = $this->auth->attempt($loginDto->email, $loginDto->password, $loginDto->remember);
-        }
-
+        $success = $this->auth->attempt($loginDto->email, $loginDto->password, $loginDto->remember);
         if ($success) {
             $user = $this->auth->user();
             $welcomeMessage = sprintf(self::MSG_WELCOME, $user?->getName() ?? 'User');

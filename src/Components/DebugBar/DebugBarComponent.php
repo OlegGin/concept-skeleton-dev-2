@@ -32,7 +32,7 @@ final class DebugBarComponent implements ComponentInterface
         return self::DESCRIPTION;
     }
 
-    public function routes(): ?string
+    public function routes(): string
     {
         return $this->componentDir . '/routes.php';
     }
