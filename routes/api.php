@@ -7,7 +7,7 @@ use League\Route\RouteGroup;
 use League\Route\Router;
 
 /** @var Router $router */
-$router->group('/api', function (RouteGroup $router): void {
+$router->group('/api', function(RouteGroup $router): void {
     $router->get('/ping', [ApiController::class, 'ping'])->setName('api.ping');
     $router->post('/echo', [ApiController::class, 'echo'])->setName('api.echo');
 })->lazyMiddlewares([

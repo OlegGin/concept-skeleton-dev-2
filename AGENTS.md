@@ -348,6 +348,7 @@ readlink -f /var/www/concept-skeleton-dev-2/vendor/php-concept/core-2
 - **Повідомлення винятків** — текст у `private const string ERR_*` класу; виняток через `use` + `throw new RuntimeException(...)`, не `throw new \RuntimeException('...')` inline. Якщо рядок константи вміщується в **120 символів** — оголошувати в один рядок, без переносу після `=`
 - **Імена класів** — без префікса `Container` (`FormRequestFactory`, `FormRequestArgumentResolver`, `TypedRouteParameterArgumentResolver`); lazy-отримання залежностей — всередині класу, не в назві
 - **Arrow functions** — без пробілу після `fn`: `fn()`, `fn(): Type`, `fn($x): Type`, `static fn(Route $a, Route $b): int`. Не `fn ()`, не `fn ($x)`.
+- **Anonymous functions** — без пробілу після `function`: `function()`, `function($x)`, `function() use ($c): Type`. Не `function ()`, не `function ($x)`.
 - **Літерали в app glue** (`ApplicationServiceProvider`, `bootstrap/*.php`) — рядкові magic values (шляхи, імена файлів, дефолти) виносити в `private const string` класу glue; не розкидати `'valinor'`, `'app.log'`, `'config'` inline у `boot()`. Приклад: `CACHE_VALINOR_DIR`, `LOG_APP_FILE`, `DEFAULT_DB_DRIVER` у `ApplicationServiceProvider`. Контрактні ключі масивів (`driver`, `host` у connection) — не константи, це API Eloquent/бібліотеки.
 - Не комітити без явного запиту користувача
 - Не створювати markdown/docs без запиту (крім цього AGENTS.md)

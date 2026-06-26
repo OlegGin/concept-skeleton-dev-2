@@ -3,6 +3,7 @@
 namespace Concept\App\Providers;
 
 use Concept\Core\Http\Contracts\ArgumentResolverInterface;
+use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
 use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
 use Concept\Core\Providers\Http\HttpServiceProvider as CoreHttpServiceProvider;
@@ -131,15 +132,20 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             handler: $this->getSessionHandler($config, $pathManager),
         ));
         $container->addServiceProvider(new CsrfServiceProvider());
+
         /** @var list<string> $routesList */
         $routesList = $config->get(ConfigKey::ROUTES_LIST) ?? [];
-
+        /** @var list<class-string<RouteInterceptorInterface>> $interceptors */
+        $interceptors = $config->get(ConfigKey::ROUTES_INTERCEPTORS) ?? [];
         $container->addServiceProvider(new CoreHttpServiceProvider(
             routePaths: $this->relativeToAbsolutePath($pathManager, $routesList),
             resolvers: $this->getArgumentResolvers($container),
+            interceptors: $interceptors,
         ));
 
-        $container->addServiceProvider(new PaginationConfiguratorServiceProvider());
+        $container->addServiceProvider(new PaginationConfiguratorServiceProvider(
+            pageName: $config->getString(ConfigKey::PAGINATION_PAGE_NAME, 'page'),
+        ));
         $container->addServiceProvider(new HttpServiceProvider());
 
         /** @var array<string, string> $viewPaths */

@@ -40,7 +40,7 @@ final class ViewServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(ViewRegistry::class, function (): ViewRegistry {
+        $container->add(ViewRegistry::class, function(): ViewRegistry {
             $viewPathRegistry = new ViewPathRegistry();
             $viewPathRegistry->append($this->paths);
 
@@ -53,14 +53,14 @@ final class ViewServiceProvider extends AbstractServiceProvider
             return new ViewRegistry($viewPathRegistry, $viewExtensionRegistry, $viewContextRegistry);
         })->setShared(true);
 
-        $container->add(ViewContextResolver::class, function () use ($container): ViewContextResolver {
+        $container->add(ViewContextResolver::class, function() use ($container): ViewContextResolver {
             /** @var ViewRegistry $viewRegistry */
             $viewRegistry = $container->get(ViewRegistry::class);
 
             return new ViewContextResolver($viewRegistry->contexts());
         })->setShared(true);
 
-        $container->add(ViewResponseFactoryInterface::class, function () use ($container): ViewResponseFactory {
+        $container->add(ViewResponseFactoryInterface::class, function() use ($container): ViewResponseFactory {
             /** @var ResponseFactoryInterface $responseFactory */
             $responseFactory = $container->get(ResponseFactoryInterface::class);
             /** @var ViewInterface $view */

@@ -24,7 +24,7 @@ final class ValidationServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(ValidatorInterface::class, function () use ($container) {
+        $container->add(ValidatorInterface::class, function() use ($container) {
             $validator = new Validator($container);
             $validator->addRules($this->customRules);
 

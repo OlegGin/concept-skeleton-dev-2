@@ -30,7 +30,7 @@ final class SessionServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(SessionInterface::class, function (): Session {
+        $container->add(SessionInterface::class, function(): Session {
             $storage = new NativeSessionStorage($this->sessionOptions, $this->handler);
             $session = new Session($storage, flashes: new FlashBag());
 
@@ -41,7 +41,7 @@ final class SessionServiceProvider extends AbstractServiceProvider
             return $session;
         })->setShared(true);
 
-        $container->add(FlashBagInterface::class, function () use ($container): FlashBagInterface {
+        $container->add(FlashBagInterface::class, function() use ($container): FlashBagInterface {
             /** @var SessionInterface $session */
             $session = $container->get(SessionInterface::class);
 

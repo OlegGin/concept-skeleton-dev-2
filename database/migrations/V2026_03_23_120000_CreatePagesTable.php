@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        CapsuleManager::schema()->create('pages', function (Blueprint $table) {
+        CapsuleManager::schema()->create('pages', function(Blueprint $table) {
             $table->increments('id');
             $table->string('title', 50);
             $table->string('slug', 255)->unique();

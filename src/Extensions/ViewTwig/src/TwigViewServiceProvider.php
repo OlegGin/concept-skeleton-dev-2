@@ -38,7 +38,7 @@ final class TwigViewServiceProvider extends AbstractServiceProvider
 
         $container->add(Filesystem::class, fn(): Filesystem => new Filesystem())->setShared(true);
 
-        $container->add(ViewClearCommand::class, function () use ($container): ViewClearCommand {
+        $container->add(ViewClearCommand::class, function() use ($container): ViewClearCommand {
             /** @var Filesystem $filesystem */
             $filesystem = $container->get(Filesystem::class);
 
@@ -48,7 +48,7 @@ final class TwigViewServiceProvider extends AbstractServiceProvider
             );
         })->setShared(true);
 
-        $container->add(ViewInterface::class, function () use ($container): TwigView {
+        $container->add(ViewInterface::class, function() use ($container): TwigView {
             $loader = new FilesystemLoader($this->viewsPath);
             $twig = new Environment($loader, [
                 'cache' => $this->debug ? false : $this->cacheDir,

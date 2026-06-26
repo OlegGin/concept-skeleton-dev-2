@@ -8,6 +8,10 @@ use League\Container\ServiceProvider\BootableServiceProviderInterface;
 
 final class PaginationConfiguratorServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    public function __construct(
+        private readonly string $pageName = 'page',
+    ) {}
+
     public function provides(string $id): bool
     {
         return false;
@@ -19,6 +23,6 @@ final class PaginationConfiguratorServiceProvider extends AbstractServiceProvide
 
     public function boot(): void
     {
-        PaginatorConfigurator::configure($this->getContainer());
+        PaginatorConfigurator::configure($this->getContainer(), $this->pageName);
     }
 }

@@ -30,7 +30,7 @@ class ConsoleSymfonyServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(ConsoleApplication::class, function () use ($container): ConsoleApplication {
+        $container->add(ConsoleApplication::class, function() use ($container): ConsoleApplication {
             $consoleApplication = new ConsoleApplication(
                 $this->appName !== '' ? $this->appName : self::DEFAULT_NAME,
                 $this->appVersion !== '' ? $this->appVersion : self::DEFAULT_VERSION,

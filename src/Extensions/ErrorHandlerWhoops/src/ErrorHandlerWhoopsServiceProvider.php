@@ -47,14 +47,14 @@ final class ErrorHandlerWhoopsServiceProvider extends AbstractServiceProvider im
         try {
             $whoops->clearHandlers();
 
-            $whoops->appendHandler(function (Throwable $exception): int {
+            $whoops->appendHandler(function(Throwable $exception): int {
                 $handler = new PhpErrorLogHandler();
                 $handler->setException($exception);
 
                 return $handler->handle();
             });
 
-            $whoops->appendHandler(function (Throwable $exception) use ($container): int {
+            $whoops->appendHandler(function(Throwable $exception) use ($container): int {
                 $handler = new ErrorLogHandler($container);
                 $handler->setException($exception);
 
@@ -99,7 +99,7 @@ final class ErrorHandlerWhoopsServiceProvider extends AbstractServiceProvider im
             return;
         }
 
-        $whoops->appendHandler(function (Throwable $exception) use ($container): int {
+        $whoops->appendHandler(function(Throwable $exception) use ($container): int {
             $handler = new ProductionErrorHandler($container, $this->errorsFallbackPath);
             $handler->setException($exception);
 

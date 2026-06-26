@@ -58,14 +58,14 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
     {
         $container = $this->getContainer();
 
-        $container->add(DatabaseInterface::class, function () use ($container): Database {
+        $container->add(DatabaseInterface::class, function() use ($container): Database {
             /** @var CapsuleManager $capsuleManager */
             $capsuleManager = $container->get(CapsuleManager::class);
 
             return new Database($capsuleManager);
         })->setShared(true);
 
-        $container->add(Migrator::class, function () use ($container): Migrator {
+        $container->add(Migrator::class, function() use ($container): Migrator {
             /** @var CapsuleManager $capsuleManager */
             $capsuleManager = $container->get(CapsuleManager::class);
             $manager = $capsuleManager->getDatabaseManager();
@@ -75,28 +75,28 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
             return new Migrator($repository, $manager, new Filesystem());
         })->setShared(true);
 
-        $container->add(SeederManager::class, function () use ($container): SeederManager {
+        $container->add(SeederManager::class, function() use ($container): SeederManager {
             /** @var SeederRegistry $seederRegistry */
             $seederRegistry = $container->get(SeederRegistry::class);
 
             return new SeederManager($container, $seederRegistry);
         })->setShared(true);
 
-        $container->add(SeederRegistry::class, function (): SeederRegistry {
+        $container->add(SeederRegistry::class, function(): SeederRegistry {
             $seederRegistry = new SeederRegistry();
             $seederRegistry->append($this->seeders);
 
             return $seederRegistry;
         })->setShared(true);
 
-        $container->add(MigrationRegistry::class, function (): MigrationRegistry {
+        $container->add(MigrationRegistry::class, function(): MigrationRegistry {
             $migrationRegistry = new MigrationRegistry();
             $migrationRegistry->append($this->migrationPaths);
 
             return $migrationRegistry;
         })->setShared(true);
 
-        $container->add(DbMigrationListCommand::class, function () use ($container): DbMigrationListCommand {
+        $container->add(DbMigrationListCommand::class, function() use ($container): DbMigrationListCommand {
             /** @var CapsuleManager $capsuleManager */
             $capsuleManager = $container->get(CapsuleManager::class);
             $migrationTableName = $this->migrationsTable !== '' ? $this->migrationsTable : self::DEFAULT_TABLE_NAME;
@@ -107,7 +107,7 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
             );
         })->setShared(true);
 
-        $container->add(QueryLogger::class, function () use ($container): QueryLogger {
+        $container->add(QueryLogger::class, function() use ($container): QueryLogger {
             $monolog = new Monolog('query');
             $monolog->pushHandler(new RotatingFileHandler(
                 $this->logPath,
@@ -135,7 +135,7 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
         $capsuleManager->bootEloquent();
         $capsuleManager->setEventDispatcher(new Dispatcher(new IlluminateContainer()));
 
-        $capsuleManager->getConnection()->listen(function (QueryExecuted $query) use ($container): void {
+        $capsuleManager->getConnection()->listen(function(QueryExecuted $query) use ($container): void {
             $this->logQueries($container, $query);
         });
 

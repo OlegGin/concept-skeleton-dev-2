@@ -29,7 +29,7 @@ final class PlatesViewServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(ViewInterface::class, function () use ($container): PlatesView {
+        $container->add(ViewInterface::class, function() use ($container): PlatesView {
             $engine = new Engine($this->viewsPath, ltrim($this->defaultExtension, '.'));
 
             /** @var ViewRegistry $viewRegistry */

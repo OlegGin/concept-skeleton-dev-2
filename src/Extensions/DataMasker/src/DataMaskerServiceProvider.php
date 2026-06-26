@@ -29,7 +29,7 @@ final class DataMaskerServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(DataMaskerInterface::class, function () use ($container): DataMasker {
+        $container->add(DataMaskerInterface::class, function() use ($container): DataMasker {
             $masker = new DataMasker();
 
             if ($this->patterns !== [] || $this->keyPatterns !== []) {

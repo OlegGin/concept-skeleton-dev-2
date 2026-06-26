@@ -21,14 +21,14 @@ final class CsrfServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(CsrfTokenManagerInterface::class, function () use ($container): CsrfTokenManager {
+        $container->add(CsrfTokenManagerInterface::class, function() use ($container): CsrfTokenManager {
             /** @var SessionInterface $session */
             $session = $container->get(SessionInterface::class);
 
             return new CsrfTokenManager($session);
         })->setShared(true);
 
-        $container->add(VerifyCsrfTokenMiddleware::class, function () use ($container): VerifyCsrfTokenMiddleware {
+        $container->add(VerifyCsrfTokenMiddleware::class, function() use ($container): VerifyCsrfTokenMiddleware {
             /** @var CsrfTokenManagerInterface $csrfTokenManager */
             $csrfTokenManager = $container->get(CsrfTokenManagerInterface::class);
 

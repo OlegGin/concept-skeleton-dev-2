@@ -21,7 +21,7 @@ final class Logger extends AbstractLogger implements LoggerInterface
             return;
         }
 
-        $this->monolog->pushProcessor(static function (LogRecord $record) use ($masker): LogRecord {
+        $this->monolog->pushProcessor(static function(LogRecord $record) use ($masker): LogRecord {
             return $record->with(
                 context: $masker->mask($record->context),
             );

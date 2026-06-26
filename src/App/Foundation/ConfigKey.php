@@ -71,6 +71,7 @@ final class ConfigKey
     public const string SESSION_PDO_TABLE = 'session.pdo.table';
 
     public const string PAGINATION_PER_PAGE = 'pagination.per_page';
+    public const string PAGINATION_PAGE_NAME = 'pagination.page_name';
 
     public const string VIEW_PATHS = 'view.paths';
     public const string VIEW_EXTENSIONS = 'view.extensions';

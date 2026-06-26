@@ -25,7 +25,7 @@ final class CastingServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(CasterInterface::class, function () {
+        $container->add(CasterInterface::class, function() {
             return new Caster(
                 $this->cacheDirectory,
                 $this->transformerClasses,

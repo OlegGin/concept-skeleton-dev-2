@@ -61,7 +61,7 @@ final class RouteListCommand extends Command
         $io->table(
             ['Method', 'URI', 'Name', 'Action', 'Middleware'],
             array_map(
-                function (Route $route) use ($fullMiddlewareClass): array {
+                function(Route $route) use ($fullMiddlewareClass): array {
                     $description = $this->routeDescriptor->describe($route, $fullMiddlewareClass);
 
                     return [

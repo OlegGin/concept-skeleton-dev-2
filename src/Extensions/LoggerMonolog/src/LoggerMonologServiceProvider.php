@@ -29,7 +29,7 @@ final class LoggerMonologServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(LoggerInterface::class, function () use ($container): Logger {
+        $container->add(LoggerInterface::class, function() use ($container): Logger {
             $monolog = new Monolog($this->channel);
             $this->setup($monolog);
 

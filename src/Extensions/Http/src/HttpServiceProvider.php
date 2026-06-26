@@ -27,14 +27,14 @@ final class HttpServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(UrlGeneratorInterface::class, function () use ($container) {
+        $container->add(UrlGeneratorInterface::class, function() use ($container) {
             /** @var Router $router */
             $router = $container->get(Router::class);
 
             return new UrlGenerator($router);
         })->setShared(true);
 
-        $container->add(RouteDescriptor::class, function () use ($container) {
+        $container->add(RouteDescriptor::class, function() use ($container) {
             /** @var Router $router */
             $router = $container->get(Router::class);
 
@@ -43,7 +43,7 @@ final class HttpServiceProvider extends AbstractServiceProvider
 
         $container->add(RequestFormat::class, fn() => new RequestFormat())->setShared(true);
 
-        $container->add(ResponseFactoryInterface::class, function () use ($container) {
+        $container->add(ResponseFactoryInterface::class, function() use ($container) {
             /** @var UrlGeneratorInterface $urlGenerator */
             $urlGenerator = $container->get(UrlGeneratorInterface::class);
 

@@ -8,17 +8,18 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class PaginatorConfigurator
 {
-    public static function configure(ContainerInterface $container): void
+    public static function configure(ContainerInterface $container, string $pageName): void
     {
-        Paginator::currentPageResolver(function ($pageName = 'page') use ($container): int {
+        Paginator::currentPageResolver(function(?string $resolvedPageName = null) use ($container, $pageName): int {
             /** @var ServerRequestInterface $request */
             $request = $container->get(ServerRequestInterface::class);
             $params = $request->getQueryParams();
+            $queryKey = $resolvedPageName ?? $pageName;
 
-            return (int) ($params[$pageName] ?? 1);
+            return (int) ($params[$queryKey] ?? 1);
         });
 
-        Paginator::currentPathResolver(function () use ($container): string {
+        Paginator::currentPathResolver(function() use ($container): string {
             /** @var ServerRequestInterface $request */
             $request = $container->get(ServerRequestInterface::class);
 
