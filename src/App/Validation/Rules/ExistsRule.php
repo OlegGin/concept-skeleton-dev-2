@@ -1,26 +1,24 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Common\Validation\Rules;
+namespace Concept\App\Validation\Rules;
 
-use Concept\Core\Services\Database\Contracts\DatabaseInterface;
-use Concept\Core\Services\Validator\Contracts\RuleInterface;
-use Concept\Core\Services\Validator\Rule;
+use Concept\Extensions\DatabaseEloquent\Contracts\DatabaseInterface;
+use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
+use Concept\Extensions\ValidationRakit\Rules\Rule;
 
 class ExistsRule extends Rule implements RuleInterface
 {
     /** @var string */
     protected string $message = ':attribute :value has been not found';
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected array $fillable = ['table', 'column', 'except', 'id_column'];
 
     protected array $required = ['table', 'column'];
 
-    public function __construct(private readonly DatabaseInterface $db)
-    {
-    }
+    public function __construct(private readonly DatabaseInterface $db) {}
 
-    public function passes($value): bool
+    public function passes(mixed $value): bool
     {
         /** @var string $column */
         $column = $this->parameter('column');

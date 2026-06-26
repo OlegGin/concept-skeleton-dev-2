@@ -11,7 +11,6 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
-use Concept\Extensions\Config\ConfigServiceProvider;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Config\Foundation\PathManager;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
@@ -42,9 +41,6 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 {
     private const string INCORRECT_SESSION_FILE_PATH = 'Session file path must be a string or null, %s given.';
 
-    private const string BOOTSTRAP_PATHS_FILE = 'bootstrap/paths.php';
-    private const string DEFAULT_CONFIG_DIR = 'config';
-
     private const string CACHE_VALINOR_DIR = 'valinor';
     private const string CACHE_VIEWS_DIR = 'views';
 
@@ -74,14 +70,6 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     public function boot(): void
     {
         $container = $this->getContainer();
-
-        /** @var array<string, string> $paths */
-        $paths = require $this->root . '/' . self::BOOTSTRAP_PATHS_FILE;
-        $container->addServiceProvider(new ConfigServiceProvider(
-            root: $this->root,
-            configDir: $paths[PathName::CONFIG] ?? self::DEFAULT_CONFIG_DIR,
-            pathMap: $paths,
-        ));
 
         /** @var ConfigInterface $config */
         $config = $container->get(ConfigInterface::class);

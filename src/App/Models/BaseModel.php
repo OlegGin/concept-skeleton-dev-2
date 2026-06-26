@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Common\Models;
+namespace Concept\App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

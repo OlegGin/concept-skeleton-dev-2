@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Common\Support;
+namespace Concept\App\Support;
 
-use Concept\Common\Models\BaseModel;
+use Concept\App\Models\BaseModel;
 
 final class ListQuery
 {
