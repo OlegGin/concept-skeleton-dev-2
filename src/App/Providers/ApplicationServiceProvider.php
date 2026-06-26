@@ -150,18 +150,21 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
         /** @var array<string, string> $viewPaths */
         $viewPaths = $config->get(ConfigKey::VIEW_PATHS) ?? [];
+        /** @var array<string, string> $viewContexts */
+        $viewContexts = $config->get(ConfigKey::VIEW_CONTEXTS) ?? [];
         /** @var list<class-string> $viewExtensions */
         $viewExtensions = $config->get(ConfigKey::VIEW_EXTENSIONS) ?? [];
         $container->addServiceProvider(new ViewServiceProvider(
             paths: $viewPaths,
+            contexts: $viewContexts,
             extensions: $viewExtensions,
         ));
 
         $container->addServiceProvider(new TwigViewServiceProvider(
             root: $this->root,
             viewsPath: $pathManager->get(PathName::VIEWS),
-            debug: $config->getBool(ConfigKey::APP_DEBUG),
             cacheDir: $pathManager->get(PathName::CACHE, self::CACHE_VIEWS_DIR),
+            debug: $config->getBool(ConfigKey::APP_DEBUG),
         ));
 
         /** @var list<class-string<Command>> $commands */

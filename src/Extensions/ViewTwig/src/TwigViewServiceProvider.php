@@ -22,8 +22,8 @@ final class TwigViewServiceProvider extends AbstractServiceProvider
     public function __construct(
         private readonly string $root,
         private readonly string $viewsPath,
-        private readonly bool $debug = false,
         private readonly string $cacheDir = '',
+        private readonly bool $debug = false,
         private readonly string $defaultExtension = self::DEFAULT_EXTENSION,
     ) {}
 
