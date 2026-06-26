@@ -2,7 +2,9 @@
 
 namespace Concept\Extensions\ViewTwig;
 
+use Concept\Core\Events\View\TemplateRendered;
 use Concept\Extensions\View\Contracts\ViewInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Twig\Environment as Twig;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -13,6 +15,7 @@ final class TwigView implements ViewInterface
     public function __construct(
         private readonly Twig $twig,
         private readonly string $defaultExtension,
+        private readonly ?EventDispatcherInterface $dispatcher = null,
     ) {}
 
     /**
@@ -23,7 +26,15 @@ final class TwigView implements ViewInterface
      */
     public function render(string $viewName, array $data = []): string
     {
-        return $this->twig->render($this->ensureExtension($viewName), $data);
+        $startedAt = microtime(true);
+        $content = $this->twig->render($this->ensureExtension($viewName), $data);
+        $this->dispatcher?->dispatch(new TemplateRendered(
+            view: $viewName,
+            startedAt: $startedAt,
+            duration: microtime(true) - $startedAt,
+        ));
+
+        return $content;
     }
 
     private function ensureExtension(string $viewName): string

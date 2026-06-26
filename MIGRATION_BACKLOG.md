@@ -324,8 +324,8 @@ Core залежить лише від `psr/event-dispatcher`. Реалізаці
 |------------|--------|
 | `events.enabled` | `false` → `dispatcher = null` у core/extensions; події не dispatch |
 | `telemetry.enabled` | `false` → `TelemetryEventSubscriber` не реєструється |
-| `telemetry.db_queries` | (наступний крок) `emitQueryEvents` у `DatabaseEloquentServiceProvider` |
-| `telemetry.logs` | (наступний крок) `TelemetryLogHandler` у LoggerMonolog |
+| `telemetry.db_queries` | `false` → без `DatabaseQueryExecuted`; `true` + dispatcher → emit у `DatabaseEloquentServiceProvider` |
+| `telemetry.logs` | `false` → без `TelemetryLogHandler`; `true` → handler на `LoggerMonolog` |
 
 Файли: `config/events.php`, `config/telemetry.php`, overlays у `config/dev/`.
 
@@ -335,10 +335,25 @@ Core залежить лише від `psr/event-dispatcher`. Реалізаці
 - [x] Extension Event: `EventServiceProvider` + `league/event`
 - [x] Extension Telemetry: collector + `TelemetryEventSubscriber`
 - [x] Glue: `ApplicationServiceProvider::registerEventDispatcher()`
-- [ ] DB query events (`telemetry.db_queries`)
-- [ ] Template render events (`ViewTwig`)
-- [ ] Component registered events (`ComponentsServiceProvider`)
-- [ ] Log events (`telemetry.logs`)
+- [x] DB query events (`telemetry.db_queries`)
+- [x] Template render events (`ViewTwig`)
+- [x] Component registered events (`ComponentsServiceProvider`)
+- [x] Log events (`telemetry.logs`)
+- [x] `RequestHandled` у `App::handle()` + `FormRequestValidated` у resolver
+
+### HTTP lifecycle (повний набір для DebugBar Timeline)
+
+| Core event | Джерело |
+|------------|---------|
+| `RouteInterceptorInvoked` | `RouteStrategy` |
+| `RouteHandlerInvoked` | `RouteStrategy` |
+| `FormRequestValidated` | `FormRequestArgumentResolver` |
+| `RequestHandled` | `App::handle()` (dispatcher з `public/index.php`) |
+| `TemplateRendered` | `TwigView` |
+| `DatabaseQueryExecuted` | `DatabaseEloquentServiceProvider` |
+| `ComponentRegistered` / `ComponentRoutesRegistered` | `ComponentsServiceProvider` |
+
+`FRAMEWORK_SERVICE_AWAKENING` навмисно не відновлюємо — шум від container bindings.
 
 ### Порядок boot (events)
 

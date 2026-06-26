@@ -26,6 +26,7 @@ use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
+use Concept\Extensions\Telemetry\Handlers\TelemetryLogHandler;
 use Concept\Extensions\Telemetry\Subscribers\TelemetryEventSubscriber;
 use Concept\Extensions\Telemetry\TelemetryCollector;
 use Concept\Extensions\Telemetry\TelemetryServiceProvider;
@@ -110,6 +111,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             level: $config->getString(ConfigKey::LOG_LEVEL),
             maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
             channel: $config->getString(ConfigKey::LOG_NAME),
+            telemetryHandler: $this->resolveTelemetryLogHandler($container, $config),
         ));
 
         /** @var list<string> $migrationPaths */
@@ -124,6 +126,8 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
             migrationPaths: $this->relativeToAbsolutePath($pathManager, $migrationPaths),
             seeders: $seeders,
+            dispatcher: $eventDispatcher,
+            emitQueryEvents: $config->getBool(ConfigKey::TELEMETRY_DB_QUERIES),
         ));
 
         /** @var array<string, class-string<RuleInterface>> $validatorRules */
@@ -148,7 +152,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $interceptors = $config->get(ConfigKey::ROUTES_INTERCEPTORS) ?? [];
         $container->addServiceProvider(new CoreHttpServiceProvider(
             routePaths: $this->relativeToAbsolutePath($pathManager, $routesList),
-            resolvers: $this->getArgumentResolvers($container),
+            resolvers: $this->getArgumentResolvers($container, $eventDispatcher),
             interceptors: $interceptors,
             dispatcher: $eventDispatcher,
         ));
@@ -175,6 +179,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             viewsPath: $pathManager->get(PathName::VIEWS),
             cacheDir: $pathManager->get(PathName::CACHE, self::CACHE_VIEWS_DIR),
             debug: $config->getBool(ConfigKey::APP_DEBUG),
+            dispatcher: $eventDispatcher,
         ));
 
         /** @var list<class-string<Command>> $commands */
@@ -229,14 +234,28 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         return $dispatcher;
     }
 
+    private function resolveTelemetryLogHandler(ContainerInterface $container, ConfigInterface $config): ?TelemetryLogHandler
+    {
+        if (!$config->getBool(ConfigKey::TELEMETRY_LOGS)) {
+            return null;
+        }
+
+        /** @var TelemetryCollector $collector */
+        $collector = $container->get(TelemetryCollector::class);
+
+        return new TelemetryLogHandler($collector);
+    }
+
     /**
      * @param ContainerInterface $container
      * @return array<ArgumentResolverInterface>
      */
-    private function getArgumentResolvers(ContainerInterface $container): array
-    {
+    private function getArgumentResolvers(
+        ContainerInterface $container,
+        ?EventDispatcherInterface $dispatcher,
+    ): array {
         return [
-            new FormRequestArgumentResolver($container),
+            new FormRequestArgumentResolver($container, $dispatcher),
             new ServerRequestArgumentResolver(),
             new TypedRouteParameterArgumentResolver($container),
             new RouteParameterArgumentResolver(),

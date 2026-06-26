@@ -14,6 +14,7 @@
         "php-concept/extension-config": "@dev",
         "php-concept/extension-database-eloquent": "@dev",
         "php-concept/extension-view": "@dev",
+        "psr/event-dispatcher": "^1.0",
         "league/container": "^5.1",
         "league/route": "^6.2",
         "symfony/console": "^7.2",

@@ -12,6 +12,7 @@ use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Config\Foundation\PathManager;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class ApplicationComponentsServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -36,9 +37,14 @@ final class ApplicationComponentsServiceProvider extends AbstractServiceProvider
         /** @var list<class-string<ComponentInterface>> $componentClasses */
         $componentClasses = $config->get(ConfigKey::COMPONENTS) ?? [];
 
+        $dispatcher = $container->has(EventDispatcherInterface::class)
+            ? $container->get(EventDispatcherInterface::class)
+            : null;
+
         $container->addServiceProvider(new ComponentsServiceProvider(
             root: $this->root,
             componentClasses: $componentClasses,
+            dispatcher: $dispatcher instanceof EventDispatcherInterface ? $dispatcher : null,
         ));
 
         $container->add(ComponentListCommand::class, function() use ($container): ComponentListCommand {

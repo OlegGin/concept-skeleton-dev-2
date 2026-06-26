@@ -6,11 +6,14 @@ use Concept\Extensions\Components\Contracts\ComponentInterface;
 use Concept\Extensions\DatabaseEloquent\Registries\MigrationRegistry;
 use Concept\Extensions\DatabaseEloquent\Registries\SeederRegistry;
 use Concept\Extensions\View\Registry\ViewRegistry;
+use Concept\Core\Events\Framework\ComponentRegistered;
+use Concept\Core\Events\Framework\ComponentRoutesRegistered;
 use InvalidArgumentException;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 use League\Route\Router;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\Application as ConsoleApplication;
 
 final class ComponentsServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
@@ -23,6 +26,7 @@ final class ComponentsServiceProvider extends AbstractServiceProvider implements
     public function __construct(
         private readonly string $root,
         private readonly array $componentClasses,
+        private readonly ?EventDispatcherInterface $dispatcher = null,
     ) {}
 
     public function provides(string $id): bool
@@ -47,11 +51,17 @@ final class ComponentsServiceProvider extends AbstractServiceProvider implements
         /** @var ComponentRegistry $registry */
         $registry = $container->get(ComponentRegistry::class);
 
+        foreach ($registry->all() as $component) {
+            $this->dispatcher?->dispatch(new ComponentRegistered($component::class, $component->name()));
+        }
+
         $this->registerComponentProviders($registry);
         $this->registerComponentSeeders($registry);
         $this->registerComponentMigrations($registry);
         $this->registerConsoleCommands($registry);
+        $routesFileCount = count($registry->routes());
         $this->registerComponentRoutes($registry);
+        $this->dispatcher?->dispatch(new ComponentRoutesRegistered($routesFileCount));
 
         if (PHP_SAPI !== 'cli') {
             $this->registerComponentViewFeatures($registry);

@@ -5,6 +5,7 @@ namespace Concept\Extensions\LoggerMonolog;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
+use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Level;
 use Monolog\Logger as Monolog;
@@ -18,6 +19,7 @@ final class LoggerMonologServiceProvider extends AbstractServiceProvider
         private readonly string $level,
         private readonly int $maxFiles,
         private readonly string $channel,
+        private readonly ?HandlerInterface $telemetryHandler = null,
     ) {}
 
     public function provides(string $id): bool
@@ -52,6 +54,9 @@ final class LoggerMonologServiceProvider extends AbstractServiceProvider
         }
 
         $monolog->pushHandler(new RotatingFileHandler($this->path, $this->maxFiles, $logLevel));
+        if ($this->telemetryHandler !== null) {
+            $monolog->pushHandler($this->telemetryHandler);
+        }
         $monolog->pushProcessor(new PsrLogMessageProcessor());
     }
 }

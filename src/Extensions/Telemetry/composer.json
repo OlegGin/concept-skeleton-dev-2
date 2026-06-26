@@ -13,7 +13,8 @@
         "php-concept/core-2": "@dev",
         "php-concept/extension-event": "@dev",
         "league/container": "^5.1",
-        "league/event": "^3.0"
+        "league/event": "^3.0",
+        "monolog/monolog": "^3"
     },
     "repositories": [
         {
