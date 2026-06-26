@@ -312,9 +312,9 @@ flowchart TD
 | **Extensions** | Власні event DTO (`DatabaseQueryExecuted`, `FormRequestValidated`, `TemplateRendered`, `ComponentRegistered`, …) — dispatch у своєму коді |
 | **Extension Event** | `League\Event\EventDispatcher`, `EventServiceProvider`, реєстрація `ListenerSubscriber` |
 | **Extension Telemetry** | `TelemetryCollector` + `TelemetryEventSubscriber` (лише core HTTP) |
-| **Telemetry component** (glue) | `TelemetryServiceProvider`, bridge subscribers, config, `EventSubscriberCollector` |
+| **Telemetry component** (glue) | `TelemetryServiceProvider` у маніфесті (`providers()`), bridge subscribers |
 | **DebugBar component** (glue) | UI consumer `TelemetryCollector` |
-| **Bootstrap** | `TelemetryServiceProvider` реєструється до `ApplicationServiceProvider` (event bus до components boot) |
+| **Config** | `config/telemetry.php`, `config/events.php` |
 
 Core залежить лише від `psr/event-dispatcher`. Реалізація — `league/event` v3 у extension.
 
@@ -329,7 +329,7 @@ Core залежить лише від `psr/event-dispatcher`. Реалізаці
 | `telemetry.db_queries` | `false` → без `DatabaseQueryExecuted`; `true` + dispatcher → emit у `DatabaseEloquentServiceProvider` |
 | `telemetry.logs` | `false` → без `TelemetryLogHandler`; `true` → handler на `LoggerMonolog` |
 
-Файли: `src/Components/Telemetry/config/telemetry.php` (re-export у `config/telemetry.php`), `config/events.php`, overlays у `config/dev/`.
+Файли: `config/events.php`, `config/telemetry.php`, overlays у `config/dev/`.
 
 ### Поточний стан реалізації
 
@@ -359,9 +359,9 @@ DebugBar **Components** tab — список зареєстрованих ком
 
 ### Порядок boot (events)
 
-1. `bootstrap/providers.php` — `TelemetryServiceProvider` (до logger і components)
-2. `TelemetryServiceProvider::register()` — extension `TelemetryCollector`
-3. `TelemetryServiceProvider::boot()` — subscribers + `EventServiceProvider` (якщо `telemetry.enabled` + `events.enabled`)
+1. `ApplicationServiceProvider` — `LoggerMonologServiceProvider` (`LogHandlerRegistry`)
+2. `ComponentsServiceProvider` — component providers (у т.ч. `TelemetryServiceProvider`), потім `ComponentRegistered`
+3. `TelemetryServiceProvider` — collector, subscribers, `EventServiceProvider`, log handler → registry
 4. Extensions з `EventDispatcherResolver::optional($container)` — без прокидання dispatcher у glue
 
 ---

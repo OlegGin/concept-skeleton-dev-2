@@ -25,7 +25,6 @@ use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
-use Concept\Extensions\Telemetry\Handlers\TelemetryLogHandler;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use Concept\Extensions\View\ViewServiceProvider;
@@ -33,7 +32,6 @@ use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
 use InvalidArgumentException;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
-use Monolog\Handler\HandlerInterface;
 use Psr\Container\ContainerInterface;
 use SessionHandlerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -103,7 +101,6 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             level: $config->getString(ConfigKey::LOG_LEVEL),
             maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
             channel: $config->getString(ConfigKey::LOG_NAME),
-            telemetryHandler: $this->resolveTelemetryHandler($container),
         ));
 
         /** @var list<string> $migrationPaths */
@@ -211,18 +208,6 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             new TypedRouteParameterArgumentResolver($container),
             new RouteParameterArgumentResolver(),
         ];
-    }
-
-    private function resolveTelemetryHandler(ContainerInterface $container): ?HandlerInterface
-    {
-        if (!$container->has(TelemetryLogHandler::class)) {
-            return null;
-        }
-
-        /** @var TelemetryLogHandler $handler */
-        $handler = $container->get(TelemetryLogHandler::class);
-
-        return $handler;
     }
 
     /**

@@ -1,3 +1,9 @@
 <?php declare(strict_types=1);
 
-return require __DIR__ . '/../../src/Components/Telemetry/config/dev/telemetry.php';
+return [
+    'telemetry' => [
+        'enabled' => true,
+        'db_queries' => true,
+        'logs' => true,
+    ],
+];

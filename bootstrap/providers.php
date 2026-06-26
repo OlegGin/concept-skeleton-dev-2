@@ -4,7 +4,6 @@ use Concept\App\Foundation\PathName;
 use Concept\App\Providers\ApplicationComponentsServiceProvider;
 use Concept\App\Providers\ApplicationRuntimeServiceProvider;
 use Concept\App\Providers\ApplicationServiceProvider;
-use Concept\Components\Telemetry\Providers\TelemetryServiceProvider;
 use Concept\Extensions\Config\ConfigServiceProvider;
 
 /**
@@ -20,7 +19,6 @@ return function(string $root, array $paths): array {
             pathMap: $paths,
         ),
         fn() => new ApplicationRuntimeServiceProvider(),
-        fn() => new TelemetryServiceProvider(),
         fn() => new ApplicationServiceProvider($root),
         fn() => new ApplicationComponentsServiceProvider($root),
     ];

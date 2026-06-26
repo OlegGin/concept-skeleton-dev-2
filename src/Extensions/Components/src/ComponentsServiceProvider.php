@@ -47,15 +47,17 @@ final class ComponentsServiceProvider extends AbstractServiceProvider implements
         $this->register();
 
         $container = $this->getContainer();
-        $dispatcher = EventDispatcherResolver::optional($container);
         /** @var ComponentRegistry $registry */
         $registry = $container->get(ComponentRegistry::class);
+
+        $this->registerComponentProviders($registry);
+
+        $dispatcher = EventDispatcherResolver::optional($container);
 
         foreach ($registry->all() as $component) {
             $dispatcher?->dispatch(new ComponentRegistered($component::class, $component->name()));
         }
 
-        $this->registerComponentProviders($registry);
         $this->registerComponentSeeders($registry);
         $this->registerComponentMigrations($registry);
         $this->registerConsoleCommands($registry);

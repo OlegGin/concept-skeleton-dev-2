@@ -3,11 +3,15 @@
 namespace Concept\Components\Telemetry\Providers;
 
 use Concept\App\Foundation\ConfigKey;
-use Concept\Components\Telemetry\Support\EventSubscriberCollector;
-use Concept\Components\Telemetry\TelemetryComponent;
+use Concept\Components\Telemetry\Subscribers\ComponentsTelemetrySubscriber;
+use Concept\Components\Telemetry\Subscribers\DatabaseTelemetrySubscriber;
+use Concept\Components\Telemetry\Subscribers\FormRequestTelemetrySubscriber;
+use Concept\Components\Telemetry\Subscribers\ViewTelemetrySubscriber;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Event\EventServiceProvider;
+use Concept\Extensions\LoggerMonolog\LogHandlerRegistry;
 use Concept\Extensions\Telemetry\Handlers\TelemetryLogHandler;
+use Concept\Extensions\Telemetry\Subscribers\TelemetryEventSubscriber;
 use Concept\Extensions\Telemetry\Subscribers\TelemetrySubscriberFactory;
 use Concept\Extensions\Telemetry\TelemetryCollector;
 use Concept\Extensions\Telemetry\TelemetryServiceProvider as TelemetryExtensionServiceProvider;
@@ -17,8 +21,14 @@ use League\Event\ListenerSubscriber;
 
 final class TelemetryServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
-    private static bool $registered = false;
-    private static bool $booted = false;
+    /** @var list<class-string<ListenerSubscriber>> */
+    private const array SUBSCRIBERS = [
+        TelemetryEventSubscriber::class,
+        DatabaseTelemetrySubscriber::class,
+        FormRequestTelemetrySubscriber::class,
+        ViewTelemetrySubscriber::class,
+        ComponentsTelemetrySubscriber::class,
+    ];
 
     public function provides(string $id): bool
     {
@@ -27,29 +37,17 @@ final class TelemetryServiceProvider extends AbstractServiceProvider implements 
 
     public function register(): void
     {
-        if (self::$registered) {
-            return;
-        }
-
-        self::$registered = true;
-
         $this->getContainer()->addServiceProvider(new TelemetryExtensionServiceProvider());
     }
 
     public function boot(): void
     {
-        if (self::$booted) {
-            return;
-        }
-
-        self::$booted = true;
-
         $container = $this->getContainer();
 
         /** @var ConfigInterface $config */
         $config = $container->get(ConfigInterface::class);
 
-        if (!$this->isEnabled($config)) {
+        if (!$config->getBool(ConfigKey::TELEMETRY_ENABLED)) {
             return;
         }
 
@@ -60,13 +58,19 @@ final class TelemetryServiceProvider extends AbstractServiceProvider implements 
 
                 return new TelemetryLogHandler($collector);
             })->setShared(true);
+
+            if ($container->has(LogHandlerRegistry::class)) {
+                /** @var LogHandlerRegistry $registry */
+                $registry = $container->get(LogHandlerRegistry::class);
+                $registry->add(TelemetryLogHandler::class);
+            }
         }
 
         if (!$config->getBool(ConfigKey::EVENTS_ENABLED)) {
             return;
         }
 
-        $subscriberClasses = EventSubscriberCollector::collect($config);
+        $subscriberClasses = $this->subscriberClasses($config);
 
         foreach ($subscriberClasses as $subscriberClass) {
             $container->add($subscriberClass, function() use ($container, $subscriberClass): ListenerSubscriber {
@@ -80,15 +84,14 @@ final class TelemetryServiceProvider extends AbstractServiceProvider implements 
         $container->addServiceProvider(new EventServiceProvider($subscriberClasses));
     }
 
-    private function isEnabled(ConfigInterface $config): bool
+    /**
+     * @return list<class-string<ListenerSubscriber>>
+     */
+    private function subscriberClasses(ConfigInterface $config): array
     {
-        if (!$config->getBool(ConfigKey::TELEMETRY_ENABLED)) {
-            return false;
-        }
+        /** @var list<class-string<ListenerSubscriber>> $extra */
+        $extra = $config->get(ConfigKey::EVENTS_SUBSCRIBERS) ?? [];
 
-        /** @var array<class-string, class-string> $components */
-        $components = $config->get(ConfigKey::COMPONENTS) ?? [];
-
-        return isset($components[TelemetryComponent::class]);
+        return array_values(array_unique([...self::SUBSCRIBERS, ...$extra]));
     }
 }
