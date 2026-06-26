@@ -14,7 +14,7 @@ return [
         'collation' => 'utf8mb4_unicode_ci',
 
         'log_enabled' => false,
-        'log_path' => 'query',
+        'log_path' => 'query.log',
         'log_max_files' => 7,
     ],
 ];

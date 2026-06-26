@@ -28,6 +28,7 @@ use Concept\Extensions\SessionSymfony\SessionServiceProvider;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
+use InvalidArgumentException;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 use Psr\Container\ContainerInterface;
@@ -44,9 +45,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private const string CACHE_VIEWS_DIR = 'views';
 
     private const string LOG_APP_FILE = 'app.log';
-    private const string LOG_FILE = 'query';
-
-    private const string STORAGE_SESSIONS_DIR = 'sessions';
+    private const string LOG_QUERY_FILE = 'query.log';
 
     private const string DEFAULT_MIGRATIONS_TABLE = 'migrations';
 
@@ -118,7 +117,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new DatabaseEloquentServiceProvider(
             connection: $this->getConnectionOptions($config),
             logEnabled: $config->getBool(ConfigKey::DB_LOG_ENABLED),
-            logPath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::DB_LOG_PATH, self::LOG_FILE)),
+            logPath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::DB_LOG_PATH, self::LOG_QUERY_FILE)),
             logMaxFiles: $config->getInt(ConfigKey::DB_LOG_MAX_FILES, 7),
             migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
             migrationPaths: $this->relativeToAbsolutePath($pathManager, $migrationPaths),
@@ -238,19 +237,20 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     private function getSessionHandler(ConfigInterface $config, PathManager $pathManager): SessionHandlerInterface
     {
-        $path = $config->get(ConfigKey::SESSION_FILE_PATH);
-
-        if ($path === null) {
-            return new NativeFileSessionHandler($pathManager->get(PathName::STORAGE, self::STORAGE_SESSIONS_DIR));
-        }
-
-        if (!is_string($path)) {
-            throw new \InvalidArgumentException(sprintf(
+        $sessionFilePath = $config->get(ConfigKey::SESSION_FILE_PATH);
+        if (!is_string($sessionFilePath) && !is_null($sessionFilePath)) {
+            throw new InvalidArgumentException(sprintf(
                 'Session file path must be a string or null, %s given.',
-                get_debug_type($path),
+                get_debug_type($sessionFilePath),
             ));
         }
 
-        return new NativeFileSessionHandler($path !== '' ? $path : null);
+        if (empty($sessionFilePath)) {
+            return new NativeFileSessionHandler();
+        }
+
+        $sessionFilePath = $pathManager->get(PathName::STORAGE, $sessionFilePath);
+
+        return new NativeFileSessionHandler($sessionFilePath);
     }
 }
