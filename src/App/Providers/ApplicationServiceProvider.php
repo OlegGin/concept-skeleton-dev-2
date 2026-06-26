@@ -40,6 +40,8 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHa
 
 final class ApplicationServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    private const string INCORRECT_SESSION_FILE_PATH = 'Session file path must be a string or null, %s given.';
+
     private const string BOOTSTRAP_PATHS_FILE = 'bootstrap/paths.php';
     private const string DEFAULT_CONFIG_DIR = 'config';
 
@@ -258,10 +260,8 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
         $sessionFilePath = $config->get(ConfigKey::SESSION_FILE_PATH);
         if (!is_string($sessionFilePath) && !is_null($sessionFilePath)) {
-            throw new InvalidArgumentException(sprintf(
-                'Session file path must be a string or null, %s given.',
-                get_debug_type($sessionFilePath),
-            ));
+            $errorMessage = sprintf(self::INCORRECT_SESSION_FILE_PATH, get_debug_type($sessionFilePath));
+            throw new InvalidArgumentException($errorMessage);
         }
 
         if (empty($sessionFilePath)) {
