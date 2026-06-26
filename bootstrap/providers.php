@@ -18,8 +18,8 @@ return function(string $root, array $paths): array {
             configDir: $paths[PathName::CONFIG] ?? 'config',
             pathMap: $paths,
         ),
-        fn() => new ApplicationRuntimeServiceProvider(),
         fn() => new ApplicationServiceProvider($root),
+        fn() => new ApplicationRuntimeServiceProvider(),
         fn() => new ApplicationComponentsServiceProvider($root),
     ];
 };
