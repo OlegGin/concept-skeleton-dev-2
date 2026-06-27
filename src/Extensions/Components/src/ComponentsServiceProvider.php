@@ -10,6 +10,7 @@ use Concept\Extensions\DatabaseEloquent\Registries\SeederRegistry;
 use Concept\Extensions\View\Registry\ViewRegistry;
 use Concept\Extensions\Components\Events\ComponentRegistered;
 use Concept\Extensions\Components\Events\ComponentRoutesRegistered;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
 use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use InvalidArgumentException;
 use League\Container\ServiceProvider\AbstractServiceProvider;
@@ -20,6 +21,7 @@ use Symfony\Component\Console\Application as ConsoleApplication;
 
 final class ComponentsServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    private const string EXTENSION_NAME = 'components';
     private const string ERR_ROUTES_FILE_NOT_FOUND = 'Component routes file not found: %s';
 
     /**
@@ -40,6 +42,11 @@ final class ComponentsServiceProvider extends AbstractServiceProvider implements
         $container = $this->getContainer();
 
         $container->add(ComponentRegistry::class, function() use ($container): ComponentRegistry {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: ComponentRegistry::class,
+            ));
+
             return new ComponentRegistry($container, $this->componentClasses);
         })->setShared(true);
     }

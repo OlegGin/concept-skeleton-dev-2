@@ -2,6 +2,7 @@
 
 namespace Concept\Extensions\ViewTwig;
 
+use Concept\Extensions\Event\Events\ExtensionAwakened;
 use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\View\Contracts\ViewInterface;
 use Concept\Extensions\View\Registry\ViewRegistry;
@@ -18,6 +19,7 @@ use Twig\Loader\FilesystemLoader;
 
 final class TwigViewServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'view-twig';
     public const string DEFAULT_EXTENSION = '.twig';
 
     public function __construct(
@@ -50,6 +52,11 @@ final class TwigViewServiceProvider extends AbstractServiceProvider
         })->setShared(true);
 
         $container->add(ViewInterface::class, function() use ($container): TwigView {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: ViewInterface::class,
+            ));
+
             $loader = new FilesystemLoader($this->viewsPath);
             $twig = new Environment($loader, [
                 'cache' => $this->debug ? false : $this->cacheDir,

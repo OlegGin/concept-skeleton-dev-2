@@ -2,6 +2,8 @@
 
 namespace Concept\Extensions\SessionSymfony;
 
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;
 use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
@@ -10,6 +12,8 @@ use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 final class SessionServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'session-symfony';
+
     /**
      * @param array<string, mixed> $sessionOptions
      */
@@ -30,7 +34,12 @@ final class SessionServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(SessionInterface::class, function(): Session {
+        $container->add(SessionInterface::class, function() use ($container): Session {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: SessionInterface::class,
+            ));
+
             $storage = new NativeSessionStorage($this->sessionOptions, $this->handler);
             $session = new Session($storage, flashes: new FlashBag());
 

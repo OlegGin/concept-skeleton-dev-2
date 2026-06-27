@@ -13,12 +13,22 @@
         "monolog/monolog": "^3",
         "psr/log": "^3",
         "league/container": "^5.1",
-        "php-concept/extension-data-masker": "@dev"
+        "php-concept/extension-data-masker": "@dev",
+        "php-concept/extension-event": "@dev",
+        "league/container": "^5.1",
+        "psr/event-dispatcher": "^1.0"
     },
     "repositories": [
         {
             "type": "path",
             "url": "../DataMasker",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../Event",
             "options": {
                 "symlink": true
             }

@@ -12,8 +12,10 @@
         "php": "^8.4",
         "php-concept/core-2": "@dev",
         "php-concept/extension-view": "@dev",
+        "php-concept/extension-event": "@dev",
         "league/plates": "^3.6",
-        "league/container": "^5.1"
+        "league/container": "^5.1",
+        "psr/event-dispatcher": "^1.0"
     },
     "repositories": [
         {
@@ -26,6 +28,13 @@
         {
             "type": "path",
             "url": "../View",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../Event",
             "options": {
                 "symlink": true
             }

@@ -2,6 +2,8 @@
 
 namespace Concept\Extensions\ConsoleSymfony;
 
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Command\Command;
@@ -9,6 +11,7 @@ use Throwable;
 
 class ConsoleSymfonyServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'console-symfony';
     private const string DEFAULT_NAME = 'Console';
     private const string DEFAULT_VERSION = '1.0.0';
 
@@ -31,6 +34,11 @@ class ConsoleSymfonyServiceProvider extends AbstractServiceProvider
         $container = $this->getContainer();
 
         $container->add(ConsoleApplication::class, function() use ($container): ConsoleApplication {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: ConsoleApplication::class,
+            ));
+
             $consoleApplication = new ConsoleApplication(
                 $this->appName !== '' ? $this->appName : self::DEFAULT_NAME,
                 $this->appVersion !== '' ? $this->appVersion : self::DEFAULT_VERSION,

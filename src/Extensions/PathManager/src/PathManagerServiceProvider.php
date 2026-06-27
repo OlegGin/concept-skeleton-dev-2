@@ -2,11 +2,14 @@
 
 namespace Concept\Extensions\PathManager;
 
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use League\Container\ServiceProvider\BootableServiceProviderInterface;
 
-final class PathManagerServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
+final class PathManagerServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'path-manager';
+
     /**
      * @param array<string, string> $pathMap
      */
@@ -22,12 +25,15 @@ final class PathManagerServiceProvider extends AbstractServiceProvider implement
 
     public function register(): void
     {
-    }
+        $this->getContainer()->add(PathManager::class, function(): PathManager {
+            $container = $this->getContainer();
 
-    public function boot(): void
-    {
-        $this->getContainer()
-            ->add(PathManager::class, new PathManager($this->root, $this->pathMap))
-            ->setShared(true);
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: PathManager::class,
+            ));
+
+            return new PathManager($this->root, $this->pathMap);
+        })->setShared(true);
     }
 }

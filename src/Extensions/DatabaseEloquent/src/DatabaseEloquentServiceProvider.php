@@ -3,6 +3,7 @@
 namespace Concept\Extensions\DatabaseEloquent;
 
 use Concept\Extensions\DatabaseEloquent\Events\DatabaseQueryExecuted;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
 use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\DatabaseEloquent\Commands\DbMigrateCommand;
@@ -29,6 +30,7 @@ use Psr\Container\ContainerInterface;
 
 class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    private const string EXTENSION_NAME = 'database-eloquent';
     private const string DEFAULT_TABLE_NAME = 'migrations';
 
     /**
@@ -184,6 +186,11 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
         });
 
         $container->add(CapsuleManager::class, $capsuleManager);
+
+        EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+            extensionName: self::EXTENSION_NAME,
+            anchorId: CapsuleManager::class,
+        ));
     }
 
     private function logQueries(ContainerInterface $container, QueryExecuted $query): void

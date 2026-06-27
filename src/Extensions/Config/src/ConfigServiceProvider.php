@@ -3,6 +3,8 @@
 namespace Concept\Extensions\Config;
 
 use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Dotenv\Dotenv;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
@@ -10,6 +12,7 @@ use Noodlehaus\Config as NhConfig;
 
 final class ConfigServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    private const string EXTENSION_NAME = 'config';
     private const string APP_ENV_KEY = 'APP_ENV';
     private const string DEFAULT_CONFIG_DIR = 'config';
 
@@ -30,6 +33,7 @@ final class ConfigServiceProvider extends AbstractServiceProvider implements Boo
     public function boot(): void
     {
         $container = $this->getContainer();
+        $dispatcher = EventDispatcherResolver::optional($container);
 
         $nhConfig = new NhConfig($this->rootPath($this->configDir));
         $envData = $this->loadDotEnv($this->root);
@@ -39,6 +43,11 @@ final class ConfigServiceProvider extends AbstractServiceProvider implements Boo
         $config = new Config($nhConfig);
 
         $container->add(ConfigInterface::class, $config)->setShared(true);
+
+        $dispatcher?->dispatch(new ExtensionAwakened(
+            extensionName: self::EXTENSION_NAME,
+            anchorId: ConfigInterface::class,
+        ));
     }
 
     private function rootPath(string $path = ''): string

@@ -2,12 +2,16 @@
 
 namespace Concept\Extensions\FormRequest;
 
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\FormRequest\Contracts\FormRequestFactoryInterface;
 use Concept\Extensions\FormRequest\Factory\FormRequestFactory;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 final class FormRequestServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'form-request';
+
     public function provides(string $id): bool
     {
         return $id === FormRequestFactoryInterface::class;
@@ -17,7 +21,13 @@ final class FormRequestServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(FormRequestFactoryInterface::class, fn() => new FormRequestFactory($container))
-            ->setShared(true);
+        $container->add(FormRequestFactoryInterface::class, function() use ($container): FormRequestFactory {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: FormRequestFactoryInterface::class,
+            ));
+
+            return new FormRequestFactory($container);
+        })->setShared(true);
     }
 }

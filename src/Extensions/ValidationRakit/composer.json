@@ -12,8 +12,10 @@
         "php": "^8.4",
         "php-concept/core-2": "@dev",
         "php-concept/extension-http": "@dev",
+        "php-concept/extension-event": "@dev",
         "magewirephp/validation": "^1.0",
-        "league/container": "^5.1"
+        "league/container": "^5.1",
+        "psr/event-dispatcher": "^1.0"
     },
     "repositories": [
         {
@@ -26,6 +28,13 @@
         {
             "type": "path",
             "url": "../Http",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../Event",
             "options": {
                 "symlink": true
             }

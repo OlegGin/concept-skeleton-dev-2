@@ -10,8 +10,19 @@
     },
     "require": {
         "php": "^8.4",
+        "php-concept/extension-event": "@dev",
         "hassankhan/config": "^3.2",
         "league/container": "^5.1",
+        "psr/event-dispatcher": "^1.0",
         "vlucas/phpdotenv": "^5.6"
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../Event",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
 }

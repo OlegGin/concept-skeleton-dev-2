@@ -3,6 +3,8 @@
 namespace Concept\Extensions\View;
 
 use Concept\Core\Http\Contracts\RequestContextInterface;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\View\Contracts\ViewInterface;
 use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
@@ -16,6 +18,8 @@ use League\Container\ServiceProvider\AbstractServiceProvider;
 
 final class ViewServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'view';
+
     /**
      * @param array<string, string> $paths
      * @param array<string, string> $contexts
@@ -40,7 +44,12 @@ final class ViewServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(ViewRegistry::class, function(): ViewRegistry {
+        $container->add(ViewRegistry::class, function() use ($container): ViewRegistry {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: ViewRegistry::class,
+            ));
+
             $viewPathRegistry = new ViewPathRegistry();
             $viewPathRegistry->append($this->paths);
 

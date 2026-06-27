@@ -3,10 +3,14 @@
 namespace Concept\Extensions\CastingValinor;
 
 use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 final class CastingServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'casting-valinor';
+
     /**
      * @param list<class-string> $transformerClasses
      */
@@ -25,7 +29,12 @@ final class CastingServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        $container->add(CasterInterface::class, function() {
+        $container->add(CasterInterface::class, function() use ($container): CasterInterface {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: CasterInterface::class,
+            ));
+
             return new Caster(
                 $this->cacheDirectory,
                 $this->transformerClasses,

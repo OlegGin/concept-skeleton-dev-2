@@ -6,6 +6,8 @@ use Concept\Extensions\ErrorHandlerWhoops\Handlers\EarlyBootstrapFallbackHandler
 use Concept\Extensions\ErrorHandlerWhoops\Handlers\ErrorLogHandler;
 use Concept\Extensions\ErrorHandlerWhoops\Handlers\PhpErrorLogHandler;
 use Concept\Extensions\ErrorHandlerWhoops\Handlers\ProductionErrorHandler;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\Http\Requests\RequestFormat;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
@@ -19,6 +21,8 @@ use Whoops\Run as Whoops;
 
 final class ErrorHandlerWhoopsServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    private const string EXTENSION_NAME = 'error-handler-whoops';
+
     public function __construct(
         private readonly string $root,
         private readonly bool $debug,
@@ -67,6 +71,11 @@ final class ErrorHandlerWhoopsServiceProvider extends AbstractServiceProvider im
         } catch (Throwable) {
             $this->restoreEarlyHandlers($container, $whoops);
         }
+
+        EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+            extensionName: self::EXTENSION_NAME,
+            anchorId: Whoops::class,
+        ));
     }
 
     private function registerRenderHandlers(ContainerInterface $container, Whoops $whoops): void

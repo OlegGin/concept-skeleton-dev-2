@@ -3,6 +3,8 @@
 namespace Concept\Extensions\ValidationRakit;
 
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Extensions\ValidationRakit\Contracts\ValidatorInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
@@ -12,6 +14,8 @@ use Monolog\Logger as Monolog;
 
 final class ValidationServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'validation-rakit';
+
     /**
      * @param array<string, class-string<RuleInterface>> $customRules
      */
@@ -50,7 +54,12 @@ final class ValidationServiceProvider extends AbstractServiceProvider
             return new ValidationLogger($this->logEnabled, $monolog, $masker);
         })->setShared(true);
 
-        $container->add(ValidatorInterface::class, function() use ($container) {
+        $container->add(ValidatorInterface::class, function() use ($container): ValidatorInterface {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: ValidatorInterface::class,
+            ));
+
             $validator = new Validator($container);
             $validator->addRules($this->customRules);
 

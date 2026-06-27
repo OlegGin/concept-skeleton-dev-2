@@ -4,11 +4,15 @@ namespace Concept\Extensions\DataMasker;
 
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Psr\Container\ContainerInterface;
 
 final class DataMaskerServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'data-masker';
+
     /**
      * @param array<string, string> $patterns
      * @param list<string> $keyPatterns
@@ -30,6 +34,11 @@ final class DataMaskerServiceProvider extends AbstractServiceProvider
         $container = $this->getContainer();
 
         $container->add(DataMaskerInterface::class, function() use ($container): DataMasker {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: DataMaskerInterface::class,
+            ));
+
             $masker = new DataMasker();
 
             if ($this->patterns !== [] || $this->keyPatterns !== []) {

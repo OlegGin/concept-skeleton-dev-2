@@ -5,6 +5,7 @@ namespace Concept\Extensions\Telemetry;
 final class TelemetryKey
 {
     public const string NAME = 'name';
+    public const string ANCHOR = 'anchor';
     public const string ROUTE = 'route';
     public const string HANDLER = 'handler';
     public const string VIEW = 'view';

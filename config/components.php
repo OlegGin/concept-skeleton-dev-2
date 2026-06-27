@@ -3,7 +3,6 @@
 use Concept\Components\Acl\AclComponent;
 use Concept\Components\AuthAdmin\AuthAdminComponent;
 use Concept\Components\SettingsManager\SettingsManagerComponent;
-use Concept\Components\Telemetry\TelemetryComponent;
 
 return [
     'components' => [

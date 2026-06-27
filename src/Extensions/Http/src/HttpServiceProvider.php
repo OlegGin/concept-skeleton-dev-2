@@ -3,6 +3,8 @@
 namespace Concept\Extensions\Http;
 
 use Concept\Core\Http\Contracts\RequestContextInterface;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\Http\Commands\RouteListCommand;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Contracts\UrlGeneratorInterface;
@@ -15,6 +17,8 @@ use League\Route\Router;
 
 final class HttpServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'http';
+
     public function provides(string $id): bool
     {
         return in_array($id, [
@@ -46,7 +50,12 @@ final class HttpServiceProvider extends AbstractServiceProvider
 
         $container->add(RequestFormat::class, fn() => new RequestFormat())->setShared(true);
 
-        $container->add(ResponseFactoryInterface::class, function() use ($container) {
+        $container->add(ResponseFactoryInterface::class, function() use ($container): ResponseFactory {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: ResponseFactoryInterface::class,
+            ));
+
             /** @var UrlGeneratorInterface $urlGenerator */
             $urlGenerator = $container->get(UrlGeneratorInterface::class);
             /** @var RequestContextInterface $requestContext */

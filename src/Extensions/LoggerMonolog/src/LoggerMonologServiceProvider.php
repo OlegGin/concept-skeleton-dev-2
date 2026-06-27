@@ -3,6 +3,8 @@
 namespace Concept\Extensions\LoggerMonolog;
 
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
@@ -15,6 +17,8 @@ use Throwable;
 
 final class LoggerMonologServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    private const string EXTENSION_NAME = 'logger-monolog';
+
     public function __construct(
         private readonly string $path,
         private readonly string $level,
@@ -32,6 +36,11 @@ final class LoggerMonologServiceProvider extends AbstractServiceProvider impleme
         $container = $this->getContainer();
 
         $container->add(LoggerInterface::class, function() use ($container): Logger {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: LoggerInterface::class,
+            ));
+
             $monolog = new Monolog($this->channel);
             $this->setup($monolog, $container);
 

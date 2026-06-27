@@ -2,6 +2,8 @@
 
 namespace Concept\Extensions\ViewPlates;
 
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\View\Contracts\ViewInterface;
 use Concept\Extensions\View\Registry\ViewRegistry;
 use League\Container\ServiceProvider\AbstractServiceProvider;
@@ -12,6 +14,7 @@ use Psr\Container\NotFoundExceptionInterface;
 
 final class PlatesViewServiceProvider extends AbstractServiceProvider
 {
+    private const string EXTENSION_NAME = 'view-plates';
     public const string DEFAULT_EXTENSION = '.php';
 
     public function __construct(
@@ -30,6 +33,11 @@ final class PlatesViewServiceProvider extends AbstractServiceProvider
         $container = $this->getContainer();
 
         $container->add(ViewInterface::class, function() use ($container): PlatesView {
+            EventDispatcherResolver::optional($container)?->dispatch(new ExtensionAwakened(
+                extensionName: self::EXTENSION_NAME,
+                anchorId: ViewInterface::class,
+            ));
+
             $engine = new Engine($this->viewsPath, ltrim($this->defaultExtension, '.'));
 
             /** @var ViewRegistry $viewRegistry */
