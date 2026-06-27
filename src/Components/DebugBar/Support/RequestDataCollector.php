@@ -6,7 +6,7 @@ use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use Concept\Extensions\Telemetry\Contracts\TelemetryItemInterface;
 use Concept\Extensions\Telemetry\TelemetryCollector;
-use Concept\Extensions\Telemetry\TelemetryEvent;
+use Concept\App\Telemetry\TelemetryEvent;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use Psr\Http\Message\ServerRequestInterface;

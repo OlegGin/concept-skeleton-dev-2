@@ -4,8 +4,8 @@ namespace Concept\App\Telemetry\Subscribers;
 
 use Concept\Extensions\FormRequest\Events\FormRequestValidated;
 use Concept\Extensions\Telemetry\TelemetryCollector;
-use Concept\Extensions\Telemetry\TelemetryEvent;
-use Concept\Extensions\Telemetry\TelemetryKey;
+use Concept\App\Telemetry\TelemetryEvent;
+use Concept\App\Telemetry\TelemetryKey;
 use League\Event\ListenerRegistry;
 use League\Event\ListenerSubscriber;
 

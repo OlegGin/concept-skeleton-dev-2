@@ -50,7 +50,7 @@ final class TelemetryCollector
 
     public function mark(string $telemetryEventName, string $name): void
     {
-        $id = $this->start($telemetryEventName, [TelemetryKey::NAME => $name]);
+        $id = $this->start($telemetryEventName, ['name' => $name]);
         $this->finish($telemetryEventName, $id);
     }
 

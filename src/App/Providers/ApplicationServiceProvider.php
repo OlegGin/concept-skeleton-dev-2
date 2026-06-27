@@ -11,6 +11,7 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
+use Concept\App\Telemetry\TelemetryEvent;
 use Concept\App\Telemetry\Subscribers\ComponentsTelemetrySubscriber;
 use Concept\App\Telemetry\Subscribers\DatabaseTelemetrySubscriber;
 use Concept\App\Telemetry\Subscribers\ExtensionsTelemetrySubscriber;
@@ -38,7 +39,6 @@ use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\PathManager\PathManagerServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
 use Concept\Extensions\Telemetry\Handlers\TelemetryLogHandler;
-use Concept\Extensions\Telemetry\Subscribers\TelemetrySubscriberFactory;
 use Concept\Extensions\Telemetry\TelemetryCollector;
 use Concept\Extensions\Telemetry\TelemetryServiceProvider as TelemetryExtensionServiceProvider;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
@@ -237,13 +237,9 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new EventServiceProvider($subscriberClasses));
     }
 
-    private function registerTelemetryLogHandler(ContainerInterface $container, ConfigInterface $config): void
+    private function registerTelemetryLogHandler(DefinitionContainerInterface $container, ConfigInterface $config): void
     {
         if (!$config->getBool(ConfigKey::TELEMETRY_ENABLED) || !$config->getBool(ConfigKey::TELEMETRY_LOGS)) {
-            return;
-        }
-
-        if (!$container instanceof Container) {
             return;
         }
 
@@ -251,7 +247,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             /** @var TelemetryCollector $collector */
             $collector = $container->get(TelemetryCollector::class);
 
-            return new TelemetryLogHandler($collector);
+            return new TelemetryLogHandler($collector, TelemetryEvent::LOG_RECORDED);
         })->setShared(true);
 
         if (!$container->has(LogHandlerRegistry::class)) {

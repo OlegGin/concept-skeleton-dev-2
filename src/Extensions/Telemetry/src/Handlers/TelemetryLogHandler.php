@@ -3,16 +3,19 @@
 namespace Concept\Extensions\Telemetry\Handlers;
 
 use Concept\Extensions\Telemetry\TelemetryCollector;
-use Concept\Extensions\Telemetry\TelemetryEvent;
-use Concept\Extensions\Telemetry\TelemetryKey;
 use Monolog\Handler\AbstractHandler;
 use Monolog\Level;
 use Monolog\LogRecord;
 
 final class TelemetryLogHandler extends AbstractHandler
 {
+    private const string CONTEXT_LEVEL = 'level';
+    private const string CONTEXT_MESSAGE = 'message';
+    private const string CONTEXT_CONTEXT = 'context';
+
     public function __construct(
         private readonly TelemetryCollector $collector,
+        private readonly string $eventName,
         int|string|Level $level = Level::Debug,
         bool $bubble = true,
     ) {
@@ -26,11 +29,11 @@ final class TelemetryLogHandler extends AbstractHandler
         }
 
         $this->collector->record(
-            TelemetryEvent::LOG_RECORDED,
+            $this->eventName,
             [
-                TelemetryKey::LEVEL => strtolower($record->level->getName()),
-                TelemetryKey::MESSAGE => $record->message,
-                TelemetryKey::CONTEXT => $record->context,
+                self::CONTEXT_LEVEL => strtolower($record->level->getName()),
+                self::CONTEXT_MESSAGE => $record->message,
+                self::CONTEXT_CONTEXT => $record->context,
             ],
         );
 

@@ -4,8 +4,8 @@ namespace Concept\Components\DebugBar\Support;
 
 use Concept\Extensions\Telemetry\Contracts\TelemetryItemInterface;
 use Concept\Extensions\Telemetry\TelemetryCollector;
-use Concept\Extensions\Telemetry\TelemetryEvent;
-use Concept\Extensions\Telemetry\TelemetryKey;
+use Concept\App\Telemetry\TelemetryEvent;
+use Concept\App\Telemetry\TelemetryKey;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 

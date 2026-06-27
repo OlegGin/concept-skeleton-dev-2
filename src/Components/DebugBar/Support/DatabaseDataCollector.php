@@ -3,7 +3,7 @@
 namespace Concept\Components\DebugBar\Support;
 
 use Concept\Extensions\Telemetry\TelemetryCollector;
-use Concept\Extensions\Telemetry\TelemetryEvent;
+use Concept\App\Telemetry\TelemetryEvent;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 
