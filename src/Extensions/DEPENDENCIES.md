@@ -33,7 +33,7 @@
 | **View** | `extension-view` | ✓ | Http | `psr/http-message` ^2.0 |
 | **ViewPlates** | `extension-view-plates` | ✓ | View | `league/plates` ^3.6 |
 | **ViewTwig** | `extension-view-twig` | ✓ | View, Event | `twig/twig` ^3.0, `symfony/console` ^7.2\|^8.0, `symfony/filesystem` ^7.2\|^8.0 |
-| **Web** | `extension-web` | — | Http, SessionSymfony | `psr/http-message` ^2.0, `psr/http-server-middleware` ^1.0 |
+| **PathManager** | `extension-path-manager` | — | — | — |
 
 ---
 
@@ -54,8 +54,6 @@ flowchart TD
     ViewTwig --> Event
     Csrf --> Http
     Csrf --> SessionSymfony
-    Web --> Http
-    Web --> SessionSymfony
     Json --> Http
     FormRequest --> CastingValinor
     FormRequest --> ValidationRakit
@@ -96,8 +94,8 @@ flowchart TD
 | `magewirephp/validation` | ValidationRakit | validation rules |
 | `monolog/monolog` | DatabaseEloquent, LoggerMonolog, Telemetry | query log / app log / telemetry log handler |
 | `psr/event-dispatcher` | DatabaseEloquent, Components, Event, FormRequest | PSR-14 contract |
-| `psr/http-message` | DatabaseEloquent, Csrf, ErrorHandlerWhoops, FormRequest, Json, View, Web | PSR-7 contract |
-| `psr/http-server-middleware` | Csrf, Json, Web | PSR-15 middleware |
+| `psr/http-message` | DatabaseEloquent, Csrf, ErrorHandlerWhoops, FormRequest, Json, View | PSR-7 contract |
+| `psr/http-server-middleware` | Csrf, Json | PSR-15 middleware |
 | `psr/log` | LoggerMonolog | PSR-3 contract |
 | `psr/container` | ErrorHandlerWhoops | PSR-11 contract |
 | `symfony/console` | DatabaseEloquent, Components, ConsoleSymfony, ViewTwig | CLI commands |

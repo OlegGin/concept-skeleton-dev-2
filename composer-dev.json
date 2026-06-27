@@ -80,13 +80,6 @@
         },
         {
             "type": "path",
-            "url": "src/Extensions/Web",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
             "url": "src/Extensions/DataMasker",
             "options": {
                 "symlink": true
@@ -129,7 +122,7 @@
         },
         {
             "type": "path",
-            "url": "src/Extensions/Path",
+            "url": "src/Extensions/PathManager",
             "options": {
                 "symlink": true
             }
@@ -185,14 +178,13 @@
         "php-concept/extension-session-symfony": "@dev",
         "php-concept/extension-csrf": "@dev",
         "php-concept/extension-json": "@dev",
-        "php-concept/extension-web": "@dev",
         "php-concept/extension-data-masker": "@dev",
         "php-concept/extension-logger-monolog": "@dev",
         "php-concept/extension-database-eloquent": "@dev",
         "php-concept/extension-console-symfony": "@dev",
         "php-concept/extension-error-handler-whoops": "@dev",
         "php-concept/extension-config": "@dev",
-        "php-concept/extension-path": "@dev",
+        "php-concept/extension-path-manager": "@dev",
         "php-concept/extension-components": "@dev",
         "php-concept/extension-event": "@dev",
         "php-concept/extension-telemetry": "@dev",

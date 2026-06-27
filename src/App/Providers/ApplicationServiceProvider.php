@@ -13,7 +13,7 @@ use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\Extensions\Config\ConfigServiceProvider;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
-use Concept\Extensions\Path\PathManager;
+use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
@@ -25,7 +25,7 @@ use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
-use Concept\Extensions\Path\PathServiceProvider;
+use Concept\Extensions\PathManager\PathManagerServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
@@ -80,7 +80,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
         $container = $this->getContainer();
 
-        $container->addServiceProvider(new PathServiceProvider(
+        $container->addServiceProvider(new PathManagerServiceProvider(
             root: $this->root,
             pathMap: $this->pathMap,
         ));

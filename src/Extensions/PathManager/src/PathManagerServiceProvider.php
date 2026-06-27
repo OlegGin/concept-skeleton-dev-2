@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Extensions\Path;
+namespace Concept\Extensions\PathManager;
 
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 
-final class PathServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
+final class PathManagerServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
     /**
      * @param array<string, string> $pathMap

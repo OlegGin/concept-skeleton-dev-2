@@ -7,7 +7,7 @@ use Concept\Components\SettingsManager\Extensions\TwigExtension;
 use Concept\Components\SettingsManager\Providers\SettingsManagerServiceProvider;
 use Concept\App\Foundation\PathName;
 use Concept\Extensions\Components\Contracts\ComponentInterface;
-use Concept\Extensions\Path\PathManager;
+use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\DatabaseEloquent\Contracts\SeederInterface;
 
 class SettingsManagerComponent implements ComponentInterface

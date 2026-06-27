@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "93a2a01bbcb42fd1816b75ab4ec36f2c",
+    "content-hash": "719d5c39c9fb7ad4f3c40a94ac629c14",
     "packages": [
         {
             "name": "brick/math",
@@ -2569,12 +2569,12 @@
             }
         },
         {
-            "name": "php-concept/extension-path",
+            "name": "php-concept/extension-path-manager",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "src/Extensions/Path",
-                "reference": "3c097a284c2b69608029e3fcc021fc97cbaa0c77"
+                "url": "src/Extensions/PathManager",
+                "reference": "c4efaeaf46035dbf41d178d7d9c2fd28ef7487a2"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2583,13 +2583,13 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Concept\\Extensions\\Path\\": "src/"
+                    "Concept\\Extensions\\PathManager\\": "src/"
                 }
             },
             "license": [
                 "MIT"
             ],
-            "description": "Concept Path extension — project root and named path map resolution",
+            "description": "Concept PathManager extension — project root and named path map resolution",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -2773,37 +2773,6 @@
                 "MIT"
             ],
             "description": "Concept View Twig engine — TwigView implementation",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
-        {
-            "name": "php-concept/extension-web",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "src/Extensions/Web",
-                "reference": "76f5591d9f1237107600e392eb177353e2a4f139"
-            },
-            "require": {
-                "league/container": "^5.1",
-                "php": "^8.4",
-                "php-concept/extension-http": "@dev",
-                "php-concept/extension-session-symfony": "@dev",
-                "psr/http-message": "^2.0",
-                "psr/http-server-middleware": "^1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Concept\\Extensions\\Web\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "Concept Web extension — safe back URL and web navigation middleware",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -5431,14 +5400,13 @@
         "php-concept/extension-session-symfony": 20,
         "php-concept/extension-csrf": 20,
         "php-concept/extension-json": 20,
-        "php-concept/extension-web": 20,
         "php-concept/extension-data-masker": 20,
         "php-concept/extension-logger-monolog": 20,
         "php-concept/extension-database-eloquent": 20,
         "php-concept/extension-console-symfony": 20,
         "php-concept/extension-error-handler-whoops": 20,
         "php-concept/extension-config": 20,
-        "php-concept/extension-path": 20,
+        "php-concept/extension-path-manager": 20,
         "php-concept/extension-components": 20,
         "php-concept/extension-event": 20,
         "php-concept/extension-telemetry": 20

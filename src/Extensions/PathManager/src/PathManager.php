@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Extensions\Path;
+namespace Concept\Extensions\PathManager;
 
 use InvalidArgumentException;
 use RuntimeException;

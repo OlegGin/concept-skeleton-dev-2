@@ -5,7 +5,7 @@ namespace Concept\Components\DebugBar;
 use Concept\Components\DebugBar\Providers\DebugBarServiceProvider;
 use Concept\App\Foundation\PathName;
 use Concept\Extensions\Components\Contracts\ComponentInterface;
-use Concept\Extensions\Path\PathManager;
+use Concept\Extensions\PathManager\PathManager;
 
 final class DebugBarComponent implements ComponentInterface
 {
