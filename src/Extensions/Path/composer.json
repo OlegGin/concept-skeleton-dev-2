@@ -1,0 +1,15 @@
+{
+    "name": "php-concept/extension-path",
+    "description": "Concept Path extension — project root and named path map resolution",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Extensions\\Path\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "league/container": "^5.1"
+    }
+}

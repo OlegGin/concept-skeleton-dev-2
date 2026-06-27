@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c59c4cbb2b8d4d3e1c496289f609ae28",
+    "content-hash": "93a2a01bbcb42fd1816b75ab4ec36f2c",
     "packages": [
         {
             "name": "brick/math",
@@ -2121,7 +2121,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/www/concept-core-2",
-                "reference": "fc01ffd4936b2aaa5eddf5cf3aa862c5d86015b9"
+                "reference": "c62f12102d7ddccfee749984e57bead74dc2b788"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
@@ -2194,7 +2194,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/Components",
-                "reference": "f3b0a087dab34923e0f7a1cc2918039d9dc97f7a"
+                "reference": "110f1fd3ea7bbbd29f7a7af81b5437db9ac2f2e3"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2203,6 +2203,8 @@
                 "php-concept/core-2": "@dev",
                 "php-concept/extension-config": "@dev",
                 "php-concept/extension-database-eloquent": "@dev",
+                "php-concept/extension-event": "@dev",
+                "php-concept/extension-path": "@dev",
                 "php-concept/extension-view": "@dev",
                 "psr/event-dispatcher": "^1.0",
                 "symfony/console": "^7.2",
@@ -2229,7 +2231,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/Config",
-                "reference": "4f04830be4f3d52b71fc14a1b6b3e856f45a8e29"
+                "reference": "46f98503d669ef688688c4069e7450a7c7a09cc9"
             },
             "require": {
                 "hassankhan/config": "^3.2",
@@ -2246,7 +2248,7 @@
             "license": [
                 "MIT"
             ],
-            "description": "Concept Config extension — PHP config files, .env merge, PathManager",
+            "description": "Concept Config extension — PHP config files and .env merge",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -2347,7 +2349,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/DatabaseEloquent",
-                "reference": "5917b8c29f5a6d07f46b1f4a75f21328bd035dcd"
+                "reference": "93177d895db405919dbf9b13027b5bb0a5955547"
             },
             "require": {
                 "illuminate/container": "^13.1",
@@ -2360,6 +2362,7 @@
                 "php": "^8.4",
                 "php-concept/core-2": "@dev",
                 "php-concept/extension-data-masker": "@dev",
+                "php-concept/extension-event": "@dev",
                 "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0",
                 "symfony/console": "^7.2|^8.0"
@@ -2449,7 +2452,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/FormRequest",
-                "reference": "a10a8cb37b248cc54d0ff38f3d05e2e505c43aa8"
+                "reference": "397f20bbb610586aab65c46ba46f533a189d8952"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2457,7 +2460,9 @@
                 "php-concept/core-2": "@dev",
                 "php-concept/extension-casting-valinor": "@dev",
                 "php-concept/extension-csrf": "@dev",
+                "php-concept/extension-event": "@dev",
                 "php-concept/extension-validation-rakit": "@dev",
+                "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0"
             },
             "type": "library",
@@ -2560,6 +2565,33 @@
                 "MIT"
             ],
             "description": "Concept Logger extension — Monolog rotating file logging with optional data masking",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "php-concept/extension-path",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "src/Extensions/Path",
+                "reference": "3c097a284c2b69608029e3fcc021fc97cbaa0c77"
+            },
+            "require": {
+                "league/container": "^5.1",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\Path\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept Path extension — project root and named path map resolution",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -2721,15 +2753,16 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/ViewTwig",
-                "reference": "b579fda4bd01c3a589c69854941929f62da73cba"
+                "reference": "13568a191d8a0d58f064d16c95d030cf9b733dd7"
             },
             "require": {
-                "illuminate/filesystem": "^13.1",
                 "league/container": "^5.1",
                 "php": "^8.4",
                 "php-concept/core-2": "@dev",
+                "php-concept/extension-event": "@dev",
                 "php-concept/extension-view": "@dev",
                 "symfony/console": "^7.2|^8.0",
+                "symfony/filesystem": "^7.2|^8.0",
                 "twig/twig": "^3.0"
             },
             "type": "library",
@@ -5407,6 +5440,7 @@
         "php-concept/extension-console-symfony": 20,
         "php-concept/extension-error-handler-whoops": 20,
         "php-concept/extension-config": 20,
+        "php-concept/extension-path": 20,
         "php-concept/extension-components": 20,
         "php-concept/extension-event": 20,
         "php-concept/extension-telemetry": 20

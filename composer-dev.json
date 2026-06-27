@@ -129,6 +129,13 @@
         },
         {
             "type": "path",
+            "url": "src/Extensions/Path",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
             "url": "src/Extensions/Components",
             "options": {
                 "symlink": true
@@ -185,6 +192,7 @@
         "php-concept/extension-console-symfony": "@dev",
         "php-concept/extension-error-handler-whoops": "@dev",
         "php-concept/extension-config": "@dev",
+        "php-concept/extension-path": "@dev",
         "php-concept/extension-components": "@dev",
         "php-concept/extension-event": "@dev",
         "php-concept/extension-telemetry": "@dev",

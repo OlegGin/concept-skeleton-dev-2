@@ -12,7 +12,7 @@ use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolve
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
-use Concept\Extensions\Config\Foundation\PathManager;
+use Concept\Extensions\Path\PathManager;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;

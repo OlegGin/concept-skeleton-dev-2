@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Extensions\Config\Foundation;
+namespace Concept\Extensions\Path;
 
 use InvalidArgumentException;
 use RuntimeException;
@@ -18,7 +18,7 @@ final class PathManager
      */
     public function __construct(
         private readonly string $rootPath,
-        private readonly array $pathMap,
+        private readonly array $pathMap = [],
     ) {}
 
     public function root(string $path = ''): string

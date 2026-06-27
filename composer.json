@@ -129,6 +129,13 @@
         },
         {
             "type": "path",
+            "url": "src/Extensions/Path",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
             "url": "src/Extensions/Components",
             "options": {
                 "symlink": true
@@ -171,6 +178,7 @@
         "php-concept/extension-console-symfony": "@dev",
         "php-concept/extension-error-handler-whoops": "@dev",
         "php-concept/extension-config": "@dev",
+        "php-concept/extension-path": "@dev",
         "php-concept/extension-components": "@dev",
         "laminas/laminas-permissions-acl": "^2.18",
         "vlucas/phpdotenv": "^5.6"

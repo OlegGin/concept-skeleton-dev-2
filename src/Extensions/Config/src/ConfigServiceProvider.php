@@ -3,7 +3,6 @@
 namespace Concept\Extensions\Config;
 
 use Concept\Extensions\Config\Contracts\ConfigInterface;
-use Concept\Extensions\Config\Foundation\PathManager;
 use Dotenv\Dotenv;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
@@ -12,19 +11,16 @@ use Noodlehaus\Config as NhConfig;
 final class ConfigServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
     private const string APP_ENV_KEY = 'APP_ENV';
+    private const string DEFAULT_CONFIG_DIR = 'config';
 
-    /**
-     * @param array<string, string> $pathMap
-     */
     public function __construct(
         private readonly string $root,
-        private readonly string $configDir,
-        private readonly array $pathMap,
+        private readonly string $configDir = self::DEFAULT_CONFIG_DIR,
     ) {}
 
     public function provides(string $id): bool
     {
-        return in_array($id, [ConfigInterface::class, PathManager::class], true);
+        return $id === ConfigInterface::class;
     }
 
     public function register(): void
@@ -35,17 +31,23 @@ final class ConfigServiceProvider extends AbstractServiceProvider implements Boo
     {
         $container = $this->getContainer();
 
-        $pathManager = new PathManager($this->root, $this->pathMap);
-        $container->add(PathManager::class, $pathManager)->setShared(true);
-
-        $nhConfig = new NhConfig($pathManager->root($this->configDir));
-        $envData = $this->loadDotEnv($pathManager->root());
-        $this->loadOverrideConfig($nhConfig, $envData, $pathManager);
+        $nhConfig = new NhConfig($this->rootPath($this->configDir));
+        $envData = $this->loadDotEnv($this->root);
+        $this->loadOverrideConfig($nhConfig, $envData);
         $this->mergeEnvData($nhConfig, $envData);
 
         $config = new Config($nhConfig);
 
         $container->add(ConfigInterface::class, $config)->setShared(true);
+    }
+
+    private function rootPath(string $path = ''): string
+    {
+        if ($path === '') {
+            return $this->root;
+        }
+
+        return $this->root . '/' . ltrim($path, '/');
     }
 
     /**
@@ -61,10 +63,10 @@ final class ConfigServiceProvider extends AbstractServiceProvider implements Boo
     /**
      * @param array<string, string|null> $envData
      */
-    private function loadOverrideConfig(NhConfig $nhConfig, array $envData, PathManager $pathManager): void
+    private function loadOverrideConfig(NhConfig $nhConfig, array $envData): void
     {
         $env = $envData[self::APP_ENV_KEY] ?? '';
-        $overrideConfigPath = $pathManager->root($this->configDir . '/' . $env);
+        $overrideConfigPath = $this->rootPath($this->configDir . '/' . $env);
         if (is_dir($overrideConfigPath)) {
             $overrideConfig = new NhConfig($overrideConfigPath);
             $nhConfig->merge($overrideConfig);
