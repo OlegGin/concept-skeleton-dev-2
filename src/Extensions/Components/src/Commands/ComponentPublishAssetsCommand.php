@@ -3,7 +3,6 @@
 namespace Concept\Extensions\Components\Commands;
 
 use Concept\Extensions\Components\ComponentRegistry;
-use Concept\Extensions\Config\Foundation\PathManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,7 +24,7 @@ final class ComponentPublishAssetsCommand extends Command
     private const string MSG_SUCCESS = 'All component assets published successfully.';
 
     public function __construct(
-        private readonly PathManager $pathManager,
+        private readonly string $root,
         private readonly ComponentRegistry $registry,
     ) {
         parent::__construct();
@@ -52,8 +51,8 @@ final class ComponentPublishAssetsCommand extends Command
 
         $errors = 0;
         foreach ($assets as $source => $target) {
-            $sourcePath = $this->pathManager->root($source);
-            $targetPath = $this->pathManager->root($target);
+            $sourcePath = $this->rootPath($source);
+            $targetPath = $this->rootPath($target);
 
             if (!$filesystem->exists($sourcePath)) {
                 $io->error(sprintf(self::MSG_SOURCE_NOT_FOUND, $sourcePath));
@@ -85,5 +84,10 @@ final class ComponentPublishAssetsCommand extends Command
         $io->success(self::MSG_SUCCESS);
 
         return Command::SUCCESS;
+    }
+
+    private function rootPath(string $path): string
+    {
+        return rtrim($this->root, '/') . '/' . ltrim($path, '/');
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Concept\Extensions\Components;
 
+use Concept\Extensions\Components\Commands\ComponentListCommand;
+use Concept\Extensions\Components\Commands\ComponentPublishAssetsCommand;
 use Concept\Extensions\Components\Contracts\ComponentInterface;
 use Concept\Extensions\DatabaseEloquent\Registries\MigrationRegistry;
 use Concept\Extensions\DatabaseEloquent\Registries\SeederRegistry;
@@ -98,6 +100,9 @@ final class ComponentsServiceProvider extends AbstractServiceProvider implements
         $container = $this->getContainer();
         /** @var ConsoleApplication $consoleApplication */
         $consoleApplication = $container->get(ConsoleApplication::class);
+
+        $consoleApplication->addCommand(new ComponentListCommand($registry));
+        $consoleApplication->addCommand(new ComponentPublishAssetsCommand($this->root, $registry));
 
         foreach ($registry->commands() as $commandClass) {
             /** @var callable $command */
