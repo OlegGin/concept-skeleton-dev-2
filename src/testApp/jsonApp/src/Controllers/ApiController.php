@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JsonApp\Controllers;
+namespace Concept\testApp\jsonApp\src\Controllers;
 
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;

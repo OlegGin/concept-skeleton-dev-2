@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JsonApp\Providers;
+namespace Concept\testApp\jsonApp\src\Providers;
 
 use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
 use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
@@ -12,8 +12,8 @@ use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
-use JsonApp\Foundation\ConfigKey;
-use JsonApp\Foundation\PathName;
+use Concept\testApp\jsonApp\src\Foundation\ConfigKey;
+use Concept\testApp\jsonApp\src\Foundation\PathName;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 
@@ -42,7 +42,7 @@ final class JsonAppServiceProvider extends AbstractServiceProvider implements Bo
 
         $container->addServiceProvider(new ConfigServiceProvider(
             root: $this->root,
-            configDir: $paths[PathName::CONFIG] ?? 'config',
+            configDir: $this->paths[PathName::CONFIG] ?? 'config',
             pathMap: $this->paths,
         ));
 

@@ -3,7 +3,7 @@
 use Concept\Core\App;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 
-require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
+require_once dirname(__DIR__, 4) . '/vendor/autoload.php';
 
 /** @var App $app */
 $app = require dirname(__DIR__) . '/bootstrap/app.php';

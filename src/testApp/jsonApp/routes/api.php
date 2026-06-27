@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use JsonApp\Controllers\ApiController;
+use Concept\testApp\jsonApp\src\Controllers\ApiController;
 use Concept\Extensions\Json\Middleware\ForceJsonResponseMiddleware;
 use Concept\Extensions\Json\Middleware\ParseJsonBodyMiddleware;
 use League\Route\RouteGroup;
