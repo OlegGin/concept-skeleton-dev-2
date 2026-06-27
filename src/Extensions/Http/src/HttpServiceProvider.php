@@ -3,6 +3,7 @@
 namespace Concept\Extensions\Http;
 
 use Concept\Core\Http\Contracts\RequestContextInterface;
+use Concept\Extensions\Http\Commands\RouteListCommand;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Contracts\UrlGeneratorInterface;
 use Concept\Extensions\Http\Requests\RequestFormat;
@@ -21,6 +22,7 @@ final class HttpServiceProvider extends AbstractServiceProvider
             RouteDescriptor::class,
             RequestFormat::class,
             ResponseFactoryInterface::class,
+            RouteListCommand::class,
         ], true);
     }
 
@@ -51,6 +53,13 @@ final class HttpServiceProvider extends AbstractServiceProvider
             $requestContext = $container->get(RequestContextInterface::class);
 
             return new ResponseFactory($urlGenerator, $requestContext);
+        })->setShared(true);
+
+        $container->add(RouteListCommand::class, function() use ($container): RouteListCommand {
+            /** @var RouteDescriptor $routeDescriptor */
+            $routeDescriptor = $container->get(RouteDescriptor::class);
+
+            return new RouteListCommand($routeDescriptor);
         })->setShared(true);
     }
 }

@@ -17,14 +17,14 @@
 | **CastingValinor** | `extension-casting-valinor` | ✓ | — | `cuyz/valinor` ^2.0 |
 | **Components** | `extension-components` | ✓ | Config, DatabaseEloquent, View, Event | `league/route` ^6.2, `symfony/console` ^7.2, `symfony/filesystem` ^7.2, `psr/event-dispatcher` ^1.0 |
 | **Config** | `extension-config` | — | — | `hassankhan/config` ^3.2, `vlucas/phpdotenv` ^5.6 |
-| **ConsoleSymfony** | `extension-console-symfony` | — | Http | `symfony/console` ^7.2\|^8.0 |
+| **ConsoleSymfony** | `extension-console-symfony` | — | — | `symfony/console` ^7.2\|^8.0 |
 | **Csrf** | `extension-csrf` | ✓ | Http, SessionSymfony | `psr/http-message` ^2.0, `psr/http-server-middleware` ^1.0 |
 | **DataMasker** | `extension-data-masker` | — | — | — |
 | **DatabaseEloquent** | `extension-database-eloquent` | ✓ | DataMasker, Event | `illuminate/database` ^13.1, `illuminate/events` ^13.1, `illuminate/container` ^13.1, `illuminate/filesystem` ^13.1, `illuminate/pagination` ^13.1, `symfony/console` ^7.2\|^8.0, `monolog/monolog` ^3, `psr/event-dispatcher` ^1.0, `psr/http-message` ^2.0 |
 | **ErrorHandlerWhoops** | `extension-error-handler-whoops` | — | Http, View, LoggerMonolog | `filp/whoops` ^2.18, `laminas/laminas-httphandlerrunner` ^2.13, `psr/container` ^2.0, `psr/http-message` ^2.0 |
 | **Event** | `extension-event` | ✓ | — | `league/event` ^3.0, `psr/event-dispatcher` ^1.0 |
 | **FormRequest** | `extension-form-request` | ✓ | CastingValinor, ValidationRakit, Csrf, Event | `psr/http-message` ^2.0, `psr/event-dispatcher` ^1.0 |
-| **Http** | `extension-http` | ✓ | — | `laminas/laminas-diactoros` ^3.8, `league/route` ^6.2 |
+| **Http** | `extension-http` | ✓ | — | `laminas/laminas-diactoros` ^3.8, `league/route` ^6.2, `symfony/console` ^7.2\|^8.0 |
 | **Json** | `extension-json` | — | Http | `psr/http-message` ^2.0, `psr/http-server-middleware` ^1.0 |
 | **LoggerMonolog** | `extension-logger-monolog` | — | DataMasker | `monolog/monolog` ^3, `psr/log` ^3 |
 | **SessionSymfony** | `extension-session-symfony` | ✓ | — | `symfony/http-foundation` ^7.2 |
@@ -68,7 +68,6 @@ flowchart TD
     ErrorHandlerWhoops --> View
     ErrorHandlerWhoops --> LoggerMonolog
     Telemetry --> Event
-    ConsoleSymfony --> Http
     Components --> Config
     Components --> DatabaseEloquent
     Components --> View
@@ -113,7 +112,7 @@ flowchart TD
 
 - **ViewTwig** не залежить від `illuminate/*` — кеш views очищається через `symfony/filesystem` (`view:clear`), Twig loader — `twig/twig` `FilesystemLoader`.
 - **DatabaseEloquent** — єдине розширення з прямою залежністю від `illuminate/*`.
-- **ConsoleSymfony** — generic CLI application; DB commands live in **DatabaseEloquent**.
+- **ConsoleSymfony** — generic CLI application shell; domain commands live in their extensions (Http, DatabaseEloquent, ViewTwig, …).
 - **Components** залежить від Config / DB / View / Event через boot wiring (routes, migrations, views, events), не через їхні зовнішні бібліотеки напряму.
 
 ---

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Extensions\ConsoleSymfony\Commands;
+namespace Concept\Extensions\Http\Commands;
 
 use Concept\Extensions\Http\Routing\RouteDescriptor;
 use League\Route\Route;

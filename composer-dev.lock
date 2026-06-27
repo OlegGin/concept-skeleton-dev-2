@@ -2259,12 +2259,11 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/ConsoleSymfony",
-                "reference": "9d1e213689e2f7906a783a7c4621287d9c55046a"
+                "reference": "3c864e530d0e980d3012d003622333684ae8c523"
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/extension-http": "@dev",
                 "symfony/console": "^7.2|^8.0"
             },
             "type": "library",
@@ -2276,7 +2275,7 @@
             "license": [
                 "MIT"
             ],
-            "description": "Concept Console extension — Symfony Console application and commands",
+            "description": "Concept Console extension — Symfony Console application shell",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -2484,14 +2483,15 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/Http",
-                "reference": "5b831b53e60b13daf6c25995f18593eac873401d"
+                "reference": "e244cd97b078e486ea2822d779ba96f000fd4828"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
                 "league/container": "^5.1",
                 "league/route": "^6.2",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev"
+                "php-concept/core-2": "@dev",
+                "symfony/console": "^7.2|^8.0"
             },
             "type": "library",
             "autoload": {

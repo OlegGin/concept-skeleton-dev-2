@@ -1,6 +1,6 @@
 {
     "name": "php-concept/extension-console-symfony",
-    "description": "Concept Console extension — Symfony Console application and commands",
+    "description": "Concept Console extension — Symfony Console application shell",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -11,16 +11,6 @@
     "require": {
         "php": "^8.4",
         "symfony/console": "^7.2|^8.0",
-        "php-concept/extension-http": "@dev",
         "league/container": "^5.1"
-    },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../Http",
-            "options": {
-                "symlink": true
-            }
-        }
-    ]
+    }
 }
