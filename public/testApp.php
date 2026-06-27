@@ -157,6 +157,9 @@ function renderTestAppList(string $testAppsDir): void
                     <a href="<?= htmlspecialchars($base . '/' . $name, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></a>
                     <?php if ($name === 'jsonApp'): ?>
                         — <a href="<?= htmlspecialchars($base . '/' . $name . '/api/ping', ENT_QUOTES, 'UTF-8') ?>">/api/ping</a>
+                    <?php elseif ($name === 'jsonDbApp'): ?>
+                        — <a href="<?= htmlspecialchars($base . '/' . $name . '/api/ping', ENT_QUOTES, 'UTF-8') ?>">/api/ping</a>
+                        · <a href="<?= htmlspecialchars($base . '/' . $name . '/api/items', ENT_QUOTES, 'UTF-8') ?>">/api/items</a>
                     <?php endif; ?>
                 </li>
             <?php endforeach; ?>

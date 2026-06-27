@@ -2,7 +2,7 @@
 
 use Concept\Core\App;
 use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsBootstrap;
-use Concept\testApp\jsonApp\src\Providers\JsonAppServiceProvider;
+use Concept\testApp\jsonDbApp\src\Providers\JsonDbAppServiceProvider;
 use League\Container\Container;
 use Whoops\Run as Whoops;
 
@@ -13,6 +13,6 @@ $app = App::create();
 $container = $app->getContainer();
 $container->add(Whoops::class, EarlyWhoopsBootstrap::register($root))->setShared(true);
 
-$app->registerServiceProviders([fn() => new JsonAppServiceProvider($root)]);
+$app->registerServiceProviders([fn() => new JsonDbAppServiceProvider($root)]);
 
 return $app;
