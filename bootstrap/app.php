@@ -7,16 +7,13 @@ use Whoops\Run as Whoops;
 
 $root = dirname(__DIR__);
 
-/** @var array<string, string> $paths */
-$paths = require $root . '/bootstrap/paths.php';
-
 $app = App::create();
 /** @var Container $container */
 $container = $app->getContainer();
 $container->add(Whoops::class, EarlyWhoopsBootstrap::register($root))->setShared(true);
 
-/** @var callable(string, array<string, string>): list<callable> $providersFactory */
+/** @var callable(string): list<callable> $providersFactory */
 $providersFactory = require $root . '/bootstrap/providers.php';
-$app->registerServiceProviders($providersFactory($root, $paths));
+$app->registerServiceProviders($providersFactory($root));
 
 return $app;

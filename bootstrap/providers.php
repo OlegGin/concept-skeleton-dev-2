@@ -4,25 +4,33 @@ use Concept\App\Foundation\PathName;
 use Concept\App\Providers\ApplicationComponentsServiceProvider;
 use Concept\App\Providers\ApplicationRuntimeServiceProvider;
 use Concept\App\Providers\ApplicationServiceProvider;
-use Concept\Extensions\Config\ConfigServiceProvider;
-use Concept\Extensions\Path\PathServiceProvider;
+use League\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * @param string $root
- * @param array<string, string> $paths
- * @return list<callable(): \League\Container\ServiceProvider\ServiceProviderInterface>
+ * @return list<callable(): ServiceProviderInterface>
  */
-return function(string $root, array $paths): array {
+return function(string $root): array {
+    $pathMap = [
+        PathName::BOOTSTRAP => 'bootstrap',
+        PathName::SRC => 'src',
+        PathName::CONFIG => 'config',
+        PathName::DATABASE => 'database',
+        PathName::MIGRATIONS => 'database/migrations',
+        PathName::SEEDERS => 'database/seeders',
+        PathName::PUBLIC => 'public',
+        PathName::STORAGE => 'storage',
+        PathName::LOGS => 'storage/logs',
+        PathName::CACHE => 'storage/cache',
+        PathName::RESOURCES => 'resources',
+        PathName::LANG => 'resources/lang',
+        PathName::VALIDATOR_TRANSLATIONS => 'resources/lang/validator',
+        PathName::VIEWS => 'resources/views',
+        PathName::ERRORS_FALLBACK_VIEWS => 'resources/views/errors/fallback',
+    ];
+
     return [
-        fn() => new PathServiceProvider(
-            root: $root,
-            pathMap: $paths,
-        ),
-        fn() => new ConfigServiceProvider(
-            root: $root,
-            configDir: $paths[PathName::CONFIG] ?? 'config',
-        ),
-        fn() => new ApplicationServiceProvider($root),
+        fn() => new ApplicationServiceProvider($root, $pathMap),
         fn() => new ApplicationRuntimeServiceProvider(),
         fn() => new ApplicationComponentsServiceProvider($root),
     ];

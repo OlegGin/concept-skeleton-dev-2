@@ -11,6 +11,7 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
+use Concept\Extensions\Config\ConfigServiceProvider;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Path\PathManager;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
@@ -24,6 +25,7 @@ use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
+use Concept\Extensions\Path\PathServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
@@ -56,7 +58,14 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private const string DEFAULT_DB_CHARSET = 'utf8mb4';
     private const string DEFAULT_DB_COLLATION = 'utf8mb4_unicode_ci';
 
-    public function __construct(private readonly string $root) {}
+    /**
+     * @param string $root
+     * @param array<string, string> $pathMap
+     */
+    public function __construct(
+        private readonly string $root,
+        private readonly array $pathMap
+    ) {}
 
     public function provides(string $id): bool
     {
@@ -71,10 +80,20 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
         $container = $this->getContainer();
 
-        /** @var ConfigInterface $config */
-        $config = $container->get(ConfigInterface::class);
+        $container->addServiceProvider(new PathServiceProvider(
+            root: $this->root,
+            pathMap: $this->pathMap,
+        ));
+
         /** @var PathManager $pathManager */
         $pathManager = $container->get(PathManager::class);
+
+        $container->addServiceProvider(new ConfigServiceProvider(
+            root: $this->root,
+            configDir: $pathManager->getRelative(PathName::CONFIG),
+        ));
+        /** @var ConfigInterface $config */
+        $config = $container->get(ConfigInterface::class);
 
         /** @var list<class-string> $transformerClasses */
         $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];
