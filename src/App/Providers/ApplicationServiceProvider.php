@@ -11,8 +11,18 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
+use Concept\App\Telemetry\Subscribers\ComponentsTelemetrySubscriber;
+use Concept\App\Telemetry\Subscribers\DatabaseTelemetrySubscriber;
+use Concept\App\Telemetry\Subscribers\ExtensionsTelemetrySubscriber;
+use Concept\App\Telemetry\Subscribers\FormRequestTelemetrySubscriber;
+use Concept\App\Telemetry\Subscribers\TelemetryEventSubscriber;
+use Concept\App\Telemetry\Subscribers\ViewTelemetrySubscriber;
 use Concept\Extensions\Config\ConfigServiceProvider;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Event\EventServiceProvider;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
+use Concept\Extensions\LoggerMonolog\LogHandlerRegistry;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
@@ -27,13 +37,20 @@ use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\PathManager\PathManagerServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
+use Concept\Extensions\Telemetry\Handlers\TelemetryLogHandler;
+use Concept\Extensions\Telemetry\Subscribers\TelemetrySubscriberFactory;
+use Concept\Extensions\Telemetry\TelemetryCollector;
+use Concept\Extensions\Telemetry\TelemetryServiceProvider as TelemetryExtensionServiceProvider;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
 use InvalidArgumentException;
+use League\Container\Container;
+use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use League\Event\ListenerSubscriber;
 use Psr\Container\ContainerInterface;
 use SessionHandlerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -95,6 +112,8 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         /** @var ConfigInterface $config */
         $config = $container->get(ConfigInterface::class);
 
+        $this->enableTelemetry($container, $config);
+
         /** @var list<class-string> $transformerClasses */
         $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];
         $container->addServiceProvider(new CastingServiceProvider(
@@ -121,6 +140,8 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
             channel: $config->getString(ConfigKey::LOG_NAME),
         ));
+
+        $this->registerTelemetryLogHandler($container, $config);
 
         /** @var list<string> $migrationPaths */
         $migrationPaths = $config->get(ConfigKey::MIGRATIONS_PATHS) ?? [];
@@ -198,6 +219,48 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             debug: $config->getBool(ConfigKey::APP_DEBUG),
             errorsFallbackPath: $pathManager->get(PathName::ERRORS_FALLBACK_VIEWS),
         ));
+    }
+
+    private function enableTelemetry(DefinitionContainerInterface $container, ConfigInterface $config): void
+    {
+        if (!$config->getBool(ConfigKey::TELEMETRY_ENABLED)) {
+            return;
+        }
+        $container->addServiceProvider(new TelemetryExtensionServiceProvider());
+
+        if (!$config->getBool(ConfigKey::EVENTS_ENABLED)) {
+            return;
+        }
+
+        /** @var list<class-string<ListenerSubscriber>> $subscriberClasses */
+        $subscriberClasses = $config->getArray(ConfigKey::EVENTS_SUBSCRIBERS);
+        $container->addServiceProvider(new EventServiceProvider($subscriberClasses));
+    }
+
+    private function registerTelemetryLogHandler(ContainerInterface $container, ConfigInterface $config): void
+    {
+        if (!$config->getBool(ConfigKey::TELEMETRY_ENABLED) || !$config->getBool(ConfigKey::TELEMETRY_LOGS)) {
+            return;
+        }
+
+        if (!$container instanceof Container) {
+            return;
+        }
+
+        $container->add(TelemetryLogHandler::class, function() use ($container): TelemetryLogHandler {
+            /** @var TelemetryCollector $collector */
+            $collector = $container->get(TelemetryCollector::class);
+
+            return new TelemetryLogHandler($collector);
+        })->setShared(true);
+
+        if (!$container->has(LogHandlerRegistry::class)) {
+            return;
+        }
+
+        /** @var LogHandlerRegistry $registry */
+        $registry = $container->get(LogHandlerRegistry::class);
+        $registry->add(TelemetryLogHandler::class);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace Concept\Components\DebugBar\Providers;
 use Concept\Components\DebugBar\Support\ConfigDataCollector;
 use Concept\Components\DebugBar\Support\CustomDebugBar;
 use Concept\Components\DebugBar\Support\DatabaseDataCollector;
+use Concept\Components\DebugBar\Support\ExtensionsDataCollector;
 use Concept\Components\DebugBar\Support\RouteDataCollector;
 use Concept\Components\DebugBar\Support\ComponentsDataCollector;
 use Concept\Components\DebugBar\Support\TimelineDataCollector;
@@ -55,6 +56,7 @@ class DebugBarServiceProvider extends AbstractServiceProvider
             $debugBar->addCollector(new DatabaseDataCollector($telemetryCollector));
             $debugBar->addCollector(new RouteDataCollector($telemetryCollector, $routeDescriptor));
             $debugBar->addCollector(new ComponentsDataCollector($telemetryCollector));
+            $debugBar->addCollector(new ExtensionsDataCollector($telemetryCollector));
             $debugBar->addCollector(new TimelineDataCollector($telemetryCollector));
             $debugBar->addCollector(new ConfigDataCollector($config, $masker));
 

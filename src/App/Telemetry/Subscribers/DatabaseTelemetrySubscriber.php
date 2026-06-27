@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Components\Telemetry\Subscribers;
+namespace Concept\App\Telemetry\Subscribers;
 
 use Concept\Extensions\DatabaseEloquent\Events\DatabaseQueryExecuted;
 use Concept\Extensions\Telemetry\TelemetryCollector;

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Components\Telemetry\Subscribers;
+namespace Concept\App\Telemetry\Subscribers;
 
 use Concept\Extensions\FormRequest\Events\FormRequestValidated;
 use Concept\Extensions\Telemetry\TelemetryCollector;
