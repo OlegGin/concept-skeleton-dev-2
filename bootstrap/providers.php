@@ -5,6 +5,7 @@ use Concept\App\Providers\ApplicationComponentsServiceProvider;
 use Concept\App\Providers\ApplicationRuntimeServiceProvider;
 use Concept\App\Providers\ApplicationServiceProvider;
 use Concept\Extensions\Config\ConfigServiceProvider;
+use Concept\Extensions\Path\PathServiceProvider;
 
 /**
  * @param string $root
@@ -13,10 +14,13 @@ use Concept\Extensions\Config\ConfigServiceProvider;
  */
 return function(string $root, array $paths): array {
     return [
+        fn() => new PathServiceProvider(
+            root: $root,
+            pathMap: $paths,
+        ),
         fn() => new ConfigServiceProvider(
             root: $root,
             configDir: $paths[PathName::CONFIG] ?? 'config',
-            pathMap: $paths,
         ),
         fn() => new ApplicationServiceProvider($root),
         fn() => new ApplicationRuntimeServiceProvider(),
