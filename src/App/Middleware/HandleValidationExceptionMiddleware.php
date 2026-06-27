@@ -2,7 +2,7 @@
 
 namespace Concept\App\Middleware;
 
-use Concept\App\Session\SessionKey;
+use Concept\App\Foundation\SessionKey;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Protocol\HttpStatusCode;
 use Concept\Extensions\Http\Requests\RequestFormat;

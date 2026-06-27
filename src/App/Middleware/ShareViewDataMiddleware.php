@@ -2,7 +2,7 @@
 
 namespace Concept\App\Middleware;
 
-use Concept\App\Session\SessionKey;
+use Concept\App\Foundation\SessionKey;
 use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
 use Concept\Extensions\Http\Requests\RequestAttribute;
 use Concept\Extensions\SessionSymfony\Contracts\FlashBagInterface;

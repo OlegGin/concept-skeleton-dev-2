@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 use Concept\App\Controllers\IndexController;
-use Concept\Extensions\Csrf\Middleware\HandleCsrfExceptionMiddleware;
 use Concept\App\Middleware\HandleValidationExceptionMiddleware;
 use Concept\App\Middleware\ShareViewDataMiddleware;
+use Concept\App\Middleware\StorePreviousUrlMiddleware;
 use Concept\Components\Acl\Middlewares\HandleAccessDeniedMiddleware;
+use Concept\Extensions\Csrf\Middleware\HandleCsrfExceptionMiddleware;
 use Concept\Extensions\Csrf\Middleware\VerifyCsrfTokenMiddleware;
-use Concept\Extensions\Web\Middleware\StorePreviousUrlMiddleware;
 use League\Route\RouteGroup;
 use League\Route\Router;
 
