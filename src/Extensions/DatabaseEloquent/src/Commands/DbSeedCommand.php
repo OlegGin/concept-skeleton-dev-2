@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Extensions\ConsoleSymfony\Commands;
+namespace Concept\Extensions\DatabaseEloquent\Commands;
 
 use Concept\Extensions\DatabaseEloquent\SeederManager;
 use Symfony\Component\Console\Command\Command;

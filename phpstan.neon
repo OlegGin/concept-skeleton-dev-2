@@ -11,3 +11,5 @@ parameters:
     excludePaths:
         - */Models/*
         - vendor/*
+        - public/testApp.php
+        - src/testApp

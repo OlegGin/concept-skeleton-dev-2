@@ -144,9 +144,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             interceptors: $interceptors,
         ));
 
-        $container->addServiceProvider(new PaginationConfiguratorServiceProvider(
-            pageName: $config->getString(ConfigKey::PAGINATION_PAGE_NAME, 'page'),
-        ));
+        $container->addServiceProvider(new PaginationConfiguratorServiceProvider());
         $container->addServiceProvider(new HttpServiceProvider());
 
         /** @var array<string, string> $viewPaths */

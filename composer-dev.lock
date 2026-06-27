@@ -2194,7 +2194,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/Components",
-                "reference": "110f1fd3ea7bbbd29f7a7af81b5437db9ac2f2e3"
+                "reference": "a7950778ca3f5eb73f1838e9212c8a5bb6f29531"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2204,7 +2204,6 @@
                 "php-concept/extension-config": "@dev",
                 "php-concept/extension-database-eloquent": "@dev",
                 "php-concept/extension-event": "@dev",
-                "php-concept/extension-path": "@dev",
                 "php-concept/extension-view": "@dev",
                 "psr/event-dispatcher": "^1.0",
                 "symfony/console": "^7.2",
@@ -2260,12 +2259,11 @@
             "dist": {
                 "type": "path",
                 "url": "src/Extensions/ConsoleSymfony",
-                "reference": "d673f0b2f8d07b1be3fc78604616d38e9cd86d68"
+                "reference": "9d1e213689e2f7906a783a7c4621287d9c55046a"
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/extension-database-eloquent": "@dev",
                 "php-concept/extension-http": "@dev",
                 "symfony/console": "^7.2|^8.0"
             },

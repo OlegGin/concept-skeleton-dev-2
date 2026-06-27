@@ -5,7 +5,11 @@ namespace Concept\Extensions\DatabaseEloquent;
 use Concept\Extensions\DatabaseEloquent\Events\DatabaseQueryExecuted;
 use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
+use Concept\Extensions\DatabaseEloquent\Commands\DbMigrateCommand;
 use Concept\Extensions\DatabaseEloquent\Commands\DbMigrationListCommand;
+use Concept\Extensions\DatabaseEloquent\Commands\DbRollbackCommand;
+use Concept\Extensions\DatabaseEloquent\Commands\DbSeedCommand;
+use Concept\Extensions\DatabaseEloquent\Commands\DbSeedersListCommand;
 use Concept\Extensions\DatabaseEloquent\Contracts\DatabaseInterface;
 use Concept\Extensions\DatabaseEloquent\Registries\MigrationRegistry;
 use Concept\Extensions\DatabaseEloquent\Registries\SeederRegistry;
@@ -54,6 +58,10 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
             SeederRegistry::class,
             MigrationRegistry::class,
             DbMigrationListCommand::class,
+            DbMigrateCommand::class,
+            DbRollbackCommand::class,
+            DbSeedCommand::class,
+            DbSeedersListCommand::class,
         ], true);
     }
 
@@ -108,6 +116,38 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
                 migrationsTable: $migrationTableName,
                 capsule: $capsuleManager,
             );
+        })->setShared(true);
+
+        $container->add(DbMigrateCommand::class, function() use ($container): DbMigrateCommand {
+            /** @var Migrator $migrator */
+            $migrator = $container->get(Migrator::class);
+            /** @var MigrationRegistry $migrationRegistry */
+            $migrationRegistry = $container->get(MigrationRegistry::class);
+
+            return new DbMigrateCommand($migrator, $migrationRegistry);
+        })->setShared(true);
+
+        $container->add(DbRollbackCommand::class, function() use ($container): DbRollbackCommand {
+            /** @var Migrator $migrator */
+            $migrator = $container->get(Migrator::class);
+            /** @var MigrationRegistry $migrationRegistry */
+            $migrationRegistry = $container->get(MigrationRegistry::class);
+
+            return new DbRollbackCommand($migrator, $migrationRegistry);
+        })->setShared(true);
+
+        $container->add(DbSeedCommand::class, function() use ($container): DbSeedCommand {
+            /** @var SeederManager $seederManager */
+            $seederManager = $container->get(SeederManager::class);
+
+            return new DbSeedCommand($seederManager);
+        })->setShared(true);
+
+        $container->add(DbSeedersListCommand::class, function() use ($container): DbSeedersListCommand {
+            /** @var SeederRegistry $seederRegistry */
+            $seederRegistry = $container->get(SeederRegistry::class);
+
+            return new DbSeedersListCommand($seederRegistry);
         })->setShared(true);
 
         $container->add(QueryLogger::class, function() use ($container): QueryLogger {

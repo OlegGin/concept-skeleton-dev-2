@@ -17,7 +17,7 @@
 | **CastingValinor** | `extension-casting-valinor` | ✓ | — | `cuyz/valinor` ^2.0 |
 | **Components** | `extension-components` | ✓ | Config, DatabaseEloquent, View, Event | `league/route` ^6.2, `symfony/console` ^7.2, `symfony/filesystem` ^7.2, `psr/event-dispatcher` ^1.0 |
 | **Config** | `extension-config` | — | — | `hassankhan/config` ^3.2, `vlucas/phpdotenv` ^5.6 |
-| **ConsoleSymfony** | `extension-console-symfony` | — | Http, DatabaseEloquent | `symfony/console` ^7.2\|^8.0 |
+| **ConsoleSymfony** | `extension-console-symfony` | — | Http | `symfony/console` ^7.2\|^8.0 |
 | **Csrf** | `extension-csrf` | ✓ | Http, SessionSymfony | `psr/http-message` ^2.0, `psr/http-server-middleware` ^1.0 |
 | **DataMasker** | `extension-data-masker` | — | — | — |
 | **DatabaseEloquent** | `extension-database-eloquent` | ✓ | DataMasker, Event | `illuminate/database` ^13.1, `illuminate/events` ^13.1, `illuminate/container` ^13.1, `illuminate/filesystem` ^13.1, `illuminate/pagination` ^13.1, `symfony/console` ^7.2\|^8.0, `monolog/monolog` ^3, `psr/event-dispatcher` ^1.0, `psr/http-message` ^2.0 |
@@ -69,7 +69,6 @@ flowchart TD
     ErrorHandlerWhoops --> LoggerMonolog
     Telemetry --> Event
     ConsoleSymfony --> Http
-    ConsoleSymfony --> DatabaseEloquent
     Components --> Config
     Components --> DatabaseEloquent
     Components --> View
@@ -114,7 +113,7 @@ flowchart TD
 
 - **ViewTwig** не залежить від `illuminate/*` — кеш views очищається через `symfony/filesystem` (`view:clear`), Twig loader — `twig/twig` `FilesystemLoader`.
 - **DatabaseEloquent** — єдине розширення з прямою залежністю від `illuminate/*`.
-- **ConsoleSymfony** тягне **DatabaseEloquent** лише для CLI-команд БД (`migrate`, `seed`, …), не для ORM у runtime HTTP.
+- **ConsoleSymfony** — generic CLI application; DB commands live in **DatabaseEloquent**.
 - **Components** залежить від Config / DB / View / Event через boot wiring (routes, migrations, views, events), не через їхні зовнішні бібліотеки напряму.
 
 ---

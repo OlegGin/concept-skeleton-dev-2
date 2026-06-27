@@ -2,16 +2,13 @@
 
 namespace Concept\Extensions\DatabaseEloquent;
 
-use Concept\Extensions\DatabaseEloquent\Pagination\PaginatorConfigurator;
+use Illuminate\Pagination\Paginator;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 final class PaginationConfiguratorServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
-    public function __construct(
-        private readonly string $pageName = 'page',
-    ) {}
-
     public function provides(string $id): bool
     {
         return false;
@@ -23,6 +20,21 @@ final class PaginationConfiguratorServiceProvider extends AbstractServiceProvide
 
     public function boot(): void
     {
-        PaginatorConfigurator::configure($this->getContainer(), $this->pageName);
+        $container = $this->getContainer();
+
+        Paginator::currentPageResolver(function(string $pageName = 'page') use ($container): int {
+            /** @var ServerRequestInterface $request */
+            $request = $container->get(ServerRequestInterface::class);
+            $params = $request->getQueryParams();
+
+            return (int) ($params[$pageName] ?? 1);
+        });
+
+        Paginator::currentPathResolver(function() use ($container): string {
+            /** @var ServerRequestInterface $request */
+            $request = $container->get(ServerRequestInterface::class);
+
+            return $request->getUri()->getPath();
+        });
     }
 }
