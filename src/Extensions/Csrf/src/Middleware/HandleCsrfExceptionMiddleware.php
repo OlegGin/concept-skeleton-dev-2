@@ -34,7 +34,7 @@ final class HandleCsrfExceptionMiddleware implements MiddlewareInterface
 
             $this->flashBag->addError($e->getMessage());
 
-            return $this->responseFactory->redirectBack();
+            return $this->responseFactory->redirectBack(request: $request);
         }
     }
 }

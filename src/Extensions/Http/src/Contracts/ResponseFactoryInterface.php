@@ -5,6 +5,7 @@ namespace Concept\Extensions\Http\Contracts;
 use Concept\Extensions\Http\Protocol\HttpStatusCode;
 use Psr\Http\Message\ResponseFactoryInterface as PsrResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 interface ResponseFactoryInterface extends PsrResponseFactoryInterface
 {
@@ -41,5 +42,9 @@ interface ResponseFactoryInterface extends PsrResponseFactoryInterface
         int $status = HttpStatusCode::FOUND,
     ): ResponseInterface;
 
-    public function redirectBack(int $status = HttpStatusCode::FOUND, string $fallback = '/'): ResponseInterface;
+    public function redirectBack(
+        int $status = HttpStatusCode::FOUND,
+        string $fallback = '/',
+        ?ServerRequestInterface $request = null,
+    ): ResponseInterface;
 }

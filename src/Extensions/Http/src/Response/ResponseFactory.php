@@ -90,9 +90,13 @@ final class ResponseFactory implements ResponseFactoryInterface
         return $this->redirect($this->urlGenerator->uri($urlName, $parameters), $status);
     }
 
-    public function redirectBack(int $status = HttpStatusCode::FOUND, string $fallback = '/'): ResponseInterface
+    public function redirectBack(
+        int $status = HttpStatusCode::FOUND,
+        string $fallback = '/',
+        ?ServerRequestInterface $request = null,
+    ): ResponseInterface
     {
-        $request = $this->requestContext->current();
+        $request ??= $this->requestContext->current();
         if ($request === null) {
             return $this->redirect($fallback, $status);
         }
