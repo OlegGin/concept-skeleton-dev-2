@@ -3,7 +3,6 @@
 namespace Concept\Extensions\Csrf;
 
 use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
-use Concept\Extensions\Csrf\Middleware\VerifyCsrfTokenMiddleware;
 use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -13,7 +12,6 @@ final class CsrfServiceProvider extends AbstractServiceProvider
     {
         return in_array($id, [
             CsrfTokenManagerInterface::class,
-            VerifyCsrfTokenMiddleware::class,
         ], true);
     }
 
@@ -26,13 +24,6 @@ final class CsrfServiceProvider extends AbstractServiceProvider
             $session = $container->get(SessionInterface::class);
 
             return new CsrfTokenManager($session);
-        })->setShared(true);
-
-        $container->add(VerifyCsrfTokenMiddleware::class, function() use ($container): VerifyCsrfTokenMiddleware {
-            /** @var CsrfTokenManagerInterface $csrfTokenManager */
-            $csrfTokenManager = $container->get(CsrfTokenManagerInterface::class);
-
-            return new VerifyCsrfTokenMiddleware($csrfTokenManager);
         })->setShared(true);
     }
 }

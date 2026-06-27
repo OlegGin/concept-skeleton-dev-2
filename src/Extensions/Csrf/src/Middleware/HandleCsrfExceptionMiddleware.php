@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\App\Middleware;
+namespace Concept\Extensions\Csrf\Middleware;
 
 use Concept\Extensions\Csrf\Exceptions\CsrfException;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
