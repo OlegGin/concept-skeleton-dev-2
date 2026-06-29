@@ -6,7 +6,6 @@ use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Contracts\DtoInterface;
 use Concept\Extensions\CastingValinor\Exceptions\CastingException;
 use Concept\Extensions\FormRequest\Contracts\FormRequestInterface;
-use Concept\Extensions\Csrf\Protocol\CsrfField;
 use Concept\Extensions\ValidationRakit\Contracts\ValidationInterface;
 use Concept\Extensions\ValidationRakit\Contracts\ValidatorInterface;
 use Concept\Extensions\ValidationRakit\ValidationLogger;
@@ -24,9 +23,7 @@ abstract class FormRequest implements FormRequestInterface
      *
      * @var array<string>
      */
-    private array $globalExcept = [
-        CsrfField::NAME,
-    ];
+    protected array $globalExcept = [];
 
     /**
      * Fields that should be excluded from validation

@@ -13,7 +13,6 @@
         "php-concept/core-2": "@dev",
         "php-concept/extension-casting-valinor": "@dev",
         "php-concept/extension-validation-rakit": "@dev",
-        "php-concept/extension-csrf": "@dev",
         "php-concept/extension-event": "@dev",
         "league/container": "^5.1",
         "psr/http-message": "^2.0",
@@ -37,13 +36,6 @@
         {
             "type": "path",
             "url": "../ValidationRakit",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../Csrf",
             "options": {
                 "symlink": true
             }
