@@ -9,19 +9,19 @@ use Concept\Extensions\ValidationRakit\Contracts\ValidationInterface;
 use Concept\Extensions\ValidationRakit\Contracts\ValidatorInterface;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
-use Rakit\Validation\Validator as LibraryValidator;
+use Rakit\Validation\Validator as RakitValidator;
 
 final class Validator implements ValidatorInterface
 {
     private const string ERR_RULE_MUST_IMPLEMENT_INTERFACE = 'Rule %s must implement %s.';
 
-    private readonly LibraryValidator $libraryValidator;
+    private readonly RakitValidator $libraryValidator;
 
     public function __construct(
         private readonly ContainerInterface $container,
-        ?LibraryValidator $libraryValidator = null,
+        ?RakitValidator                     $libraryValidator = null,
     ) {
-        $this->libraryValidator = $libraryValidator ?? new LibraryValidator();
+        $this->libraryValidator = $libraryValidator ?? new RakitValidator();
     }
 
     public function addRules(array $rules): void

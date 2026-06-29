@@ -27,7 +27,7 @@ final class PaginationConfiguratorServiceProvider extends AbstractServiceProvide
             $request = $container->get(ServerRequestInterface::class);
             $params = $request->getQueryParams();
 
-            return (int)(is_scalar($params[$pageName]) ? $params[$pageName] : 1);
+            return (int)($params[$pageName] ?? 1);
         });
 
         Paginator::currentPathResolver(function() use ($container): string {

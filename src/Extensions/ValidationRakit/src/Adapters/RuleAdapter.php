@@ -4,9 +4,9 @@ namespace Concept\Extensions\ValidationRakit\Adapters;
 
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Rakit\Validation\MissingRequiredParameterException;
-use Rakit\Validation\Rule as LibraryRule;
+use Rakit\Validation\Rule as RakitRule;
 
-final class RuleAdapter extends LibraryRule
+final class RuleAdapter extends RakitRule
 {
     public function __construct(private readonly RuleInterface $customRule)
     {

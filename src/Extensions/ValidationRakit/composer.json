@@ -11,7 +11,6 @@
     "require": {
         "php": "^8.4",
         "php-concept/core-2": "@dev",
-        "php-concept/extension-http": "@dev",
         "php-concept/extension-event": "@dev",
         "magewirephp/validation": "^1.0",
         "league/container": "^5.1",
@@ -21,13 +20,6 @@
         {
             "type": "path",
             "url": "/var/www/concept-core-2",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../Http",
             "options": {
                 "symlink": true
             }

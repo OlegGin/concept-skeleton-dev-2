@@ -3,11 +3,11 @@
 namespace Concept\Extensions\ValidationRakit\Adapters;
 
 use Concept\Extensions\ValidationRakit\Contracts\ValidationInterface;
-use Rakit\Validation\Validation as LibraryValidation;
+use Rakit\Validation\Validation as RakitValidation;
 
 final class ValidationAdapter implements ValidationInterface
 {
-    public function __construct(private readonly LibraryValidation $validation) {}
+    public function __construct(private readonly RakitValidation $validation) {}
 
     public function validate(): void
     {
