@@ -5,7 +5,7 @@ namespace Concept\Extensions\Http;
 use Concept\Core\Http\Contracts\RequestContextInterface;
 use Concept\Extensions\Event\Events\ExtensionAwakened;
 use Concept\Extensions\Event\Support\EventDispatcherResolver;
-use Concept\Extensions\Http\Commands\RouteListCommand;
+use Concept\Extensions\Http\Console\Commands\RouteListCommand;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Contracts\UrlGeneratorInterface;
 use Concept\Extensions\Http\Requests\RequestFormat;

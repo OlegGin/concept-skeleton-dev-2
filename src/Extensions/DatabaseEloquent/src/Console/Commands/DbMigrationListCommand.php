@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Extensions\DatabaseEloquent\Commands;
+namespace Concept\Extensions\DatabaseEloquent\Console\Commands;
 
 use Illuminate\Database\Capsule\Manager as CapsuleManager;
 use Symfony\Component\Console\Command\Command;
@@ -12,7 +12,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 final class DbMigrationListCommand extends Command
 {
     private const string COMMAND_NAME = 'migration:list';
-    private const string COMMAND_DESCRIPTION = 'Show migrations list';
+    private const string COMMAND_DESCRIPTION = 'Show migrations list (from database table)';
     private const string OPTION_LIMIT = 'limit';
     private const string OPTION_LIMIT_SHORTCUT = 'l';
     private const string OPTION_LIMIT_DESCRIPTION = 'The count of migrations to display';

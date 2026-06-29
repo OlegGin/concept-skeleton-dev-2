@@ -2,18 +2,18 @@
 
 namespace Concept\Extensions\DatabaseEloquent;
 
-use Concept\Extensions\DatabaseEloquent\Events\DatabaseQueryExecuted;
-use Concept\Extensions\Event\Events\ExtensionAwakened;
-use Concept\Extensions\Event\Support\EventDispatcherResolver;
-use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
-use Concept\Extensions\DatabaseEloquent\Commands\DbMigrateCommand;
-use Concept\Extensions\DatabaseEloquent\Commands\DbMigrationListCommand;
-use Concept\Extensions\DatabaseEloquent\Commands\DbRollbackCommand;
-use Concept\Extensions\DatabaseEloquent\Commands\DbSeedCommand;
-use Concept\Extensions\DatabaseEloquent\Commands\DbSeedersListCommand;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrateCommand;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrationListCommand;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbRollbackCommand;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbSeedCommand;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbSeederListCommand;
 use Concept\Extensions\DatabaseEloquent\Contracts\DatabaseInterface;
+use Concept\Extensions\DatabaseEloquent\Events\DatabaseQueryExecuted;
 use Concept\Extensions\DatabaseEloquent\Registries\MigrationRegistry;
 use Concept\Extensions\DatabaseEloquent\Registries\SeederRegistry;
+use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
+use Concept\Extensions\Event\Events\ExtensionAwakened;
+use Concept\Extensions\Event\Support\EventDispatcherResolver;
 use Illuminate\Container\Container as IlluminateContainer;
 use Illuminate\Database\Capsule\Manager as CapsuleManager;
 use Illuminate\Database\Events\QueryExecuted;
@@ -63,7 +63,7 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
             DbMigrateCommand::class,
             DbRollbackCommand::class,
             DbSeedCommand::class,
-            DbSeedersListCommand::class,
+            DbSeederListCommand::class,
         ], true);
     }
 
@@ -145,11 +145,11 @@ class DatabaseEloquentServiceProvider extends AbstractServiceProvider implements
             return new DbSeedCommand($seederManager);
         })->setShared(true);
 
-        $container->add(DbSeedersListCommand::class, function() use ($container): DbSeedersListCommand {
+        $container->add(DbSeederListCommand::class, function() use ($container): DbSeederListCommand {
             /** @var SeederRegistry $seederRegistry */
             $seederRegistry = $container->get(SeederRegistry::class);
 
-            return new DbSeedersListCommand($seederRegistry);
+            return new DbSeederListCommand($seederRegistry);
         })->setShared(true);
 
         $container->add(QueryLogger::class, function() use ($container): QueryLogger {

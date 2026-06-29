@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+use Database\Seeders\PageSeeder;
+
 return [
     'db' => [
         'prefix' => '',
@@ -16,5 +18,16 @@ return [
         'log_enabled' => false,
         'log_path' => 'query.log',
         'log_max_files' => 7,
+    ],
+    'migrations' => [
+        'table' => 'migrations',
+        'paths' => [
+            'database/migrations',
+        ],
+    ],
+    'seeders' => [
+        'list' => [
+            PageSeeder::class,
+        ],
     ],
 ];

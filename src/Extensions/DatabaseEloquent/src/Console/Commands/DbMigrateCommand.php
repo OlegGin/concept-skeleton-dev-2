@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Extensions\DatabaseEloquent\Commands;
+namespace Concept\Extensions\DatabaseEloquent\Console\Commands;
 
 use Concept\Extensions\DatabaseEloquent\Registries\MigrationRegistry;
 use Illuminate\Database\Migrations\Migrator;
@@ -10,15 +10,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
-final class DbRollbackCommand extends Command
+final class DbMigrateCommand extends Command
 {
-    private const string COMMAND_NAME = 'db:rollback';
-    private const string COMMAND_DESCRIPTION = 'Rollback the last database migration batch';
-    private const string MSG_STARTING = 'Rolling back database migrations...';
-    private const string MSG_SUCCESS = 'Database rollback completed successfully.';
-    private const string MSG_NOTHING = 'Nothing to rollback.';
-    private const string MSG_ROLLED_BACK = ' <info>✔</info> Rolled back: <comment>%s</comment> ... ';
-    private const string ERR_ROLLBACK_FAILED = 'Rollback failed: %s';
+    private const string COMMAND_NAME = 'db:migrate';
+    private const string COMMAND_DESCRIPTION = 'Run all outstanding database migrations';
+    private const string MSG_STARTING = 'Starting database migrations...';
+    private const string MSG_SUCCESS = 'Database migrations completed successfully.';
+    private const string MSG_NOTHING = 'Nothing to migrate. Your database is up to date.';
+    private const string MSG_MIGRATED = ' <info>✔</info> Migrated: <comment>%s</comment> ... ';
+    private const string ERR_MIGRATION_FAILED = 'Migration failed: %s';
 
     public function __construct(
         private readonly Migrator $migrator,
@@ -39,10 +39,13 @@ final class DbRollbackCommand extends Command
         $io->title(self::MSG_STARTING);
 
         try {
+            if (!$this->migrator->repositoryExists()) {
+                $this->migrator->getRepository()->createRepository();
+            }
+
             /** @var array<string> $paths */
             $paths = $this->migrationRegistry->all();
-            $executed = $this->migrator->rollback($paths);
-
+            $executed = $this->migrator->run($paths);
             if ($executed === []) {
                 $io->info(self::MSG_NOTHING);
 
@@ -50,7 +53,7 @@ final class DbRollbackCommand extends Command
             }
 
             foreach ($executed as $migration) {
-                $io->writeln(sprintf(self::MSG_ROLLED_BACK, $migration));
+                $io->writeln(sprintf(self::MSG_MIGRATED, $migration));
             }
 
             $io->newLine();
@@ -58,7 +61,7 @@ final class DbRollbackCommand extends Command
 
             return Command::SUCCESS;
         } catch (Throwable $exception) {
-            $io->error(sprintf(self::ERR_ROLLBACK_FAILED, $exception->getMessage()));
+            $io->error(sprintf(self::ERR_MIGRATION_FAILED, $exception->getMessage()));
 
             return Command::FAILURE;
         }

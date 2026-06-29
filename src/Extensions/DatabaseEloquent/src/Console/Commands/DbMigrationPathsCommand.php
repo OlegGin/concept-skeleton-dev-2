@@ -1,23 +1,23 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Extensions\DatabaseEloquent\Commands;
+namespace Concept\Extensions\DatabaseEloquent\Console\Commands;
 
-use Concept\Extensions\DatabaseEloquent\Registries\SeederRegistry;
+use Concept\Extensions\DatabaseEloquent\Registries\MigrationRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-final class DbSeedersListCommand extends Command
+final class DbMigrationPathsCommand extends Command
 {
-    private const string COMMAND_NAME = 'seeders:list';
-    private const string COMMAND_DESCRIPTION = 'Show seeders list';
-    private const string MSG_MIGRATIONS_LIST = 'Seeders List';
-    private const string MSG_NOT_FOUND = 'No seeders found.';
-    private const string MSG_END_OF_LIST = 'End of seeders list.';
+    private const string COMMAND_NAME = 'migration:paths';
+    private const string COMMAND_DESCRIPTION = 'Show migrations paths list';
+    private const string MSG_MIGRATIONS_LIST = 'Migrations Paths List';
+    private const string MSG_NOT_FOUND = 'No migrations found.';
+    private const string MSG_END_OF_LIST = 'End of migrations paths list.';
 
     public function __construct(
-        private readonly SeederRegistry $seederRegistry,
+        private readonly MigrationRegistry $migrationsRegistry,
     ) {
         parent::__construct();
     }
@@ -32,17 +32,17 @@ final class DbSeedersListCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        /** @var array<string> $seedersList */
-        $seedersList = $this->seederRegistry->all();
-        if ($seedersList === []) {
+        /** @var array<string> $migrationsPaths */
+        $migrationsPaths = $this->migrationsRegistry->all();
+        if ($migrationsPaths === []) {
             $io->warning(self::MSG_NOT_FOUND);
 
             return Command::SUCCESS;
         }
 
         $io->title(self::MSG_MIGRATIONS_LIST);
-        foreach ($seedersList as $seeder) {
-            $io->writeln($seeder);
+        foreach ($migrationsPaths as $migrationPath) {
+            $io->writeln($migrationPath);
         }
 
         $io->success(self::MSG_END_OF_LIST);

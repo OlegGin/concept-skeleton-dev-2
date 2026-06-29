@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Extensions\ViewTwig\Commands;
+namespace Concept\Extensions\ViewTwig\Console\Commands;
 
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
 use Throwable;
 
 final class ViewClearCommand extends Command

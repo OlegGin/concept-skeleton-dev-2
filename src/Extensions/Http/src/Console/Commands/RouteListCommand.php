@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Extensions\Http\Commands;
+namespace Concept\Extensions\Http\Console\Commands;
 
 use Concept\Extensions\Http\Routing\RouteDescriptor;
 use League\Route\Route;
@@ -69,7 +69,7 @@ final class RouteListCommand extends Command
                         $description['path'],
                         $description['name'] ?? '',
                         $description['action'],
-                        implode(', ', $description['middleware']),
+                        implode("\n", $description['middleware']),
                     ];
                 },
                 $routes,

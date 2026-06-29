@@ -14,7 +14,7 @@ final class ConfigKey
     public const string APP_LOCALE = 'app.locale';
     public const string APP_FALLBACK_LOCALE = 'app.fallback_locale';
 
-    public const string COMMANDS = 'commands';
+    public const string COMMANDS = 'console.commands';
 
     public const string COMPONENTS = 'components';
 
