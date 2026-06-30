@@ -104,8 +104,8 @@ class AuthAdminComponent implements ComponentInterface
     public function assets(): array
     {
         return [
-            $this->pathManager->toRelative($this->componentDir . '/Assets/admin-tokens.js') =>
-                $this->pathManager->getRelative(PathName::PUBLIC, 'components/auth-admin/js/admin-tokens.js'),
+            $this->componentDir . '/Assets/admin-tokens.js' =>
+                $this->pathManager->get(PathName::PUBLIC, 'components/auth-admin/js/admin-tokens.js'),
         ];
     }
 }

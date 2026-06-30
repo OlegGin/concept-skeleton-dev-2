@@ -100,8 +100,8 @@ class SettingsManagerComponent implements ComponentInterface
     public function assets(): array
     {
         return [
-            $this->pathManager->toRelative($this->componentDir . '/Assets/settings-form.js') =>
-                $this->pathManager->getRelative(PathName::PUBLIC, 'components/settings-manager/js/settings-form.js'),
+            $this->componentDir . '/Assets/settings-form.js' =>
+                $this->pathManager->get(PathName::PUBLIC, 'components/settings-manager/js/settings-form.js'),
         ];
     }
 }

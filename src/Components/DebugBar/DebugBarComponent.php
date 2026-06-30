@@ -77,8 +77,8 @@ final class DebugBarComponent implements ComponentInterface
     public function assets(): array
     {
         return [
-            'vendor/php-debugbar/php-debugbar/resources/dist' =>
-                $this->pathManager->getRelative(PathName::PUBLIC, 'components/debug-bar/dist'),
+            $this->pathManager->root('vendor/php-debugbar/php-debugbar/resources/dist') =>
+                $this->pathManager->get(PathName::PUBLIC, 'components/debug-bar/dist'),
         ];
     }
 }
