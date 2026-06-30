@@ -1,140 +1,32 @@
 {
     "name": "php-concept/framework",
-    "repositories": [
-        {
-            "type": "path",
-            "url": "/var/www/concept-core-2",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/Http",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/CastingValinor",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/FormRequest",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/ValidationRakit",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/View",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/ViewTwig",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/ViewPlates",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/SessionSymfony",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/Csrf",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/Json",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/DataMasker",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/LoggerMonolog",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/DatabaseEloquent",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/ConsoleSymfony",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/ErrorHandlerWhoops",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/Config",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/PathManager",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "src/Extensions/Components",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
+    "require": {
+        "php-concept/core-2": "^1.0",
+        "twbs/bootstrap": "^5.3",
+        "twbs/bootstrap-icons": "^1.13",
+        "php-concept/extension-http": "^1.0",
+        "php-concept/extension-casting-valinor": "^1.0",
+        "php-concept/extension-form-request": "^1.0",
+        "php-concept/extension-validation-rakit": "^1.0",
+        "php-concept/extension-view": "^1.0",
+        "php-concept/extension-view-twig": "^1.0",
+        "php-concept/extension-view-plates": "^1.0",
+        "php-concept/extension-session-symfony": "^1.0",
+        "php-concept/extension-csrf": "^1.0",
+        "php-concept/extension-json": "^1.0",
+        "php-concept/extension-data-masker": "^1.0",
+        "php-concept/extension-logger-monolog": "^1.0",
+        "php-concept/extension-database-eloquent": "^1.0",
+        "php-concept/extension-console-symfony": "^1.0",
+        "php-concept/extension-error-handler-whoops": "^1.0",
+        "php-concept/extension-config": "^1.0",
+        "php-concept/extension-path-manager": "^1.0",
+        "php-concept/extension-components": "^1.0",
+        "php-concept/extension-event": "^1.0",
+        "php-concept/extension-telemetry": "^1.0",
+        "laminas/laminas-permissions-acl": "^2.18",
+        "vlucas/phpdotenv": "^5.6"
+    },
     "autoload": {
         "psr-4": {
             "Concept\\": "src/",
@@ -149,31 +41,6 @@
     "require-dev": {
         "phpstan/phpstan": "^2.1",
         "php-debugbar/php-debugbar": "^3.7"
-    },
-    "require": {
-        "php-concept/core-2": "@dev",
-        "twbs/bootstrap": "^5.3",
-        "twbs/bootstrap-icons": "^1.13",
-        "php-concept/extension-http": "@dev",
-        "php-concept/extension-casting-valinor": "@dev",
-        "php-concept/extension-form-request": "@dev",
-        "php-concept/extension-validation-rakit": "@dev",
-        "php-concept/extension-view": "@dev",
-        "php-concept/extension-view-twig": "@dev",
-        "php-concept/extension-view-plates": "@dev",
-        "php-concept/extension-session-symfony": "@dev",
-        "php-concept/extension-csrf": "@dev",
-        "php-concept/extension-json": "@dev",
-        "php-concept/extension-data-masker": "@dev",
-        "php-concept/extension-logger-monolog": "@dev",
-        "php-concept/extension-database-eloquent": "@dev",
-        "php-concept/extension-console-symfony": "@dev",
-        "php-concept/extension-error-handler-whoops": "@dev",
-        "php-concept/extension-config": "@dev",
-        "php-concept/extension-path-manager": "@dev",
-        "php-concept/extension-components": "@dev",
-        "laminas/laminas-permissions-acl": "^2.18",
-        "vlucas/phpdotenv": "^5.6"
     },
     "scripts": {
         "post-install-cmd": [

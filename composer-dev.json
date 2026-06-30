@@ -10,140 +10,140 @@
         },
         {
             "type": "path",
-            "url": "src/Extensions/Http",
+            "url": "/var/www/concept-extensions/extension-casting-valinor",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/CastingValinor",
+            "url": "/var/www/concept-extensions/extension-components",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/FormRequest",
+            "url": "/var/www/concept-extensions/extension-config",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/ValidationRakit",
+            "url": "/var/www/concept-extensions/extension-console-symfony",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/View",
+            "url": "/var/www/concept-extensions/extension-csrf",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/ViewTwig",
+            "url": "/var/www/concept-extensions/extension-database-eloquent",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/ViewPlates",
+            "url": "/var/www/concept-extensions/extension-data-masker",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/SessionSymfony",
+            "url": "/var/www/concept-extensions/extension-error-handler-whoops",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/Csrf",
+            "url": "/var/www/concept-extensions/extension-event",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/Json",
+            "url": "/var/www/concept-extensions/extension-form-request",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/DataMasker",
+            "url": "/var/www/concept-extensions/extension-http",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/LoggerMonolog",
+            "url": "/var/www/concept-extensions/extension-json",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/DatabaseEloquent",
+            "url": "/var/www/concept-extensions/extension-logger-monolog",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/ConsoleSymfony",
+            "url": "/var/www/concept-extensions/extension-path-manager",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/ErrorHandlerWhoops",
+            "url": "/var/www/concept-extensions/extension-session-symfony",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/Config",
+            "url": "/var/www/concept-extensions/extension-telemetry",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/PathManager",
+            "url": "/var/www/concept-extensions/extension-validation-rakit",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/Components",
+            "url": "/var/www/concept-extensions/extension-view",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/Event",
+            "url": "/var/www/concept-extensions/extension-view-plates",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "src/Extensions/Telemetry",
+            "url": "/var/www/concept-extensions/extension-view-twig",
             "options": {
                 "symlink": true
             }
@@ -165,29 +165,29 @@
         "php-debugbar/php-debugbar": "^3.7"
     },
     "require": {
-        "php-concept/core-2": "@dev",
+        "php-concept/core-2": "^1.0",
         "twbs/bootstrap": "^5.3",
         "twbs/bootstrap-icons": "^1.13",
-        "php-concept/extension-http": "@dev",
-        "php-concept/extension-casting-valinor": "@dev",
-        "php-concept/extension-form-request": "@dev",
-        "php-concept/extension-validation-rakit": "@dev",
-        "php-concept/extension-view": "@dev",
-        "php-concept/extension-view-twig": "@dev",
-        "php-concept/extension-view-plates": "@dev",
-        "php-concept/extension-session-symfony": "@dev",
-        "php-concept/extension-csrf": "@dev",
-        "php-concept/extension-json": "@dev",
-        "php-concept/extension-data-masker": "@dev",
-        "php-concept/extension-logger-monolog": "@dev",
-        "php-concept/extension-database-eloquent": "@dev",
-        "php-concept/extension-console-symfony": "@dev",
-        "php-concept/extension-error-handler-whoops": "@dev",
-        "php-concept/extension-config": "@dev",
-        "php-concept/extension-path-manager": "@dev",
-        "php-concept/extension-components": "@dev",
-        "php-concept/extension-event": "@dev",
-        "php-concept/extension-telemetry": "@dev",
+        "php-concept/extension-http": "^1.0",
+        "php-concept/extension-casting-valinor": "^1.0",
+        "php-concept/extension-form-request": "^1.0",
+        "php-concept/extension-validation-rakit": "^1.0",
+        "php-concept/extension-view": "^1.0",
+        "php-concept/extension-view-twig": "^1.0",
+        "php-concept/extension-view-plates": "^1.0",
+        "php-concept/extension-session-symfony": "^1.0",
+        "php-concept/extension-csrf": "^1.0",
+        "php-concept/extension-json": "^1.0",
+        "php-concept/extension-data-masker": "^1.0",
+        "php-concept/extension-logger-monolog": "^1.0",
+        "php-concept/extension-database-eloquent": "^1.0",
+        "php-concept/extension-console-symfony": "^1.0",
+        "php-concept/extension-error-handler-whoops": "^1.0",
+        "php-concept/extension-config": "^1.0",
+        "php-concept/extension-path-manager": "^1.0",
+        "php-concept/extension-components": "^1.0",
+        "php-concept/extension-event": "^1.0",
+        "php-concept/extension-telemetry": "^1.0",
         "laminas/laminas-permissions-acl": "^2.18",
         "vlucas/phpdotenv": "^5.6"
     },
