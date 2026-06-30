@@ -12,6 +12,13 @@ final class FormRequestServiceProvider extends AbstractServiceProvider
 {
     private const string EXTENSION_NAME = 'form-request';
 
+    /**
+     * @param array<string> $globalExcept
+     */
+    public function __construct(
+        private readonly array $globalExcept = [],
+    ) {}
+
     public function provides(string $id): bool
     {
         return $id === FormRequestFactoryInterface::class;
@@ -27,7 +34,7 @@ final class FormRequestServiceProvider extends AbstractServiceProvider
                 anchorId: FormRequestFactoryInterface::class,
             ));
 
-            return new FormRequestFactory($container);
+            return new FormRequestFactory($container, $this->globalExcept);
         })->setShared(true);
     }
 }

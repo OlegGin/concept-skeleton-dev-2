@@ -48,12 +48,20 @@ abstract class FormRequest implements FormRequestInterface
 
     protected ValidationInterface $validation;
 
+    /**
+     * @param array<string> $globalExcept
+     */
     public function __construct(
         protected readonly ServerRequestInterface $request,
         protected readonly ValidatorInterface $validator,
         protected readonly ?CasterInterface $caster = null,
         protected readonly ?ValidationLogger $validationLogger = null,
-    ) {}
+        array $globalExcept = [],
+    ) {
+        if ($globalExcept !== []) {
+            $this->globalExcept = $globalExcept;
+        }
+    }
 
     public function httpRequest(): ServerRequestInterface
     {

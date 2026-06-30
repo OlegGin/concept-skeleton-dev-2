@@ -44,6 +44,8 @@ final class ConfigKey
     public const string VALIDATOR_LOG_PATH = 'validator.log_path';
     public const string VALIDATOR_LOG_MAX_FILES = 'validator.log_max_files';
 
+    public const string FORM_REQUEST_GLOBAL_EXCEPT = 'form_request.global_except';
+
     public const string CASTER_TRANSFORMERS = 'caster.transformers';
 
     public const string MASKING_PATTERNS = 'masking.patterns';

@@ -167,7 +167,11 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             logMaxFiles: $config->getInt(ConfigKey::VALIDATOR_LOG_MAX_FILES, 7),
         ));
 
-        $container->addServiceProvider(new FormRequestServiceProvider());
+        /** @var list<string> $formRequestGlobalExcept */
+        $formRequestGlobalExcept = $config->getArray(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT);
+        $container->addServiceProvider(new FormRequestServiceProvider(
+            globalExcept: $formRequestGlobalExcept,
+        ));
         $container->addServiceProvider(new SessionServiceProvider(
             sessionOptions: $this->getSessionOptions($config),
             handler: $this->getSessionHandler($config, $pathManager),

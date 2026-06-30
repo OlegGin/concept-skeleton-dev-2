@@ -18,7 +18,13 @@ final class FormRequestFactory implements FormRequestFactoryInterface
     private const string ERR_CASTER_NOT_REGISTERED = 'CasterInterface is not registered in the container.';
     private const string ERR_VALIDATOR_NOT_REGISTERED = 'ValidatorInterface is not registered in the container.';
 
-    public function __construct(private readonly ContainerInterface $container) {}
+    /**
+     * @param array<string> $globalExcept
+     */
+    public function __construct(
+        private readonly ContainerInterface $container,
+        private readonly array $globalExcept = [],
+    ) {}
 
     public function make(string $className, ServerRequestInterface $request): FormRequestInterface
     {
@@ -43,7 +49,7 @@ final class FormRequestFactory implements FormRequestFactoryInterface
             ? $this->container->get(ValidationLogger::class)
             : null;
 
-        return new $className($request, $validator, $caster, $validationLogger);
+        return new $className($request, $validator, $caster, $validationLogger, $this->globalExcept);
     }
 
     private function resolveCaster(): CasterInterface
