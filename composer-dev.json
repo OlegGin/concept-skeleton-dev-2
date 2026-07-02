@@ -1,5 +1,5 @@
 {
-    "name": "php-concept/framework",
+    "name": "php-concept/skeleton",
     "repositories": [
         {
             "type": "path",

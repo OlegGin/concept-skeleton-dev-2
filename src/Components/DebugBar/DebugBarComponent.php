@@ -69,7 +69,7 @@ final class DebugBarComponent implements ComponentInterface
         return [];
     }
 
-    public function viewContexts(): array
+    public function viewRouteNamespace(): array
     {
         return [];
     }

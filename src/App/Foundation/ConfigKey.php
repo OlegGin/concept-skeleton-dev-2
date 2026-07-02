@@ -73,7 +73,7 @@ final class ConfigKey
 
     public const string VIEW_PATHS = 'view.paths';
     public const string VIEW_EXTENSIONS = 'view.extensions';
-    public const string VIEW_CONTEXTS = 'view.contexts';
+    public const string VIEW_ROUTE_NAMESPACE = 'view.route_namespace';
 
     public const string EVENTS_ENABLED = 'events.enabled';
     public const string EVENTS_SUBSCRIBERS = 'events.subscribers';

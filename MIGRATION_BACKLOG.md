@@ -308,7 +308,7 @@ flowchart TD
 
 | Шар | Відповідальність |
 |-----|------------------|
-| **Core** | Lifecycle event DTO (`Concept\Core\Events\Http\*` only); `?EventDispatcherInterface` у `RouteStrategy` / `HttpServiceProvider` |
+| **Core** | Lifecycle event DTO (`Concept\Core\Events\Http\*` only); `?EventDispatcherInterface` у `RouteStrategy` / `HttpKernelServiceProvider` |
 | **Extensions** | Власні event DTO (`DatabaseQueryExecuted`, `FormRequestValidated`, `TemplateRendered`, `ComponentRegistered`, …) — dispatch у своєму коді |
 | **Extension Event** | `League\Event\EventDispatcher`, `EventServiceProvider`, реєстрація `ListenerSubscriber` |
 | **Extension Telemetry** | `TelemetryCollector` + `TelemetryEventSubscriber` (лише core HTTP) |

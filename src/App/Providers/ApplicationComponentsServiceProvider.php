@@ -11,8 +11,6 @@ use League\Container\ServiceProvider\BootableServiceProviderInterface;
 
 final class ApplicationComponentsServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
-    public function __construct(private readonly string $root) {}
-
     public function provides(string $id): bool
     {
         return false;
@@ -33,7 +31,6 @@ final class ApplicationComponentsServiceProvider extends AbstractServiceProvider
         $componentClasses = $config->get(ConfigKey::COMPONENTS) ?? [];
 
         $container->addServiceProvider(new ComponentsServiceProvider(
-            root: $this->root,
             componentClasses: $componentClasses,
         ));
     }

@@ -1,0 +1,25 @@
+{% extends '@frontend/layouts/base.twig' %}
+
+{% block title %}501 · Not Implemented{% endblock %}
+
+{% block body %}
+    <section class="content-block text-center">
+        <div class="container d-flex align-items-center justify-content-center" style="min-height: 70vh;">
+            <div class="text-center">
+                <div class="display-1 fw-bold text-muted opacity-25" style="font-size: 10rem; line-height: 1;">501</div>
+                <h2 class="display-5 fw-semibold mb-3">Feature Under Construction</h2>
+                <p class="lead text-muted mb-4">
+                    We know exactly what you're looking for, but we haven't built it yet. <br>
+                    This feature is planned and will be available in a future update.
+                </p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-5">
+                    <a href="{{ uri('home') }}" class="btn btn-dark btn-lg px-5 rounded-0">Return to Home</a>
+                    <button onclick="history.back()" class="btn btn-outline-dark btn-lg px-5 rounded-0">Go Back</button>
+                </div>
+                <p class="mt-5 small text-uppercase letter-spacing-1 opacity-50">
+                    Status: 501 Not Implemented
+                </p>
+            </div>
+        </div>
+    </section>
+{% endblock %}

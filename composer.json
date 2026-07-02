@@ -1,5 +1,5 @@
 {
-    "name": "php-concept/framework",
+    "name": "php-concept/skeleton",
     "require": {
         "php-concept/core-2": "^1.0",
         "twbs/bootstrap": "^5.3",

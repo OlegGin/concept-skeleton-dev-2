@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-use Concept\App\View\Twig\AppExtension;
+use Concept\App\View\Twig\TwigAppExtension;
 
 return [
     'view' => [
-        'extensions' => [
-            AppExtension::class,
-        ],
         'paths' => [
             'frontend' => '/resources/views/frontend',
             'dashboard' => '/resources/views/dashboard',
         ],
-        'contexts' => [
+        'extensions' => [
+            TwigAppExtension::class,
+        ],
+        'route_namespace' => [
         ],
     ],
 ];

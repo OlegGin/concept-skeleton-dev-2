@@ -10,7 +10,8 @@ $root = dirname(__DIR__);
 $app = App::create();
 /** @var Container $container */
 $container = $app->getContainer();
-$container->add(Whoops::class, EarlyWhoopsBootstrap::register($root))->setShared(true);
+$errorsFallbackPath = $root . '/resources/views/errors/fallback';
+$container->add(Whoops::class, EarlyWhoopsBootstrap::register($errorsFallbackPath))->setShared(true);
 
 /** @var callable(string): list<callable> $providersFactory */
 $providersFactory = require $root . '/bootstrap/providers.php';

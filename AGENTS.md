@@ -34,7 +34,7 @@ Composer skeleton підключає core через path repository:
 ### Що лишається в ядрі
 
 - `App` — League Container + ReflectionContainer delegate, dispatch router
-- `HttpServiceProvider` — ServerRequest, Router, завантаження route files
+- `HttpKernelServiceProvider` — ServerRequest, Router, завантаження route files
 - `RouteStrategy` — invoke handler, interceptors, **chain of ArgumentResolvers**
 - Контракти: `ArgumentResolverInterface`, `RouteInterceptorInterface`
 - Дефолтні резолвери (класи в core, **порядок задає skeleton**):
@@ -62,7 +62,7 @@ Composer skeleton підключає core через path repository:
 Це **довідник**, що раніше налаштовувалось через `ConfigInterface` + `ConfigKey`. При переносі extension-а:
 - дивись `storage/config/{name}.php` — які ключі/структура були
 - у новому коді **не тягни ConfigInterface** — передай потрібні значення явно в skeleton glue
-- приклад уже є: `bootstrap/providers.php` передає route paths масивом у `HttpServiceProvider`, а не через config
+- приклад уже є: `bootstrap/providers.php` передає route paths масивом у `HttpKernelServiceProvider`, а не через config
 
 **Не робити зараз:**
 - не додавати `ConfigInterface` у core
@@ -196,12 +196,12 @@ Http/
 
 **Request у методах:** `ResponseFactory::back($request)`, `UrlGenerator::url($request, …)` — без container lookup.
 
-Provider: `Concept\Extensions\Http\HttpServiceProvider` (core provider — `Concept\Core\Providers\Http\HttpServiceProvider`).
+Provider: `Concept\Extensions\Http\HttpServiceProvider` (core kernel — `Concept\Core\Providers\Http\HttpKernelServiceProvider`).
 
 ### Що робить skeleton («клей»)
 
 - Реєструє providers у `bootstrap/providers.php`
-- Підключає extensions і передає `$resolvers` / `$interceptors` у `HttpServiceProvider`
+- Підключає extensions і передає `$resolvers` / `$interceptors` у `HttpKernelServiceProvider`
 - Містить app code: controllers, routes, app-specific providers
 
 ## Argument resolving — узгоджена модель
@@ -219,7 +219,7 @@ foreach ($this->resolvers as $resolver) {
 
 ### Порядок резолверів (важливо!)
 
-**Ядро не збирає chain** — лише приймає `$resolvers` у `HttpServiceProvider` у заданому порядку.
+**Ядро не збирає chain** — лише приймає `$resolvers` у `HttpKernelServiceProvider` у заданому порядку.
 Skeleton (`bootstrap/providers.php`) описує повний ланцюжок явно.
 
 Рекомендований порядок (skeleton glue):
@@ -235,7 +235,7 @@ Skeleton (`bootstrap/providers.php`) описує повний ланцюжок 
 ### Архітектурні рішення (узгоджені з користувачем)
 
 - **FormRequest** → extension, ядро не знає про `FormRequestInterface`
-- **ServerRequest** → resolver-клас у core, реєструється HttpServiceProvider за замовчуванням (не hardcode в RouteStrategy)
+- **ServerRequest** → resolver-клас у core, реєструється `HttpKernelServiceProvider` (не hardcode в RouteStrategy)
 - **castValue / typed route params** → extension Casting, базовий route param без casting — у core
 - **Config** → не використовувати `ConfigInterface` під час міграції; явні параметри; Config extension — в кінці
 - **Enriched request** → лише через resolvers/параметри handler-а; `prepareRequest` додає route vars як attributes, **без** `container->add(ServerRequestInterface)`. Container request — тільки entry point для `App::handle()`. Не використовувати `RequestProxy` у core.
@@ -272,14 +272,14 @@ core-2/src/
 │           └── RouteParameterArgumentResolver.php
 └── Providers/
     └── Http/
-        └── HttpServiceProvider.php    # routePaths, $resolvers, $interceptors — явні параметри
+        └── HttpKernelServiceProvider.php    # routePaths, $resolvers, $interceptors — явні параметри
 ```
 
 ## Skeleton — поточні файли
 
 ```
 bootstrap/app.php          → App::create(), register providers
-bootstrap/providers.php    → HttpServiceProvider + app providers
+bootstrap/providers.php    → HttpKernelServiceProvider + app providers
 routes/web.php             → GET / → IndexController::index
 src/App/Controllers/IndexController.php
 src/App/Providers/TestServiceProvider.php
@@ -297,10 +297,10 @@ config/routes.php          → skeleton config (поки не використо
 
 ### ✅ Зроблено
 
-- [x] Тонке ядро: `App`, `HttpServiceProvider`, `RouteStrategy` з chain resolvers
+- [x] Тонке ядро: `App`, `HttpKernelServiceProvider`, `RouteStrategy` з chain resolvers
 - [x] Контракт `ArgumentResolverInterface` (`supports` отримує `$vars`)
 - [x] `ServerRequestArgumentResolver` + `RouteParameterArgumentResolver` у core
-- [x] Дефолтні resolvers підключені в `HttpServiceProvider`
+- [x] Дефолтні resolvers підключені в `HttpKernelServiceProvider`
 - [x] **Http extension**: Protocol, RequestFormat, UrlGenerator, ResponseFactory, RouteDescriptor + provider
 - [x] **Casting extension**: Caster (Valinor), DtoInterface, Dto, TypedRouteParameterArgumentResolver
 - [x] **Validation extension**: magewirephp/validation, Rule, exceptions
@@ -372,7 +372,7 @@ public/index.php
 
 | Request | Джерело | Route attributes |
 |---------|---------|------------------|
-| Container `ServerRequestInterface` | `HttpServiceProvider`, globals | Ні — лише для `App::handle()` entry |
+| Container `ServerRequestInterface` | `HttpKernelServiceProvider`, globals | Ні — лише для `App::handle()` entry |
 | Enriched | `prepareRequest()` → resolvers → handler | Так |
 
 Extensions (FormRequest, ResponseFactory): отримують `$request` **явно** з resolver/параметра методу, не `$container->get(ServerRequestInterface::class)`.
@@ -395,7 +395,7 @@ public function __construct(
 ) {}
 ```
 
-Resolvers передаються з skeleton у `HttpServiceProvider` як **повний упорядкований** масив.
+Resolvers передаються з skeleton у `HttpKernelServiceProvider` як **повний упорядкований** масив.
 
 ---
 

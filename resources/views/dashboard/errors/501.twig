@@ -1,0 +1,26 @@
+{% extends '@dashboard/layouts/error.twig' %}
+
+{% block title %}501 · Not Implemented{% endblock %}
+
+{% block body %}
+    <div class="error-shell">
+        <div class="error-card">
+            <span class="error-eyebrow">Error · Not Implemented</span>
+            <div class="error-code">501</div>
+            <h1 class="error-title">Feature Under Construction</h1>
+            <p class="error-sub">We haven't built this feature yet. It's planned and will be available in a future update.</p>
+            <div class="error-actions">
+                <a href="{{ uri('admin.dashboard') }}" class="btn btn--primary">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 12 3l9 9"/><path d="M5 10v10h14V10"/></svg> Back to dashboard
+                </a>
+                <a href="javascript:history.back()" class="btn btn--ghost">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Go back
+                </a>
+            </div>
+            <div class="error-meta">
+                <span><strong>STATUS</strong> 501</span>
+                <span><strong>CODE</strong> NOT_IMPLEMENTED</span>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -22,8 +22,8 @@ class SettingsManagerComponent implements ComponentInterface
         SettingsSeeder::class,
     ];
 
-    /** @var array<string, string> */
-    private const array VIEW_CONTEXTS = [
+    /** @var array<string, string> route prefix => view namespace */
+    private const array VIEW_ROUTE_NAMESPACE = [
         '/admin' => 'dashboard',
     ];
 
@@ -71,7 +71,7 @@ class SettingsManagerComponent implements ComponentInterface
     public function migrationPaths(): array
     {
         return [
-            $this->pathManager->toRelative($this->componentDir . '/Database/Migrations'),
+            $this->componentDir . '/Database/Migrations',
         ];
     }
 
@@ -88,13 +88,13 @@ class SettingsManagerComponent implements ComponentInterface
     public function viewPaths(): array
     {
         return [
-            self::VIEW_NAMESPACE => $this->pathManager->toRelative($this->componentDir . '/Views'),
+            self::VIEW_NAMESPACE => $this->componentDir . '/Views',
         ];
     }
 
-    public function viewContexts(): array
+    public function viewRouteNamespace(): array
     {
-        return self::VIEW_CONTEXTS;
+        return self::VIEW_ROUTE_NAMESPACE;
     }
 
     public function assets(): array
