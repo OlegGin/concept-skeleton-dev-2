@@ -40,6 +40,12 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
         $container = $this->getContainer();
 
+        $container->addServiceProvider(new HttpKernelServiceProvider(
+            routePaths: [
+                $this->root . self::ROUTES_WEB,
+            ],
+            notFoundMiddleware: RenderHttpErrorMiddleware::class,
+        ));
         $container->addServiceProvider(new HttpServiceProvider());
 
         $container->addServiceProvider(new ViewServiceProvider(
@@ -60,13 +66,6 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
             debug: self::DEBUG,
             errorsFallbackPath: $this->root . self::ERRORS_FALLBACK,
-        ));
-
-        $container->addServiceProvider(new HttpKernelServiceProvider(
-            routePaths: [
-                $this->root . self::ROUTES_WEB,
-            ],
-            notFoundMiddleware: RenderHttpErrorMiddleware::class,
         ));
     }
 }
