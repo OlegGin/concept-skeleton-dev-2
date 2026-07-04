@@ -2,6 +2,7 @@
 
 namespace Concept\App\Providers;
 
+use Concept\App\Http\Error\AppExceptionReporter;
 use Concept\App\Http\Error\TwigHttpErrorRenderer;
 use Concept\App\Middleware\RenderHttpErrorMiddleware;
 use Concept\App\View\Twig\TwigAppExtension;
@@ -9,10 +10,10 @@ use Concept\Core\Providers\Http\HttpKernelServiceProvider;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
-use Concept\Extensions\ErrorHandlerWhoops\Reporting\WhoopsExceptionReporter;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\Http\Requests\RequestFormat;
+use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
@@ -21,6 +22,7 @@ use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
 use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 final class ApplicationServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -91,8 +93,12 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     private function registerErrorHandlers(DefinitionContainerInterface $container, string $fallbackPath): void
     {
-        $container->add(ExceptionReporterInterface::class, fn(): WhoopsExceptionReporter => new WhoopsExceptionReporter($container))
-            ->setShared(true);
+        $container->add(ExceptionReporterInterface::class, function() use ($container): AppExceptionReporter {
+            return new AppExceptionReporter(
+                logger: $container->get(LoggerInterface::class),
+                request: $container->get(ServerRequestInterface::class),
+            );
+        })->setShared(true);
 
         $container->add(TwigHttpErrorRenderer::class, function() use ($container, $fallbackPath): TwigHttpErrorRenderer {
             return new TwigHttpErrorRenderer(
