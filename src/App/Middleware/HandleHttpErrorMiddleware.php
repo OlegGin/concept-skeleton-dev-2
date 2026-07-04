@@ -3,18 +3,19 @@
 namespace Concept\App\Middleware;
 
 use Concept\App\Http\Exception\HttpErrorException;
+use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
 use Concept\Extensions\Http\Protocol\HttpStatusCode;
 use League\Route\Http\Exception\NotFoundException;
-use Throwable;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 
 final class HandleHttpErrorMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private readonly RenderHttpErrorMiddleware $renderHttpError,
+        private readonly HttpErrorRendererInterface $httpErrorRenderer,
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -22,19 +23,19 @@ final class HandleHttpErrorMiddleware implements MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (NotFoundException $exception) {
-            return $this->renderHttpError->render(
+            return $this->httpErrorRenderer->render(
                 $request,
                 HttpStatusCode::NOT_FOUND,
                 $exception->getMessage(),
             );
         } catch (HttpErrorException $exception) {
-            return $this->renderHttpError->render(
+            return $this->httpErrorRenderer->render(
                 $request,
                 $exception->getStatusCode(),
                 $exception->getMessage(),
             );
         } catch (Throwable) {
-            return $this->renderHttpError->render(
+            return $this->httpErrorRenderer->render(
                 $request,
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
                 HttpStatusCode::getReasonPhrase(HttpStatusCode::INTERNAL_SERVER_ERROR),
