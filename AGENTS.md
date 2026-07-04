@@ -41,35 +41,113 @@ Composer skeleton підключає core через path repository:
   - `ServerRequestArgumentResolver` — PSR-7 request injection
   - `RouteParameterArgumentResolver` — raw route vars by param name
 
-### Конфігурація — без ConfigInterface (узгоджено)
+### Конфігурація — glue читає, extensions отримують параметри
 
-**Зараз ConfigInterface не використовується ніде** — ні в ядрі, ні в extensions під час міграції.
+**Ядро не знає про Config.** Extensions **не читають** `ConfigInterface` — лише skeleton glue.
 
-| Етап | Підхід |
-|------|--------|
-| **Зараз (міграція)** | Залежності та налаштування передаються **явно**: масиви, окремі параметри конструктора, аргументи provider-ів |
-| **В кінці** | Extension **Config** — тоді skeleton буде читати конфіги і передавати значення в providers/extensions |
+| Шар | Підхід |
+|-----|--------|
+| **Core** | Без config; тільки явні параметри provider-ів |
+| **Extensions** | Constructor params у `*ServiceProvider`; сервіси — через конструктор, не через `$container->get()` чужих типів |
+| **Skeleton glue** | Читає `config/` (+ `.env` через Config extension) → передає значення в providers/extensions |
 
-**Reference-конфіги** старого додатку лежать тут (не active, не підключені):
+**Reference-конфіги** старого додатку: `core-2/storage/config/` — довідник ключів/структури при переносі.
 
-```
-/var/www/concept-core-2/storage/config/
-├── app.php, db.php, session.php, view.php, validator.php, …
-├── dev/, production/          # env-specific overrides
-└── routes.php, telemetry.php, migrations.php, …
-```
-
-Це **довідник**, що раніше налаштовувалось через `ConfigInterface` + `ConfigKey`. При переносі extension-а:
-- дивись `storage/config/{name}.php` — які ключі/структура були
-- у новому коді **не тягни ConfigInterface** — передай потрібні значення явно в skeleton glue
-- приклад уже є: `bootstrap/providers.php` передає route paths масивом у `HttpKernelServiceProvider`, а не через config
-
-**Не робити зараз:**
+**Не робити:**
 - не додавати `ConfigInterface` у core
-- не підключати `storage/config/` до bootstrap
-- не копіювати `ConfigServiceProvider` / `ConfigKey` зі старого ядра
+- не підключати `storage/config/` старого ядра напряму
+- не тягнути `ConfigInterface` всередину extension-класів (тільки glue)
 
-**Config extension (фінальний етап):** skeleton читає PHP-конфіги (можливо з `storage/config/` як основи) і прокидає значення в providers. Ядро лишається без Config.
+## Збірка додатку — модель «конструктора» (узгоджено)
+
+> Мета: збирати додаток як конструктор — «хочу логування → додаю provider», «хочу Twig + розширення → передаю в constructor». Крок за кроком від мінімального стеку до повного.
+
+### Стратегія: incremental build, не big-bang
+
+| Артефакт | Роль |
+|----------|------|
+| **`ApplicationServiceProvider.php`** (active) | **Мінімальна проба** — перевірка передачі залежностей, один extension за раз |
+| **`ApplicationServiceProvider1.php`** | **Reference full stack** — працююча повна збірка, але занадто велика для огляду контрактів |
+| **`providers.php`** | Active entry point (мінімальний профіль) |
+| **`providers1.php`** | Reference entry point (повний профіль + Config + Components) |
+
+**Порядок роботи:** стартуємо з мінімального `ApplicationServiceProvider`, додаємо extension лише коли його контракт (constructor params, lazy wiring, залежності) зрозумілий. Кожен крок — «розробник хоче X → додає один блок у glue». Повна збірка в `ApplicationServiceProvider1` — **ціль і чеклист**, не джерело для сліпого копіювання.
+
+### Три шари збірки
+
+```
+bootstrap/providers.php          → список app-level providers (glue entry)
+ApplicationServiceProvider       → infrastructure extensions (constructor blocks, lazy resolve)
+ApplicationComponentsServiceProvider → feature components (manifest modules)
+ApplicationRuntimeServiceProvider    → post-config runtime (timezone, …)
+```
+
+**Glue** = конструктор. **Extension ServiceProvider** = блок конструктора з явними параметрами. **Component** = plug-in module (routes, views, migrations, …) поверх уже зібраного стеку.
+
+### Правила залежностей extensions (цільовий стан)
+
+Старе товсте ядро мало **жорсткі зв'язки** між частинами; після декомпозиції артефакти лишаються — extension тягне з container «чужі» сервіси. **При нарощенні мінімального стеку — виправляти.**
+
+| Дозволено | Заборонено (ціль) |
+|-----------|-------------------|
+| Provider constructor: paths, flags, arrays, closures, готові instances | Extension-клас `$container->get(ForeignExtension\Service::class)` |
+| Provider `register()`: реєструє **власні** контракти extension | Extension читає `ConfigInterface` |
+| `$container->get()` **лише власних** контрактів extension або **core/PSR** контрактів, без яких extension не може існувати | Неявні залежності «якщо в container є X — візьму» без контракту в constructor |
+| Glue передає app-specific реалізації через constructor/closures (напр. `HttpErrorRendererInterface`) | Extension знає про skeleton app-класи |
+
+**ServiceProvider `register()` і container lookup:**
+
+- **Constructor params** — primary спосіб конфігурації extension (paths, debug, lists, handlers).
+- **`$container->get()` у factory closure provider-а** — допустимо для **відомих контрактів** того ж extension або стабільних core/PSR типів (`Router`, `RequestContextInterface`), якщо це wiring всередині provider-а, а не business-logic класу.
+- **Сервіси extension** — залежності через **constructor**, не через `$container->get()` у методах.
+
+**App-specific glue** (приклад: `AppExceptionReporter`, `TwigHttpErrorRenderer`) — у skeleton (`Concept\App\`), не в extension. Extension отримує `ExceptionReporterInterface` / `HttpErrorRendererInterface` через constructor provider-а або closure з glue.
+
+### Приклади «конструктора» (mental model)
+
+| «Хочу…» | Glue робить |
+|---------|---------------|
+| Логування помилок | `new LoggerMonologServiceProvider(path:, level:, …)` → glue передає `ExceptionReporterInterface` у `ErrorHandlerWhoopsServiceProvider` |
+| Гарні сторінки помилок | skeleton: `TwigHttpErrorRenderer` → glue: `httpErrorRenderer: fn() => …` у Whoops provider (lazy closures) |
+| Шаблонізатор | `ViewServiceProvider(paths:, extensions:)` + `TwigViewServiceProvider(viewsPath:, cacheDir:, debug:)` |
+| Розширення Twig | `extensions: [TwigAppExtension::class, …]` у `ViewServiceProvider` constructor |
+| FormRequest + validation | glue збирає resolver chain + `ValidationServiceProvider` + `FormRequestServiceProvider`; instances/resolvers передає в `HttpKernelServiceProvider` |
+
+### Lazy-first (узгоджено)
+
+**Ціль:** glue лише реєструє definitions; сервіси **не прокидаються наперед**. Resolve — при першому `get()` (request, exception, CLI entry).
+
+| Шар | Що робить |
+|-----|-----------|
+| **`boot()`** | `$container->add(...)`, `addServiceProvider(...)`, порожні registries, handler chains з closures. **Без** `$container->get()` чужих сервісів |
+| **`register()`** | `$container->add(..., fn() => ...)` — lazy factories |
+| **Resolve** | Перший реальний `get()` — wiring залежностей у closure |
+
+**Порядок `addServiceProvider()` у glue не є контрактом**, якщо дотримано lazy: усі блоки додані до першого resolve.
+
+**Коли порядок / eager все ж потрібен:**
+
+- `boot()` одразу робить `$container->get()` (напр. `ComponentsServiceProvider` → `Router`, `ViewRegistry`)
+- glue між блоками робить eager `get()` (напр. append у registry після попереднього provider)
+- runtime-порядок у масивах: resolver chain, middleware/interceptors
+- **early bootstrap** окремо: `EarlyWhoopsBootstrap` у `bootstrap/app.php` до повного container
+
+**Ціна lazy:** помилки конфігурації — fail late (на першому використанні). Компенсація: dev/CLI smoke після змін glue (див. MIGRATION_BACKLOG P0).
+
+**Шари glue (для читабельності, не жорсткий порядок):** Config → Logger/Event → infrastructure extensions → app error glue → Console/Components → HttpKernel (resolvers/interceptors як constructor params).
+
+### Legacy coupling — що шукати при нarощенні
+
+При додаванні extension з `ApplicationServiceProvider1` у мінімальну збірку перевіряти:
+
+- `$container->get()` на типи інших extensions без явного контракту в constructor provider-а
+- `EventDispatcherResolver::optional($container)` — допустимо для optional telemetry, але не заміна явної залежності для critical path
+- Resolvers з `$container` у constructor (`FormRequestArgumentResolver`, `TypedRouteParameterArgumentResolver`) — glue **передає** їх у `HttpKernelServiceProvider`, не core
+- Hardcoded assumptions «ViewRegistry вже є», «Router вже зареєстрований» — документувати в boot order
+
+### Профілі збірки (майбутнє)
+
+Замість дублікатів `ApplicationServiceProvider2.php`, `providers2.php` — один provider + named profiles (`minimal`, `full`) або окремі методи/класи glue за шарами. `ApplicationServiceProvider1` лишається reference до повного профілю.
 
 ### Що виноситься в Extensions (skeleton `src/Extensions/`)
 
@@ -309,13 +387,16 @@ config/routes.php          → skeleton config (поки не використо
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
 
-### 🔲 Наступні кроки (порядок роботи)
+### 🔲 Наступні кроки (constructor build — порядок роботи)
 
-1. **Http extension** (далі): middleware (`ParseJsonBody`, `ForceJsonResponse`, `HandleValidationException`, …)
-2. **Extension View**: ViewResponseFactory після View engine
-3. **Extension Console**: `RouteListCommand` та інші CLI commands
-4. Поступово переносити інші можливості з `storage/src/` у extensions
-5. **Extension Config** (фінал): читання `storage/config/`, прокидання параметрів у glue
+1. **Мінімальний стек** — довести active `ApplicationServiceProvider`: lazy wiring, error handling через closures
+2. **Extension-by-extension** — кожен блок з `ApplicationServiceProvider1` → мінімальна збірка + перевірка constructor params, без container coupling
+3. **Рефактор legacy coupling** у extensions (container lookups → constructor/wiring у provider)
+4. **Розбити glue** — окремі providers за шарами (error handling, infrastructure, components)
+5. **Profiles** — formalize `minimal` / `full` замість дублікатів `*1.php`, `*2.php`
+6. **Boot validation** — dev/CLI smoke після зборки (див. MIGRATION_BACKLOG P0)
+
+Reference full stack: `ApplicationServiceProvider1.php` + `providers1.php`.
 
 ## Команди
 
@@ -344,7 +425,7 @@ readlink -f /var/www/concept-skeleton-dev-2/vendor/php-concept/core-2
 - Мінімальний diff — не переносити зайве зі старого ядра
 - Ядро **не залежить** від extensions (тільки PSR + League + Laminas)
 - Extensions залежать від core contracts
-- **Без ConfigInterface** під час міграції — тільки явні параметри/massиви в skeleton glue
+- **Config читає лише glue** — extensions отримують значення через constructor provider-ів, не `ConfigInterface` всередині extension
 - **Повідомлення винятків** — текст у `private const string ERR_*` класу; виняток через `use` + `throw new RuntimeException(...)`, не `throw new \RuntimeException('...')` inline. Якщо рядок константи вміщується в **120 символів** — оголошувати в один рядок, без переносу після `=`
 - **Імена класів** — без префікса `Container` (`FormRequestFactory`, `FormRequestArgumentResolver`, `TypedRouteParameterArgumentResolver`); lazy-отримання залежностей — всередині класу, не в назві
 - **Arrow functions** — без пробілу після `fn`: `fn()`, `fn(): Type`, `fn($x): Type`, `static fn(Route $a, Route $b): int`. Не `fn ()`, не `fn ($x)`.
@@ -399,4 +480,4 @@ Resolvers передаються з skeleton у `HttpKernelServiceProvider` як
 
 ---
 
-*Останнє оновлення: 2026-06-24 — конвенції fn()/літерали; Config extension; ApplicationServiceProvider glue.*
+*Останнє оновлення: 2026-07-04 — lazy-first, модель «конструктора», incremental build.*

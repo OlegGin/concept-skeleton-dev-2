@@ -6,6 +6,8 @@ use Concept\App\Http\Error\AppExceptionReporter;
 use Concept\App\Http\Error\TwigHttpErrorRenderer;
 use Concept\App\Middleware\RenderHttpErrorMiddleware;
 use Concept\App\View\Twig\TwigAppExtension;
+use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
+use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
 use Concept\Core\Providers\Http\HttpKernelServiceProvider;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
@@ -62,6 +64,10 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new HttpKernelServiceProvider(
             routePaths: [
                 $this->root . self::ROUTES_WEB,
+            ],
+            resolvers: [
+                new ServerRequestArgumentResolver(),
+                new RouteParameterArgumentResolver(),
             ],
             notFoundMiddleware: RenderHttpErrorMiddleware::class,
         ));

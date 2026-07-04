@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-{#    {% include '@frontend/partials/_title.twig' with { page_title: block('title') } %}#}
+    {% include '@frontend/partials/_title.twig' with { page_title: block('title') } %}
     {% block meta %}
         <meta name="description" content="{% block meta_description %}{% endblock %}">
         <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">

@@ -1,0 +1,16 @@
+{% extends '@frontend/layouts/base.twig' %}
+
+{% block title %}503 · Service Unavailable{% endblock %}
+
+{% block body %}
+    <section class="content-block bg-dark text-white text-center">
+        <div class="container d-flex align-items-center justify-content-center" style="min-height: 70vh;">
+            <div class="text-center">
+                <div class="display-1 fw-bold text-muted">503</div>
+                <h2 class="display-5 fw-semibold mb-3">Service Unavailable</h2>
+                <p class="lead text-muted mb-4">The service is temporarily unavailable. Please try again later.</p>
+                <a href="{{ uri('home') }}" class="btn btn-dark btn-lg px-5">Back to safety</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}
