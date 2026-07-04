@@ -21,6 +21,7 @@ use Concept\Extensions\LoggerMonolog\LogHandlerRegistry;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
+use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
 use Concept\Extensions\DatabaseEloquent\DatabaseEloquentServiceProvider;
@@ -40,6 +41,7 @@ use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
 use InvalidArgumentException;
+use Closure;
 use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
@@ -127,11 +129,14 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             rules: $rules,
         ));
 
+        $dataMaskerFactory = $this->dataMaskerFactory($container);
+
         $container->addServiceProvider(new LoggerMonologServiceProvider(
             path: $pathManager->get(PathName::LOGS, self::LOG_APP_FILE),
             level: $config->getString(ConfigKey::LOG_LEVEL),
             maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
             channel: $config->getString(ConfigKey::LOG_NAME),
+            dataMaskerFactory: $dataMaskerFactory,
         ));
 
         $this->registerTelemetryLogHandler($container, $config);
@@ -151,6 +156,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             migrationPaths: $migrationPaths,
             seeders: $seeders,
             emitQueryEvents: $config->getBool(ConfigKey::TELEMETRY_DB_QUERIES),
+            dataMaskerFactory: $dataMaskerFactory,
         ));
 
         /** @var array<string, class-string<RuleInterface>> $validatorRules */
@@ -160,6 +166,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             logEnabled: $config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED),
             logPath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::VALIDATOR_LOG_PATH, self::LOG_VALIDATION_FILE)),
             logMaxFiles: $config->getInt(ConfigKey::VALIDATOR_LOG_MAX_FILES, 7),
+            dataMaskerFactory: $dataMaskerFactory,
         ));
 
         /** @var list<string> $formRequestGlobalExcept */
@@ -337,5 +344,13 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $sessionFilePath = $pathManager->get(PathName::STORAGE, $sessionFilePath);
 
         return new NativeFileSessionHandler($sessionFilePath);
+    }
+
+    /**
+     * @return Closure(): ?DataMaskerInterface
+     */
+    private function dataMaskerFactory(ContainerInterface $container): Closure
+    {
+        return fn(): ?DataMaskerInterface => $container->get(DataMaskerInterface::class);
     }
 }

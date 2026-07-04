@@ -15,6 +15,8 @@ use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
+use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
+use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
@@ -35,6 +37,7 @@ use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use Closure;
 use Psr\Http\Message\ServerRequestInterface;
 use SessionHandlerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -88,10 +91,19 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             debug: self::DEBUG,
         ));
 
+        $container->addServiceProvider(new DataMaskerServiceProvider(
+            patterns: $this->getDataMaskerPatterns(),
+            keyPatterns: $this->getDataMaskerKeyPatterns(),
+            rules: [],
+        ));
+
+        $dataMaskerFactory = $this->dataMaskerFactory($container);
+
         $container->addServiceProvider(new ValidationServiceProvider(
             customRules: [],
             logEnabled: self::DEBUG,
             logPath: $this->root . self::LOG_VALIDATION_FILE,
+            dataMaskerFactory: $dataMaskerFactory,
         ));
 
         $container->addServiceProvider(new FormRequestServiceProvider(
@@ -119,6 +131,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             level: self::LOG_LEVEL,
             maxFiles: self::LOG_MAX_FILES,
             channel: self::LOG_CHANNEL,
+            dataMaskerFactory: $dataMaskerFactory,
         ));
 
         $container->addServiceProvider(new HttpServiceProvider());
@@ -190,6 +203,41 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private function getSessionHandler(): SessionHandlerInterface
     {
         return new NativeFileSessionHandler($this->root . self::SESSION_SAVE_PATH);
+    }
+
+    /**
+     * @return Closure(): ?DataMaskerInterface
+     */
+    private function dataMaskerFactory(DefinitionContainerInterface $container): Closure
+    {
+        return fn(): ?DataMaskerInterface => $container->get(DataMaskerInterface::class);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function getDataMaskerPatterns(): array
+    {
+        return [
+            '/[a-z0-9_\-\+\.]+@[a-z0-9\-]+\.[a-z]{2,}/i' => '***@***.***',
+            '/\d{4}-\d{4}-\d{4}-\d{4}/' => '****-****-****-****',
+            '/(password|passwd|pwd|repeat_password|password_confirmation|token|_csrf_token|csrf_token|api_key|secret|authorization)[:=]+([^\s,;]+)/i' => '$1=*****',
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getDataMaskerKeyPatterns(): array
+    {
+        return [
+            '/.*password.*/i',
+            '/.*token.*/i',
+            '/.*_csrf_token.*/i',
+            '/.*secret.*/i',
+            '/api_key/i',
+            '/authorization/i',
+        ];
     }
 
     private function registerErrorHandlers(DefinitionContainerInterface $container, string $fallbackPath): void

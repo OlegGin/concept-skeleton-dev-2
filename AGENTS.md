@@ -92,8 +92,8 @@ ApplicationRuntimeServiceProvider    → post-config runtime (timezone, …)
 |-----------|-------------------|
 | Provider constructor: paths, flags, arrays, closures, готові instances | Extension-клас `$container->get(ForeignExtension\Service::class)` |
 | Provider `register()`: реєструє **власні** контракти extension | Extension читає `ConfigInterface` |
-| `$container->get()` **лише власних** контрактів extension або **core/PSR** контрактів, без яких extension не може існувати | Неявні залежності «якщо в container є X — візьму» без контракту в constructor |
-| Glue передає app-specific реалізації через constructor/closures (напр. `HttpErrorRendererInterface`) | Extension знає про skeleton app-класи |
+| `$container->get()` **лише власних** контрактів extension або **core/PSR** контрактів, без яких extension не може існувати | `$container->has(ForeignInterface)` + optional get (service locator) |
+| Glue передає **optional cross-extension** deps через `?Closure $…Factory` у constructor provider-а (напр. `dataMaskerFactory`) | Extension знає про skeleton app-класи |
 
 **ServiceProvider `register()` і container lookup:**
 
@@ -112,6 +112,7 @@ ApplicationRuntimeServiceProvider    → post-config runtime (timezone, …)
 | Шаблонізатор | `ViewServiceProvider(paths:, extensions:)` + `TwigViewServiceProvider(viewsPath:, cacheDir:, debug:)` |
 | Розширення Twig | `extensions: [TwigAppExtension::class, …]` у `ViewServiceProvider` constructor |
 | FormRequest + validation | glue збирає resolver chain + `ValidationServiceProvider` + `FormRequestServiceProvider`; instances/resolvers передає в `HttpKernelServiceProvider` |
+| Маскування логів | `DataMaskerServiceProvider(patterns:, …)` + `dataMaskerFactory: fn() => …` у `LoggerMonologServiceProvider` / `ValidationServiceProvider` |
 
 ### Lazy-first (узгоджено)
 
@@ -390,6 +391,7 @@ config/routes.php          → skeleton config (поки не використо
 - [x] **Session + CSRF**: `SessionServiceProvider`, `CsrfServiceProvider`, middleware chain у `web.php`
 - [x] **Validation redirect flow**: `HandleValidationExceptionMiddleware` + flash + форма на `/` з errors/old
 - [x] **Json middleware**: `routes/api.php`, `ParseJsonBodyMiddleware`, `ForceJsonResponseMiddleware`; CSRF/session middleware лише на web group
+- [x] **DataMasker extension**: glue → `dataMaskerFactory` у log-related providers (не `$container->has()` у extension)
 - [x] `ApplicationServiceProvider` — glue для extensions і resolver chain
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
@@ -399,7 +401,7 @@ config/routes.php          → skeleton config (поки не використо
 > **Components** — відкладено до повного проходження всіх extensions (не чіпати зараз).
 
 1. **Config + PathManager** — замінити hardcoded consts у glue
-2. **Інші extensions** — Event, DataMasker, Database, … по одному з smoke-тестом
+2. **Інші extensions** — Event, Database, … по одному з smoke-тестом
 4. **Розбити glue** — окремі providers за шарами
 5. **Profiles** — formalize `minimal` / `full` замість дублікатів `*1.php`
 6. **Boot validation** — dev/CLI smoke після зборки
