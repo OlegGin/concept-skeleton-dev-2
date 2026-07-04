@@ -56,6 +56,9 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
         $container = $this->getContainer();
 
+        $fallbackPath = $this->root . self::ERRORS_FALLBACK;
+        $this->registerErrorHandlers($container, $fallbackPath);
+
         $container->addServiceProvider(new HttpKernelServiceProvider(
             routePaths: [
                 $this->root . self::ROUTES_WEB,
@@ -86,9 +89,6 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             cacheDir: $this->root . self::CACHE_VIEWS,
             debug: self::DEBUG,
         ));
-
-        $fallbackPath = $this->root . self::ERRORS_FALLBACK;
-        $this->registerErrorHandlers($container, $fallbackPath);
     }
 
     private function registerErrorHandlers(DefinitionContainerInterface $container, string $fallbackPath): void
