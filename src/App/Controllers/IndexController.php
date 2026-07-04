@@ -14,6 +14,6 @@ class IndexController
 
     public function index(): ResponseInterface
     {
-        return $this->responseFactory->create('frontend/test');
+        return $this->responseFactory->create('@frontend/index');
     }
 }
