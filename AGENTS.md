@@ -383,18 +383,25 @@ config/routes.php          → skeleton config (поки не використо
 - [x] **Casting extension**: Caster (Valinor), DtoInterface, Dto, TypedRouteParameterArgumentResolver
 - [x] **Validation extension**: magewirephp/validation, Rule, exceptions
 - [x] **FormRequest extension**: factory, resolver, abstract FormRequest
+- [x] **Validation + FormRequest у glue**: `ValidationServiceProvider`, `FormRequestServiceProvider`, `new FormRequestArgumentResolver($container)` у resolver chain
+- [x] `HandleHttpErrorMiddleware` — `ValidationException` → 422 JSON (Accept) або HTML renderer
+- [x] Тест: `POST /test/echo` + `TestEchoRequest` (name, email)
+- [x] **Console extension**: `ConsoleSymfonyServiceProvider`, `route:list`
 - [x] `ApplicationServiceProvider` — glue для extensions і resolver chain
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
 
 ### 🔲 Наступні кроки (constructor build — порядок роботи)
 
-1. **Мінімальний стек** — довести active `ApplicationServiceProvider`: lazy wiring, error handling через closures
-2. **Extension-by-extension** — кожен блок з `ApplicationServiceProvider1` → мінімальна збірка + перевірка constructor params, без container coupling
-3. **Рефактор legacy coupling** у extensions (container lookups → constructor/wiring у provider)
-4. **Розбити glue** — окремі providers за шарами (error handling, infrastructure, components)
-5. **Profiles** — formalize `minimal` / `full` замість дублікатів `*1.php`, `*2.php`
-6. **Boot validation** — dev/CLI smoke після зборки (див. MIGRATION_BACKLOG P0)
+> **Components** — відкладено до повного проходження всіх extensions (не чіпати зараз).
+
+1. **Session block** — Session + CSRF + middleware (`StorePreviousUrl`, `HandleValidationException`, `ShareViewData`)
+2. **Http middleware** — `ParseJsonBody`, `ForceJsonResponse`, …
+3. **Config + PathManager** — замінити hardcoded consts у glue
+4. **Інші extensions** — Event, DataMasker, Database, … по одному з smoke-тестом
+5. **Розбити glue** — окремі providers за шарами
+6. **Profiles** — formalize `minimal` / `full` замість дублікатів `*1.php`
+7. **Boot validation** — dev/CLI smoke після зборки
 
 Reference full stack: `ApplicationServiceProvider1.php` + `providers1.php`.
 

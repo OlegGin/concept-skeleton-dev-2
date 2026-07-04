@@ -3,8 +3,11 @@
 namespace Concept\App\Controllers;
 
 use Concept\App\Http\Exception\HttpErrorException;
+use Concept\App\Http\Requests\TestEchoRequest;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Protocol\HttpStatusCode;
+use Concept\Extensions\Http\Requests\RequestFormat;
+use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -13,6 +16,8 @@ final class TestController
 {
     public function __construct(
         private readonly ResponseFactoryInterface $responseFactory,
+        private readonly ViewResponseFactoryInterface $viewResponse,
+        private readonly RequestFormat $requestFormat,
     ) {}
 
     public function boom(): never
@@ -40,6 +45,22 @@ final class TestController
             'user_id' => $id,
             'type' => get_debug_type($id),
             'resolvers' => ['TypedRouteParameterArgumentResolver', 'RouteParameterArgumentResolver'],
+        ]);
+    }
+
+    public function echo(TestEchoRequest $request): ResponseInterface
+    {
+        $validated = $request->validated();
+
+        if ($this->requestFormat->expectsJson($request->httpRequest())) {
+            return $this->responseFactory->json([
+                'validated' => $validated,
+                'resolvers' => ['FormRequestArgumentResolver', 'ValidationServiceProvider'],
+            ]);
+        }
+
+        return $this->viewResponse->create('@frontend/echo-result', [
+            'validated' => $validated,
         ]);
     }
 }

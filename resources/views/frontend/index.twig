@@ -25,6 +25,22 @@
                             <li><a href="{{ uri('test.boom') }}" class="link-light">Server error (500)</a></li>
                             <li><a href="/unknown-url" class="link-light">Not found (404)</a></li>
                         </ul>
+                        <div class="mt-4 p-3 rounded border border-secondary border-opacity-50 bg-dark bg-opacity-25">
+                            <h3 class="h6 text-white-50 mb-3">FormRequest test</h3>
+                            <form method="post" action="{{ uri('test.echo') }}" class="row g-2">
+                                <div class="col-md-6">
+                                    <label for="echo-name" class="form-label text-white-50 small mb-1">Name</label>
+                                    <input type="text" class="form-control form-control-sm" id="echo-name" name="name" placeholder="Ann" autocomplete="name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="echo-email" class="form-label text-white-50 small mb-1">Email</label>
+                                    <input type="email" class="form-control form-control-sm" id="echo-email" name="email" placeholder="ann@example.com" autocomplete="email">
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-outline-light btn-sm mt-1">Submit</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="200">

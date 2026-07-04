@@ -13,10 +13,14 @@ use Concept\Core\Providers\Http\HttpKernelServiceProvider;
 use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
+use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
+use Concept\Extensions\FormRequest\FormRequestServiceProvider;
+use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
+use Concept\Extensions\Http\Console\Commands\RouteListCommand;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\Http\Requests\RequestFormat;
 use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
@@ -25,14 +29,19 @@ use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
+use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\Console\Command\Command;
 
 final class ApplicationServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
     private const bool DEBUG = true;
+
+    private const string APP_NAME = 'Concept Skeleton';
+    private const string APP_VERSION = '1.0.0';
 
     private const string ROUTES_WEB = '/routes/web.php';
     private const string VIEWS_FRONTEND = '/resources/views/frontend';
@@ -41,6 +50,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private const string CACHE_VIEWS = '/storage/cache/views';
     private const string ERRORS_FALLBACK = '/resources/views/errors/fallback';
     private const string LOG_APP_FILE = '/storage/logs/app.log';
+    private const string LOG_VALIDATION_FILE = '/storage/logs/validation.log';
     private const string LOG_LEVEL = 'debug';
     private const int LOG_MAX_FILES = 7;
     private const string LOG_CHANNEL = 'app';
@@ -72,6 +82,16 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             debug: self::DEBUG,
         ));
 
+        $container->addServiceProvider(new ValidationServiceProvider(
+            customRules: [],
+            logEnabled: self::DEBUG,
+            logPath: $this->root . self::LOG_VALIDATION_FILE,
+        ));
+
+        $container->addServiceProvider(new FormRequestServiceProvider(
+            globalExcept: [],
+        ));
+
         $container->addServiceProvider(new HttpKernelServiceProvider(
             routePaths: [
                 $this->root . self::ROUTES_WEB,
@@ -88,6 +108,12 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         ));
 
         $container->addServiceProvider(new HttpServiceProvider());
+
+        $container->addServiceProvider(new ConsoleSymfonyServiceProvider(
+            appName: self::APP_NAME,
+            appVersion: self::APP_VERSION,
+            commands: $this->getConsoleCommands(),
+        ));
 
         $container->addServiceProvider(new ViewServiceProvider(
             paths: [
@@ -111,11 +137,22 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private function getArgumentResolvers(DefinitionContainerInterface $container): array
     {
         return [
+            new FormRequestArgumentResolver($container),
             new ServerRequestArgumentResolver(),
             new TypedRouteParameterArgumentResolver(
                 fn(): CasterInterface => $container->get(CasterInterface::class),
             ),
             new RouteParameterArgumentResolver(),
+        ];
+    }
+
+    /**
+     * @return list<class-string<Command>>
+     */
+    private function getConsoleCommands(): array
+    {
+        return [
+            RouteListCommand::class,
         ];
     }
 
