@@ -18,6 +18,7 @@ use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
+use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 
@@ -52,7 +53,13 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     public function boot(): void
     {
         $container = $this->getContainer();
-        $fallbackPath = $this->root . self::ERRORS_FALLBACK;
+
+        $container->addServiceProvider(new HttpKernelServiceProvider(
+            routePaths: [
+                $this->root . self::ROUTES_WEB,
+            ],
+            notFoundMiddleware: RenderHttpErrorMiddleware::class,
+        ));
 
         $container->addServiceProvider(new LoggerMonologServiceProvider(
             path: $this->root . self::LOG_APP_FILE,
@@ -78,6 +85,12 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             debug: self::DEBUG,
         ));
 
+        $fallbackPath = $this->root . self::ERRORS_FALLBACK;
+        $this->registerErrorHandlers($container, $fallbackPath);
+    }
+
+    private function registerErrorHandlers(DefinitionContainerInterface $container, string $fallbackPath): void
+    {
         $container->add(ExceptionReporterInterface::class, fn(): WhoopsExceptionReporter => new WhoopsExceptionReporter($container))
             ->setShared(true);
 
@@ -94,13 +107,6 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
         $container->add(HttpErrorRendererInterface::class, fn(): TwigHttpErrorRenderer => $container->get(TwigHttpErrorRenderer::class))
             ->setShared(true);
-
-        $container->addServiceProvider(new HttpKernelServiceProvider(
-            routePaths: [
-                $this->root . self::ROUTES_WEB,
-            ],
-            notFoundMiddleware: RenderHttpErrorMiddleware::class,
-        ));
 
         $container->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
             debug: self::DEBUG,
