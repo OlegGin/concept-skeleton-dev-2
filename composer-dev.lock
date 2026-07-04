@@ -2120,7 +2120,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-core-2",
+                "url": "../concept-core-2",
                 "reference": "b3ac52a8b655580dcfc8f235d4e24c3952123fdd"
             },
             "require": {
@@ -2164,7 +2164,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-casting-valinor",
+                "url": "../concept-extensions/extension-casting-valinor",
                 "reference": "5257d2e8451ad8856caca7f7095a7e27130583fc"
             },
             "require": {
@@ -2195,7 +2195,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-components",
+                "url": "../concept-extensions/extension-components",
                 "reference": "8443f553f9cd3838750322df676e24ac0ffe53e4"
             },
             "require": {
@@ -2231,7 +2231,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-config",
+                "url": "../concept-extensions/extension-config",
                 "reference": "9780f85e5b85f79d28255fae4c5026f525e72aaf"
             },
             "require": {
@@ -2262,7 +2262,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-console-symfony",
+                "url": "../concept-extensions/extension-console-symfony",
                 "reference": "0bdc9a1a72f65f1d013de5ed14e2f3f68525c666"
             },
             "require": {
@@ -2292,7 +2292,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-csrf",
+                "url": "../concept-extensions/extension-csrf",
                 "reference": "2e5a7135fe60dde6aceec5002a4348ecebae51c8"
             },
             "require": {
@@ -2326,7 +2326,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-data-masker",
+                "url": "../concept-extensions/extension-data-masker",
                 "reference": "a4f71505813e5308f7cdb70b60852f4340b42056"
             },
             "require": {
@@ -2355,7 +2355,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-database-eloquent",
+                "url": "../concept-extensions/extension-database-eloquent",
                 "reference": "14c10bd4a19360a3c7d59dc149b4435464f92e54"
             },
             "require": {
@@ -2394,7 +2394,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-error-handler-whoops",
+                "url": "../concept-extensions/extension-error-handler-whoops",
                 "reference": "ff1b9eb52728a0e3bc513fa0c7eae5886de0f03a"
             },
             "require": {
@@ -2430,7 +2430,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-event",
+                "url": "../concept-extensions/extension-event",
                 "reference": "389582c4e9aafb4ebfe23deab075accbdf98506f"
             },
             "require": {
@@ -2460,7 +2460,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-form-request",
+                "url": "../concept-extensions/extension-form-request",
                 "reference": "401a686699b6257d050c9c2f3e4d0c10ee0c421b"
             },
             "require": {
@@ -2493,7 +2493,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-http",
+                "url": "../concept-extensions/extension-http",
                 "reference": "245892ced1c501ec252c395c97c26f6de7322359"
             },
             "require": {
@@ -2526,7 +2526,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-json",
+                "url": "../concept-extensions/extension-json",
                 "reference": "cbc0e2fd73b035aa32f821b0bb46951c2d8b0a5d"
             },
             "require": {
@@ -2556,7 +2556,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-logger-monolog",
+                "url": "../concept-extensions/extension-logger-monolog",
                 "reference": "406b46d2180a85871765ed3049aa6abc1794846d"
             },
             "require": {
@@ -2588,7 +2588,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-path-manager",
+                "url": "../concept-extensions/extension-path-manager",
                 "reference": "a66f2631626d01c4290b25202ae10c91e7922d27"
             },
             "require": {
@@ -2617,7 +2617,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-session-symfony",
+                "url": "../concept-extensions/extension-session-symfony",
                 "reference": "ed6fd181d362e9e774084642b43e85ac3e3a68e3"
             },
             "require": {
@@ -2648,7 +2648,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-telemetry",
+                "url": "../concept-extensions/extension-telemetry",
                 "reference": "18553f091d6b9ca548d8d0a36e2132fbed9b5a32"
             },
             "require": {
@@ -2677,7 +2677,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-validation-rakit",
+                "url": "../concept-extensions/extension-validation-rakit",
                 "reference": "48981312d390bd237379848a3a90f6dd4801b16f"
             },
             "require": {
@@ -2709,7 +2709,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-view",
+                "url": "../concept-extensions/extension-view",
                 "reference": "5122e6a3be4b1fce1614d78da9d27ea42b2b786c"
             },
             "require": {
@@ -2741,7 +2741,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-view-plates",
+                "url": "../concept-extensions/extension-view-plates",
                 "reference": "af9a33712c7c03ca0b526260f1be4391fb8c7609"
             },
             "require": {
@@ -2773,7 +2773,7 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "/var/www/concept-extensions/extension-view-twig",
+                "url": "../concept-extensions/extension-view-twig",
                 "reference": "7f3ba2b63df1e625f12aaa2a6048c6dcaa44f24e"
             },
             "require": {

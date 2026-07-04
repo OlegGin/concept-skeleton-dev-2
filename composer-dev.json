@@ -3,147 +3,147 @@
     "repositories": [
         {
             "type": "path",
-            "url": "/var/www/concept-core-2",
+            "url": "../concept-core-2",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-casting-valinor",
+            "url": "../concept-extensions/extension-casting-valinor",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-components",
+            "url": "../concept-extensions/extension-components",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-config",
+            "url": "../concept-extensions/extension-config",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-console-symfony",
+            "url": "../concept-extensions/extension-console-symfony",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-csrf",
+            "url": "../concept-extensions/extension-csrf",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-database-eloquent",
+            "url": "../concept-extensions/extension-database-eloquent",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-data-masker",
+            "url": "../concept-extensions/extension-data-masker",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-error-handler-whoops",
+            "url": "../concept-extensions/extension-error-handler-whoops",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-event",
+            "url": "../concept-extensions/extension-event",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-form-request",
+            "url": "../concept-extensions/extension-form-request",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-http",
+            "url": "../concept-extensions/extension-http",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-json",
+            "url": "../concept-extensions/extension-json",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-logger-monolog",
+            "url": "../concept-extensions/extension-logger-monolog",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-path-manager",
+            "url": "../concept-extensions/extension-path-manager",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-session-symfony",
+            "url": "../concept-extensions/extension-session-symfony",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-telemetry",
+            "url": "../concept-extensions/extension-telemetry",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-validation-rakit",
+            "url": "../concept-extensions/extension-validation-rakit",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-view",
+            "url": "../concept-extensions/extension-view",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-view-plates",
+            "url": "../concept-extensions/extension-view-plates",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "/var/www/concept-extensions/extension-view-twig",
+            "url": "../concept-extensions/extension-view-twig",
             "options": {
                 "symlink": true
             }

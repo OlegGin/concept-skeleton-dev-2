@@ -5,6 +5,7 @@ namespace Concept\App\Middleware;
 use Concept\App\Http\Exception\HttpErrorException;
 use Concept\Extensions\Http\Protocol\HttpStatusCode;
 use League\Route\Http\Exception\NotFoundException;
+use Throwable;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -31,6 +32,12 @@ final class HandleHttpErrorMiddleware implements MiddlewareInterface
                 $request,
                 $exception->getStatusCode(),
                 $exception->getMessage(),
+            );
+        } catch (Throwable) {
+            return $this->renderHttpError->render(
+                $request,
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                HttpStatusCode::getReasonPhrase(HttpStatusCode::INTERNAL_SERVER_ERROR),
             );
         }
     }
