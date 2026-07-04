@@ -3,10 +3,10 @@
 namespace Concept\App\Providers;
 
 use Concept\App\Http\Error\TwigHttpErrorRenderer;
-use Concept\App\Middleware\HandleHttpErrorMiddleware;
 use Concept\App\Middleware\RenderHttpErrorMiddleware;
 use Concept\App\View\Twig\TwigAppExtension;
 use Concept\Core\Providers\Http\HttpKernelServiceProvider;
+use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
 use Concept\Extensions\ErrorHandlerWhoops\Reporting\WhoopsExceptionReporter;
@@ -78,18 +78,22 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             debug: self::DEBUG,
         ));
 
-        $exceptionReporter = new WhoopsExceptionReporter($container);
+        $container->add(ExceptionReporterInterface::class, fn(): WhoopsExceptionReporter => new WhoopsExceptionReporter($container))
+            ->setShared(true);
 
-        $container->add(TwigHttpErrorRenderer::class, function() use ($container, $fallbackPath, $exceptionReporter): TwigHttpErrorRenderer {
+        $container->add(TwigHttpErrorRenderer::class, function() use ($container, $fallbackPath): TwigHttpErrorRenderer {
             return new TwigHttpErrorRenderer(
                 responseFactory: $container->get(ResponseFactoryInterface::class),
                 viewResponse: $container->get(ViewResponseFactoryInterface::class),
                 requestFormat: $container->get(RequestFormat::class),
                 routeNamespaceResolver: $container->get(ViewRouteNamespaceResolver::class),
-                exceptionReporter: $exceptionReporter,
+                exceptionReporter: $container->get(ExceptionReporterInterface::class),
                 fallbackPath: $fallbackPath,
             );
         });
+
+        $container->add(HttpErrorRendererInterface::class, fn(): TwigHttpErrorRenderer => $container->get(TwigHttpErrorRenderer::class))
+            ->setShared(true);
 
         $container->addServiceProvider(new HttpKernelServiceProvider(
             routePaths: [
@@ -98,24 +102,11 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             notFoundMiddleware: RenderHttpErrorMiddleware::class,
         ));
 
-        /** @var HttpErrorRendererInterface $httpErrorRenderer */
-        $httpErrorRenderer = $container->get(TwigHttpErrorRenderer::class);
-
-        $container->add(HttpErrorRendererInterface::class, fn(): HttpErrorRendererInterface => $httpErrorRenderer);
-
         $container->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
             debug: self::DEBUG,
             errorsFallbackPath: $fallbackPath,
-            exceptionReporter: $exceptionReporter,
-            httpErrorRenderer: $httpErrorRenderer,
-        ));
-
-        $container->add(RenderHttpErrorMiddleware::class, fn(): RenderHttpErrorMiddleware => new RenderHttpErrorMiddleware(
-            httpErrorRenderer: $httpErrorRenderer,
-        ));
-
-        $container->add(HandleHttpErrorMiddleware::class, fn(): HandleHttpErrorMiddleware => new HandleHttpErrorMiddleware(
-            httpErrorRenderer: $httpErrorRenderer,
+            exceptionReporter: fn(): ExceptionReporterInterface => $container->get(ExceptionReporterInterface::class),
+            httpErrorRenderer: fn(): HttpErrorRendererInterface => $container->get(HttpErrorRendererInterface::class),
         ));
     }
 }
