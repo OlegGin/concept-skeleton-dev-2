@@ -9,6 +9,7 @@ use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
 use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
 use Concept\Core\Providers\Http\HttpKernelServiceProvider;
 use Concept\Extensions\CastingValinor\CastingServiceProvider;
+use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
@@ -279,7 +280,9 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         return [
             new FormRequestArgumentResolver($container),
             new ServerRequestArgumentResolver(),
-            new TypedRouteParameterArgumentResolver($container),
+            new TypedRouteParameterArgumentResolver(
+                fn(): CasterInterface => $container->get(CasterInterface::class),
+            ),
             new RouteParameterArgumentResolver(),
         ];
     }

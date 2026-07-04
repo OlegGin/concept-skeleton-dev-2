@@ -6,9 +6,13 @@ use Concept\App\Http\Error\AppExceptionReporter;
 use Concept\App\Http\Error\TwigHttpErrorRenderer;
 use Concept\App\Middleware\RenderHttpErrorMiddleware;
 use Concept\App\View\Twig\TwigAppExtension;
+use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
 use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
 use Concept\Core\Providers\Http\HttpKernelServiceProvider;
+use Concept\Extensions\CastingValinor\CastingServiceProvider;
+use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
+use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
@@ -33,6 +37,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private const string ROUTES_WEB = '/routes/web.php';
     private const string VIEWS_FRONTEND = '/resources/views/frontend';
     private const string VIEWS_ROOT = '/resources/views';
+    private const string CACHE_VALINOR = '/storage/cache/valinor';
     private const string CACHE_VIEWS = '/storage/cache/views';
     private const string ERRORS_FALLBACK = '/resources/views/errors/fallback';
     private const string LOG_APP_FILE = '/storage/logs/app.log';
@@ -61,14 +66,17 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $fallbackPath = $this->root . self::ERRORS_FALLBACK;
         $this->registerErrorHandlers($container, $fallbackPath);
 
+        $container->addServiceProvider(new CastingServiceProvider(
+            cacheDirectory: $this->root . self::CACHE_VALINOR,
+            transformerClasses: [],
+            debug: self::DEBUG,
+        ));
+
         $container->addServiceProvider(new HttpKernelServiceProvider(
             routePaths: [
                 $this->root . self::ROUTES_WEB,
             ],
-            resolvers: [
-                new ServerRequestArgumentResolver(),
-                new RouteParameterArgumentResolver(),
-            ],
+            resolvers: $this->getArgumentResolvers($container),
             notFoundMiddleware: RenderHttpErrorMiddleware::class,
         ));
 
@@ -95,6 +103,20 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             cacheDir: $this->root . self::CACHE_VIEWS,
             debug: self::DEBUG,
         ));
+    }
+
+    /**
+     * @return list<ArgumentResolverInterface>
+     */
+    private function getArgumentResolvers(DefinitionContainerInterface $container): array
+    {
+        return [
+            new ServerRequestArgumentResolver(),
+            new TypedRouteParameterArgumentResolver(
+                fn(): CasterInterface => $container->get(CasterInterface::class),
+            ),
+            new RouteParameterArgumentResolver(),
+        ];
     }
 
     private function registerErrorHandlers(DefinitionContainerInterface $container, string $fallbackPath): void

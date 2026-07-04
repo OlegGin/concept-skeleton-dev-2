@@ -33,4 +33,13 @@ final class TestController
             'resolvers' => ['ServerRequestArgumentResolver', 'RouteParameterArgumentResolver'],
         ]);
     }
+
+    public function user(int $id): ResponseInterface
+    {
+        return $this->responseFactory->json([
+            'user_id' => $id,
+            'type' => get_debug_type($id),
+            'resolvers' => ['TypedRouteParameterArgumentResolver', 'RouteParameterArgumentResolver'],
+        ]);
+    }
 }

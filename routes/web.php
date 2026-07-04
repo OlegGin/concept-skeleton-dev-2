@@ -17,4 +17,5 @@ $router->group('', function(RouteGroup $router): void {
     $router->get('/test/boom', [TestController::class, 'boom'])->setName('test.boom');
     $router->get('/test/http-error', [TestController::class, 'httpError'])->setName('test.http_error');
     $router->get('/test/hello/{name}', [TestController::class, 'hello'])->setName('test.hello');
+    $router->get('/test/user/{id}', [TestController::class, 'user'])->setName('test.user');
 });
