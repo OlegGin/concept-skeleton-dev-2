@@ -1,0 +1,51 @@
+{% extends '@frontend/layouts/base.twig' %}
+
+{% block title %}422 · Validation failed{% endblock %}
+
+{% block body %}
+    <section class="content-block">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center mb-4">
+                    <div class="display-1 fw-bold text-warning">422</div>
+                    <h2 class="display-6 fw-semibold mb-2">Validation failed</h2>
+                    <p class="lead text-muted mb-0">FormRequest rejected the submitted data.</p>
+                </div>
+                <div class="col-lg-8">
+                    {% if errors is defined and errors %}
+                        <div class="alert alert-danger">
+                            <ul class="mb-0 ps-3">
+                                {% for field, fieldErrors in errors %}
+                                    {% if fieldErrors is iterable %}
+                                        {% for rule, message in fieldErrors %}
+                                            <li><strong>{{ field }}</strong>: {{ message }}</li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li><strong>{{ field }}</strong>: {{ fieldErrors }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {% if old is defined and old %}
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header fw-semibold">Submitted values</div>
+                            <ul class="list-group list-group-flush">
+                                {% for key, value in old %}
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span class="text-muted">{{ key }}</span>
+                                        <span>{{ value is same as('') ? '—' : value }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                        <a href="{{ uri('home') }}" class="btn btn-dark btn-lg px-4">Try again on home</a>
+                        <button type="button" onclick="history.back()" class="btn btn-outline-secondary btn-lg px-4">Go back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
