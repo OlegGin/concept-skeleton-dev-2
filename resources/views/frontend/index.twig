@@ -27,14 +27,36 @@
                         </ul>
                         <div class="mt-4 p-3 rounded border border-secondary border-opacity-50 bg-dark bg-opacity-25">
                             <h3 class="h6 text-white-50 mb-3">FormRequest test</h3>
+                            {% if flashes is defined and flashes.error is defined %}
+                                {% for message in flashes.error %}
+                                    <div class="alert alert-danger py-2 small mb-2" role="alert">{{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
                             <form method="post" action="{{ uri('test.echo') }}" class="row g-2">
+                                {% if csrf_token is defined %}
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                                {% endif %}
                                 <div class="col-md-6">
                                     <label for="echo-name" class="form-label text-white-50 small mb-1">Name</label>
-                                    <input type="text" class="form-control form-control-sm" id="echo-name" name="name" placeholder="Ann" autocomplete="name">
+                                    <input type="text" class="form-control form-control-sm{% if errors.name is defined %} is-invalid{% endif %}" id="echo-name" name="name" value="{{ old.name|default('') }}" placeholder="Ann" autocomplete="name">
+                                    {% if errors.name is defined %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for rule, message in errors.name %}
+                                                {{ message }}{% if not loop.last %}, {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-6">
                                     <label for="echo-email" class="form-label text-white-50 small mb-1">Email</label>
-                                    <input type="email" class="form-control form-control-sm" id="echo-email" name="email" placeholder="ann@example.com" autocomplete="email">
+                                    <input type="email" class="form-control form-control-sm{% if errors.email is defined %} is-invalid{% endif %}" id="echo-email" name="email" value="{{ old.email|default('') }}" placeholder="ann@example.com" autocomplete="email">
+                                    {% if errors.email is defined %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for rule, message in errors.email %}
+                                                {{ message }}{% if not loop.last %}, {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-outline-light btn-sm mt-1">Submit</button>

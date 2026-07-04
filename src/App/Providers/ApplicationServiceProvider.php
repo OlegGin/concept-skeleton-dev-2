@@ -14,6 +14,7 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
+use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
@@ -25,6 +26,7 @@ use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\Http\Requests\RequestFormat;
 use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
+use Concept\Extensions\SessionSymfony\SessionServiceProvider;
 use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
 use Concept\Extensions\View\ViewServiceProvider;
@@ -34,7 +36,9 @@ use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use SessionHandlerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 
 final class ApplicationServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -51,6 +55,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private const string ERRORS_FALLBACK = '/resources/views/errors/fallback';
     private const string LOG_APP_FILE = '/storage/logs/app.log';
     private const string LOG_VALIDATION_FILE = '/storage/logs/validation.log';
+    private const string SESSION_SAVE_PATH = '/storage/sessions';
     private const string LOG_LEVEL = 'debug';
     private const int LOG_MAX_FILES = 7;
     private const string LOG_CHANNEL = 'app';
@@ -89,8 +94,15 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         ));
 
         $container->addServiceProvider(new FormRequestServiceProvider(
-            globalExcept: [],
+            globalExcept: ['_csrf_token'],
         ));
+
+        $container->addServiceProvider(new SessionServiceProvider(
+            sessionOptions: $this->getSessionOptions(),
+            handler: $this->getSessionHandler(),
+        ));
+
+        $container->addServiceProvider(new CsrfServiceProvider());
 
         $container->addServiceProvider(new HttpKernelServiceProvider(
             routePaths: [
@@ -154,6 +166,28 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         return [
             RouteListCommand::class,
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getSessionOptions(): array
+    {
+        return [
+            'cookie_lifetime' => 0,
+            'cookie_path' => '/',
+            'cookie_secure' => false,
+            'cookie_httponly' => true,
+            'cookie_domain' => '',
+            'cookie_samesite' => 'Lax',
+            'use_only_cookies' => true,
+            'use_strict_mode' => true,
+        ];
+    }
+
+    private function getSessionHandler(): SessionHandlerInterface
+    {
+        return new NativeFileSessionHandler($this->root . self::SESSION_SAVE_PATH);
     }
 
     private function registerErrorHandlers(DefinitionContainerInterface $container, string $fallbackPath): void
