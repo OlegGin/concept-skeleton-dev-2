@@ -48,6 +48,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private const string APP_VERSION = '1.0.0';
 
     private const string ROUTES_WEB = '/routes/web.php';
+    private const string ROUTES_API = '/routes/api.php';
     private const string VIEWS_FRONTEND = '/resources/views/frontend';
     private const string VIEWS_ROOT = '/resources/views';
     private const string CACHE_VALINOR = '/storage/cache/valinor';
@@ -107,6 +108,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new HttpKernelServiceProvider(
             routePaths: [
                 $this->root . self::ROUTES_WEB,
+                $this->root . self::ROUTES_API,
             ],
             resolvers: $this->getArgumentResolvers($container),
             notFoundMiddleware: RenderHttpErrorMiddleware::class,

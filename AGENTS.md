@@ -389,6 +389,7 @@ config/routes.php          → skeleton config (поки не використо
 - [x] **Console extension**: `ConsoleSymfonyServiceProvider`, `route:list`
 - [x] **Session + CSRF**: `SessionServiceProvider`, `CsrfServiceProvider`, middleware chain у `web.php`
 - [x] **Validation redirect flow**: `HandleValidationExceptionMiddleware` + flash + форма на `/` з errors/old
+- [x] **Json middleware**: `routes/api.php`, `ParseJsonBodyMiddleware`, `ForceJsonResponseMiddleware`; CSRF/session middleware лише на web group
 - [x] `ApplicationServiceProvider` — glue для extensions і resolver chain
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
@@ -397,9 +398,8 @@ config/routes.php          → skeleton config (поки не використо
 
 > **Components** — відкладено до повного проходження всіх extensions (не чіпати зараз).
 
-1. **Http middleware** — `ParseJsonBody`, `ForceJsonResponse`, …
-2. **Config + PathManager** — замінити hardcoded consts у glue
-3. **Інші extensions** — Event, DataMasker, Database, Json, … по одному з smoke-тестом
+1. **Config + PathManager** — замінити hardcoded consts у glue
+2. **Інші extensions** — Event, DataMasker, Database, … по одному з smoke-тестом
 4. **Розбити glue** — окремі providers за шарами
 5. **Profiles** — formalize `minimal` / `full` замість дублікатів `*1.php`
 6. **Boot validation** — dev/CLI smoke після зборки
