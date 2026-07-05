@@ -5,10 +5,10 @@ use League\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * @param string $root
- * @return list<callable(): ServiceProviderInterface>
+ * @return list<ServiceProviderInterface>
  */
 return function(string $root): array {
     return [
-        fn() => new MinimalHttpServiceProvider($root),
+        new MinimalHttpServiceProvider($root),
     ];
 };

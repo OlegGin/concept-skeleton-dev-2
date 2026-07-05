@@ -4,6 +4,7 @@ use Concept\App\Foundation\AppProfile;
 use Concept\Core\App;
 use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsBootstrap;
 use League\Container\Container;
+use League\Container\ServiceProvider\ServiceProviderInterface;
 use Whoops\Run as Whoops;
 
 const APP_PROFILE = AppProfile::FULL;
@@ -25,7 +26,7 @@ $container = $app->getContainer();
 $errorsFallbackPath = $root . '/resources/views/errors/fallback';
 $container->add(Whoops::class, EarlyWhoopsBootstrap::register($errorsFallbackPath))->setShared(true);
 
-/** @var callable(string): list<callable> $providersFactory */
+/** @var callable(string): list<ServiceProviderInterface> $providersFactory */
 $providersFactory = require $profileProvidersFile;
 $app->registerServiceProviders($providersFactory($root));
 

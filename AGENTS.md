@@ -135,10 +135,12 @@ Core              → dispatch + routing contract
 
 | Дозволено | Заборонено |
 |-----------|------------|
-| Список `*LayerProvider` | Читання config |
+| Список `new *LayerProvider(...)` (instances) | Читання config |
 | Порядок layer-ів (за потреби) | `new *ServiceProvider(...)` extension напряму |
 | `$root`, `path-map.php` для Foundation | Business logic, middleware lists |
 | `ApplicationRuntimeServiceProvider` | Умови «якщо prod — …» |
+
+`App::registerServiceProviders()` приймає `ServiceProviderInterface` або `callable(): ServiceProviderInterface` (factory без container arg).
 
 Новий продукт = новий **profile** (інший список layers), не fork extensions.
 
