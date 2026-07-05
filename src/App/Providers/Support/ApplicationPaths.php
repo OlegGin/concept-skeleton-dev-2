@@ -25,7 +25,12 @@ final class ApplicationPaths
      */
     public function resolveList(array $paths): array
     {
-        return array_values(array_map(fn(string $path): string => $this->root($path), $paths));
+        $resolved = [];
+        foreach ($paths as $path) {
+            $resolved[] = $this->root($path);
+        }
+
+        return $resolved;
     }
 
     /**
