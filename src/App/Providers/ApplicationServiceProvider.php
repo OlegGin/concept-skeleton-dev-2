@@ -15,8 +15,17 @@ use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrationPathsCommand;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
+use Concept\Extensions\DatabaseEloquent\Contracts\DatabaseInterface;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrateCommand;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrationListCommand;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbRollbackCommand;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbSeedCommand;
+use Concept\Extensions\DatabaseEloquent\Console\Commands\DbSeederListCommand;
+use Concept\Extensions\DatabaseEloquent\DatabaseEloquentServiceProvider;
+use Concept\Extensions\DatabaseEloquent\PaginationConfiguratorServiceProvider;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
@@ -34,6 +43,8 @@ use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
+use Database\Seeders\PageSeeder;
+use Dotenv\Dotenv;
 use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
@@ -59,7 +70,17 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private const string ERRORS_FALLBACK = '/resources/views/errors/fallback';
     private const string LOG_APP_FILE = '/storage/logs/app.log';
     private const string LOG_VALIDATION_FILE = '/storage/logs/validation.log';
+    private const string LOG_QUERY_FILE = '/storage/logs/query.log';
+    private const string MIGRATIONS_DIR = '/database/migrations';
     private const string SESSION_SAVE_PATH = '/storage/sessions';
+    private const string DEFAULT_DB_DRIVER = 'mysql';
+    private const string DEFAULT_DB_HOST = 'db';
+    private const int DEFAULT_DB_PORT = 3306;
+    private const string DEFAULT_DB_DATABASE = 'concept_skeleton_dev_db_2';
+    private const string DEFAULT_DB_USERNAME = 'root';
+    private const string DEFAULT_DB_PASSWORD = 'root';
+    private const string DEFAULT_DB_CHARSET = 'utf8mb4';
+    private const string DEFAULT_DB_COLLATION = 'utf8mb4_unicode_ci';
     private const string LOG_LEVEL = 'debug';
     private const int LOG_MAX_FILES = 7;
     private const string LOG_CHANNEL = 'app';
@@ -81,6 +102,8 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     public function boot(): void
     {
         $container = $this->getContainer();
+
+        $this->loadEnvironment();
 
         $fallbackPath = $this->root . self::ERRORS_FALLBACK;
         $this->registerErrorHandlers($container, $fallbackPath);
@@ -126,11 +149,27 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             notFoundMiddleware: RenderHttpErrorMiddleware::class,
         ));
 
+        $container->addServiceProvider(new PaginationConfiguratorServiceProvider());
+
         $container->addServiceProvider(new LoggerMonologServiceProvider(
             path: $this->root . self::LOG_APP_FILE,
             level: self::LOG_LEVEL,
             maxFiles: self::LOG_MAX_FILES,
             channel: self::LOG_CHANNEL,
+            dataMaskerFactory: $dataMaskerFactory,
+        ));
+
+        $container->addServiceProvider(new DatabaseEloquentServiceProvider(
+            connection: $this->getDatabaseConnection(),
+            migrationPaths: [
+                $this->root . self::MIGRATIONS_DIR,
+            ],
+            seeders: [
+                PageSeeder::class,
+            ],
+            logEnabled: self::DEBUG,
+            logPath: $this->root . self::LOG_QUERY_FILE,
+            logMaxFiles: self::LOG_MAX_FILES,
             dataMaskerFactory: $dataMaskerFactory,
         ));
 
@@ -180,7 +219,61 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
         return [
             RouteListCommand::class,
+            DbMigrateCommand::class,
+            DbMigrationListCommand::class,
+            DbMigrationPathsCommand::class,
+            DbRollbackCommand::class,
+            DbSeedCommand::class,
+            DbSeederListCommand::class,
         ];
+    }
+
+    private function loadEnvironment(): void
+    {
+        $envFile = $this->root . '/.env';
+        if (!is_file($envFile)) {
+            return;
+        }
+
+        Dotenv::createImmutable($this->root)->safeLoad();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getDatabaseConnection(): array
+    {
+        return [
+            'driver' => $this->envString('DB_DRIVER', self::DEFAULT_DB_DRIVER),
+            'host' => $this->envString('DB_HOST', self::DEFAULT_DB_HOST),
+            'port' => $this->envInt('DB_PORT', self::DEFAULT_DB_PORT),
+            'database' => $this->envString('DB_DATABASE', self::DEFAULT_DB_DATABASE),
+            'username' => $this->envString('DB_USERNAME', self::DEFAULT_DB_USERNAME),
+            'password' => $this->envString('DB_PASSWORD', self::DEFAULT_DB_PASSWORD),
+            'charset' => $this->envString('DB_CHARSET', self::DEFAULT_DB_CHARSET),
+            'collation' => $this->envString('DB_COLLATION', self::DEFAULT_DB_COLLATION),
+            'prefix' => $this->envString('DB_PREFIX', ''),
+        ];
+    }
+
+    private function envString(string $key, string $default): string
+    {
+        $value = $_ENV[$key] ?? getenv($key);
+        if (!is_string($value) || $value === '') {
+            return $default;
+        }
+
+        return $value;
+    }
+
+    private function envInt(string $key, int $default): int
+    {
+        $value = $_ENV[$key] ?? getenv($key);
+        if (!is_string($value) || !is_numeric($value)) {
+            return $default;
+        }
+
+        return (int) $value;
     }
 
     /**

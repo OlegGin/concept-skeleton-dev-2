@@ -4,6 +4,7 @@ namespace Concept\App\Controllers;
 
 use Concept\App\Http\Exception\HttpErrorException;
 use Concept\App\Http\Requests\TestEchoRequest;
+use Concept\Extensions\DatabaseEloquent\Contracts\DatabaseInterface;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Protocol\HttpStatusCode;
 use Concept\Extensions\Http\Requests\RequestFormat;
@@ -18,6 +19,7 @@ final class TestController
         private readonly ResponseFactoryInterface $responseFactory,
         private readonly ViewResponseFactoryInterface $viewResponse,
         private readonly RequestFormat $requestFormat,
+        private readonly DatabaseInterface $database,
     ) {}
 
     public function boom(): never
@@ -61,6 +63,18 @@ final class TestController
 
         return $this->viewResponse->create('@frontend/echo-result', [
             'validated' => $validated,
+        ]);
+    }
+
+    public function db(): ResponseInterface
+    {
+        $pages = $this->database->capsule()->table('pages');
+
+        return $this->responseFactory->json([
+            'connection' => 'ok',
+            'pages_total' => $pages->count(),
+            'pages_published' => $pages->where('published', true)->count(),
+            'resolvers' => ['DatabaseEloquentServiceProvider', 'DatabaseInterface'],
         ]);
     }
 }

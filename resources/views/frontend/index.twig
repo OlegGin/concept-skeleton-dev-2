@@ -23,6 +23,7 @@
                             <li><a href="{{ uri('test.hello', {name: 'world'}) }}" class="link-light">Resolver chain</a> — <code>/test/hello/world</code></li>
                             <li><a href="{{ uri('api.ping') }}" class="link-light">API ping</a> — <code>/api/ping</code></li>
                             <li>API JSON echo — <code>curl -X POST -H "Content-Type: application/json" -d '{"name":"Ann"}' {{ uri('api.echo') }}</code></li>
+                            <li><a href="{{ uri('test.db') }}" class="link-light">Database (Eloquent)</a> — <code>/test/db</code></li>
                             <li>DataMasker — validation log masks email (see <code>storage/logs/validation*.log</code> after form submit)</li>
                             <li><a href="{{ uri('test.http_error') }}" class="link-light">HTTP error (503)</a></li>
                             <li><a href="{{ uri('test.boom') }}" class="link-light">Server error (500)</a></li>

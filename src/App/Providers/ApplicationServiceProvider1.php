@@ -149,14 +149,14 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $seeders = $config->get(ConfigKey::SEEDERS_LIST) ?? [];
         $container->addServiceProvider(new DatabaseEloquentServiceProvider(
             connection: $this->getConnectionOptions($config),
+            migrationPaths: $migrationPaths,
+            migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
+            seeders: $seeders,
             logEnabled: $config->getBool(ConfigKey::DB_LOG_ENABLED),
             logPath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::DB_LOG_PATH, self::LOG_QUERY_FILE)),
             logMaxFiles: $config->getInt(ConfigKey::DB_LOG_MAX_FILES, 7),
-            migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
-            migrationPaths: $migrationPaths,
-            seeders: $seeders,
-            emitQueryEvents: $config->getBool(ConfigKey::TELEMETRY_DB_QUERIES),
             dataMaskerFactory: $dataMaskerFactory,
+            emitQueryEvents: $config->getBool(ConfigKey::TELEMETRY_DB_QUERIES),
         ));
 
         /** @var array<string, class-string<RuleInterface>> $validatorRules */
