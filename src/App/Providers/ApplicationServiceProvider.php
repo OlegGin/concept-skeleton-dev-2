@@ -61,7 +61,6 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     private const int DEFAULT_DB_PORT = 3306;
     private const string DEFAULT_DB_CHARSET = 'utf8mb4';
     private const string DEFAULT_DB_COLLATION = 'utf8mb4_unicode_ci';
-    private const string DEFAULT_SESSION_PATH = 'sessions';
 
     /**
      * @param string $root
@@ -130,6 +129,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             customRules: $this->getValidatorRules($config),
             logEnabled: $config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED),
             logFilePath: $this->logFilePath($pathManager, $config->getString(ConfigKey::VALIDATOR_LOG_FILE)),
+            logMaxFiles: $config->getInt(ConfigKey::VALIDATOR_LOG_MAX_FILES, 7),
             dataMaskerFactory: $dataMaskerFactory,
         ));
 
@@ -294,7 +294,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         }
 
         if ($sessionFilePath === null || $sessionFilePath === '') {
-            $sessionFilePath = self::DEFAULT_SESSION_PATH;
+            return new NativeFileSessionHandler();
         }
 
         return new NativeFileSessionHandler(
