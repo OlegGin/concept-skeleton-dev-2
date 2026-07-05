@@ -3,7 +3,7 @@
 namespace Concept\App\Providers\Layers;
 
 use Concept\App\Foundation\ConfigKey;
-use Concept\App\Providers\Support\ApplicationPaths;
+use Concept\App\Foundation\PathName;
 use Concept\App\Providers\Support\DataMaskerFactory;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
@@ -31,7 +31,6 @@ final class LoggingLayerProvider extends AbstractServiceProvider implements Boot
 
         $pathManager = ContainerDependency::get($container, PathManager::class);
         $config = ContainerDependency::get($container, ConfigInterface::class);
-        $paths = new ApplicationPaths($pathManager);
 
         /** @var array<string, string> $patterns */
         $patterns = $config->getArray(ConfigKey::MASKING_PATTERNS);
@@ -46,7 +45,7 @@ final class LoggingLayerProvider extends AbstractServiceProvider implements Boot
         ));
 
         $container->addServiceProvider(new LoggerMonologServiceProvider(
-            logFilePath: $paths->logFile($config->getString(ConfigKey::LOG_FILE)),
+            logFilePath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::LOG_FILE)),
             level: $config->getString(ConfigKey::LOG_LEVEL),
             maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
             channel: $config->getString(ConfigKey::LOG_NAME),

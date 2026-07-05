@@ -3,7 +3,7 @@
 namespace Concept\App\Providers\Layers;
 
 use Concept\App\Foundation\ConfigKey;
-use Concept\App\Providers\Support\ApplicationPaths;
+use Concept\App\Foundation\PathName;
 use Concept\App\Providers\Support\DataMaskerFactory;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
@@ -31,12 +31,11 @@ final class ValidationLayerProvider extends AbstractServiceProvider implements B
 
         $pathManager = ContainerDependency::get($container, PathManager::class);
         $config = ContainerDependency::get($container, ConfigInterface::class);
-        $paths = new ApplicationPaths($pathManager);
 
         $container->addServiceProvider(new ValidationServiceProvider(
             customRules: $this->getValidatorRules($config),
             logEnabled: $config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED),
-            logFilePath: $paths->logFile($config->getString(ConfigKey::VALIDATOR_LOG_FILE)),
+            logFilePath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::VALIDATOR_LOG_FILE)),
             logMaxFiles: $config->getInt(ConfigKey::VALIDATOR_LOG_MAX_FILES, 7),
             dataMaskerFactory: DataMaskerFactory::fromContainer($container),
         ));

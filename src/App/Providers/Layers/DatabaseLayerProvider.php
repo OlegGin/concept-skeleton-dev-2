@@ -3,7 +3,7 @@
 namespace Concept\App\Providers\Layers;
 
 use Concept\App\Foundation\ConfigKey;
-use Concept\App\Providers\Support\ApplicationPaths;
+use Concept\App\Foundation\PathName;
 use Concept\App\Providers\Support\DataMaskerFactory;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
@@ -36,7 +36,6 @@ final class DatabaseLayerProvider extends AbstractServiceProvider implements Boo
 
         $pathManager = ContainerDependency::get($container, PathManager::class);
         $config = ContainerDependency::get($container, ConfigInterface::class);
-        $paths = new ApplicationPaths($pathManager);
 
         $container->addServiceProvider(new PaginationConfiguratorServiceProvider());
 
@@ -46,11 +45,11 @@ final class DatabaseLayerProvider extends AbstractServiceProvider implements Boo
         $seeders = $config->get(ConfigKey::SEEDERS_LIST) ?? [];
         $container->addServiceProvider(new DatabaseEloquentServiceProvider(
             connection: $this->getConnectionOptions($config),
-            migrationPaths: $paths->resolveList($migrationPaths),
+            migrationPaths: $pathManager->rootList($migrationPaths),
             migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
             seeders: $seeders,
             logEnabled: $config->getBool(ConfigKey::DB_LOG_ENABLED),
-            logFilePath: $paths->logFile($config->getString(ConfigKey::DB_LOG_FILE)),
+            logFilePath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::DB_LOG_FILE)),
             logMaxFiles: $config->getInt(ConfigKey::DB_LOG_MAX_FILES, 7),
             dataMaskerFactory: DataMaskerFactory::fromContainer($container),
             emitQueryEvents: $config->getBool(ConfigKey::TELEMETRY_DB_QUERIES),

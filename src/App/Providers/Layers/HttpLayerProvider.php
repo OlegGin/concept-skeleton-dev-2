@@ -5,7 +5,6 @@ namespace Concept\App\Providers\Layers;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\App\Middleware\RenderHttpErrorMiddleware;
-use Concept\App\Providers\Support\ApplicationPaths;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
@@ -47,7 +46,6 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
 
         $pathManager = ContainerDependency::get($container, PathManager::class);
         $config = ContainerDependency::get($container, ConfigInterface::class);
-        $paths = new ApplicationPaths($pathManager);
 
         /** @var list<class-string> $transformerClasses */
         $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];
@@ -70,7 +68,7 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
         $interceptors = $config->get(ConfigKey::ROUTES_INTERCEPTORS) ?? [];
 
         $container->addServiceProvider(new HttpKernelServiceProvider(
-            routePaths: $paths->resolveList($routesList),
+            routePaths: $pathManager->rootList($routesList),
             resolvers: $this->getArgumentResolvers($container),
             interceptors: $interceptors,
             notFoundMiddleware: RenderHttpErrorMiddleware::class,

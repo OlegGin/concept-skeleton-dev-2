@@ -151,14 +151,14 @@ Core              → dispatch + routing contract
 | Env overlay `config/{APP_ENV}/` | Middleware class lists |
 | Один файл або багато — без різниці для правил | Виклики PathManager |
 
-Absolute paths будує **layer** через `ApplicationPaths` / `PathManager`.
+Absolute paths будує **layer** через `PathManager` (`rootList`, `rootMap`, `get(PathName::…)`).
 
 #### `*LayerProvider`
 
 | Дозволено | Заборонено |
 |-----------|------------|
 | `$config->get(ConfigKey::…)` → constructor extension provider | Routes, controllers |
-| `$paths->logFile(...)`, `resolveList()` | Business rules |
+| `$pathManager->rootList()` / `rootMap()` / `get(PathName::LOGS, …)` | Business rules |
 | `ContainerDependency::get($container, Interface::class)` — typed resolve у `boot()` і factory closures | `$container->get()` + `@var` у glue |
 | `new XxxServiceProvider(...)` з явними args | Middleware stack для web |
 | App glue: error renderers, resolver chain, `DataMaskerFactory` | «God layer» (новий domain без нового layer) |
