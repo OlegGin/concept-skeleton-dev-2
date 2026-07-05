@@ -1,11 +1,23 @@
 <?php declare(strict_types=1);
 
+use Concept\App\Foundation\AppProfile;
 use Concept\Core\App;
 use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsBootstrap;
 use League\Container\Container;
 use Whoops\Run as Whoops;
 
+const APP_PROFILE = AppProfile::FULL;
+
 $root = dirname(__DIR__);
+
+if (!AppProfile::isValid(APP_PROFILE)) {
+    throw new \RuntimeException(sprintf('Unknown application profile: %s', APP_PROFILE));
+}
+
+$profileProvidersFile = __DIR__ . '/profiles/' . APP_PROFILE . '/providers.php';
+if (!is_file($profileProvidersFile)) {
+    throw new \RuntimeException(sprintf('Profile providers file not found: %s', $profileProvidersFile));
+}
 
 $app = App::create();
 /** @var Container $container */
@@ -14,7 +26,7 @@ $errorsFallbackPath = $root . '/resources/views/errors/fallback';
 $container->add(Whoops::class, EarlyWhoopsBootstrap::register($errorsFallbackPath))->setShared(true);
 
 /** @var callable(string): list<callable> $providersFactory */
-$providersFactory = require $root . '/bootstrap/providers.php';
+$providersFactory = require $profileProvidersFile;
 $app->registerServiceProviders($providersFactory($root));
 
 return $app;

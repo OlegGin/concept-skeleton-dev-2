@@ -243,7 +243,7 @@ flowchart TD
 |---|--------|
 | 9 | `dependencies()` + topological sort у registry |
 | 10 | Container-resolved component providers (`new $providerClass()` → container) |
-| 11 | Boot-order коментар у `bootstrap/providers.php` |
+| 11 | Boot-order коментар у `bootstrap/profiles/full/providers.php` |
 | 12 | Checklist для нового компонента (див. нижче) |
 
 ### P3 — не чіпати без причини

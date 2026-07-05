@@ -66,7 +66,7 @@ Composer skeleton підключає core через path repository:
 - `config/dev/app.php` — `debug => true` (при `APP_ENV=dev`)
 - `.env` — `APP_DEBUG=true`, `DB_HOST=…` перекриває все інше
 
-**Шляхи:** `PathManager` + `PathName` constants; `pathMap` задається в `bootstrap/providers.php`.
+**Шляхи:** `PathManager` + `PathName` constants; `pathMap` у `bootstrap/shared/path-map.php` (full profile).
 
 **Логи:** config — `log.file` / `db.log_file` / `validator.log_file` (ім’я файлу під `PathName::LOGS`); glue → `logFilePath` (absolute шлях до файлу для Monolog).
 
@@ -85,20 +85,30 @@ Composer skeleton підключає core через path repository:
 
 | Артефакт | Роль |
 |----------|------|
-| **`ApplicationServiceProvider.php`** (active) | **Мінімальна проба** — перевірка передачі залежностей, один extension за раз |
-| **`ApplicationServiceProvider1.php`** | **Reference full stack** — працююча повна збірка, але занадто велика для огляду контрактів |
-| **`providers.php`** | Active entry point (мінімальний профіль) |
-| **`providers1.php`** | Reference entry point (повний профіль + Config + Components) |
+| **`src/App/Providers/Layers/*LayerProvider.php`** | Full profile glue — один layer = один домен (Foundation, Logging, Http, View, …) |
+| **`bootstrap/app.php`** | `APP_PROFILE` constant → `bootstrap/profiles/{profile}/providers.php` |
+| **`bootstrap/profiles/full/`** | Повна збірка (Config, PathManager, усі extensions) |
+| **`bootstrap/profiles/minimal/`** | API-only: HttpKernel + Http, без Config/PathManager |
+| **`bootstrap/shared/path-map.php`** | Спільний pathMap для профілів, що використовують PathManager |
 
-**Порядок роботи:** стартуємо з мінімального `ApplicationServiceProvider`, додаємо extension лише коли його контракт (constructor params, lazy wiring, залежності) зрозумілий. Кожен крок — «розробник хоче X → додає один блок у glue». Повна збірка в `ApplicationServiceProvider1` — **ціль і чеклист**, не джерело для сліпого копіювання.
+**Порядок роботи:** layer providers у `bootstrap/profiles/full/providers.php`. «Хочу X → додаєш/редагуєш відповідний `*LayerProvider`».
 
 ### Три шари збірки
 
 ```
-bootstrap/providers.php          → список app-level providers (glue entry)
-ApplicationServiceProvider       → infrastructure extensions (constructor blocks, lazy resolve)
-ApplicationComponentsServiceProvider → feature components (manifest modules)
+bootstrap/app.php                    → APP_PROFILE, завантаження profile providers
+bootstrap/profiles/{name}/providers.php
+bootstrap/shared/path-map.php        → pathMap для full profile
+FoundationLayerProvider              → PathManager + Config
+LoggingLayerProvider                 → DataMasker + LoggerMonolog (`DataMaskerFactory::fromContainer`)
+ErrorHandlingLayerProvider           → Whoops + skeleton error renderers
+ValidationLayerProvider              → ValidationRakit + FormRequest
+DatabaseLayerProvider                → DatabaseEloquent + PaginationConfigurator
+HttpLayerProvider                    → Casting, Session, CSRF, HttpKernel, Http extension
+ConsoleLayerProvider               → ConsoleSymfony
+ViewLayerProvider                  → View + Twig
 ApplicationRuntimeServiceProvider    → post-config runtime (timezone, …)
+ApplicationComponentsServiceProvider → feature components (manifest modules)
 ```
 
 **Glue** = конструктор. **Extension ServiceProvider** = блок конструктора з явними параметрами. **Component** = plug-in module (routes, views, migrations, …) поверх уже зібраного стеку.
@@ -158,7 +168,7 @@ ApplicationRuntimeServiceProvider    → post-config runtime (timezone, …)
 
 ### Legacy coupling — що шукати при нarощенні
 
-При додаванні extension з `ApplicationServiceProvider1` у мінімальну збірку перевіряти:
+При додаванні extension у full glue перевіряти:
 
 - `$container->get()` на типи інших extensions без явного контракту в constructor provider-а
 - `EventDispatcherResolver::optional($container)` — допустимо для optional telemetry, але не заміна явної залежності для critical path
@@ -167,7 +177,7 @@ ApplicationRuntimeServiceProvider    → post-config runtime (timezone, …)
 
 ### Профілі збірки (майбутнє)
 
-Замість дублікатів `ApplicationServiceProvider2.php`, `providers2.php` — один provider + named profiles (`minimal`, `full`) або окремі методи/класи glue за шарами. `ApplicationServiceProvider1` лишається reference до повного профілю.
+Named profiles (`minimal`, `full`) + layer providers за шарами. Legacy `ApplicationServiceProvider1`, `providers1.php` — видалено.
 
 ### Що виноситься в Extensions (skeleton `src/Extensions/`)
 
@@ -298,7 +308,7 @@ Provider: `Concept\Extensions\Http\HttpServiceProvider` (core kernel — `Concep
 
 ### Що робить skeleton («клей»)
 
-- Реєструє providers у `bootstrap/providers.php`
+- Реєструє providers у `bootstrap/profiles/{profile}/providers.php`
 - Підключає extensions і передає `$resolvers` / `$interceptors` у `HttpKernelServiceProvider`
 - Містить app code: controllers, routes, app-specific providers
 
@@ -318,7 +328,7 @@ foreach ($this->resolvers as $resolver) {
 ### Порядок резолверів (важливо!)
 
 **Ядро не збирає chain** — лише приймає `$resolvers` у `HttpKernelServiceProvider` у заданому порядку.
-Skeleton (`bootstrap/providers.php`) описує повний ланцюжок явно.
+Skeleton (`bootstrap/profiles/full/providers.php` або minimal) описує повний ланцюжок явно.
 
 Рекомендований порядок (skeleton glue):
 
@@ -376,8 +386,9 @@ core-2/src/
 ## Skeleton — поточні файли
 
 ```
-bootstrap/app.php          → App::create(), register providers
-bootstrap/providers.php    → HttpKernelServiceProvider + app providers
+bootstrap/app.php          → APP_PROFILE, register profile providers
+bootstrap/profiles/full/providers.php
+src/App/Providers/Layers/  → Foundation, Logging, ErrorHandling, Validation, Database, Http, Console, View
 routes/web.php             → GET / → IndexController::index
 src/App/Controllers/IndexController.php
 src/App/Providers/TestServiceProvider.php
@@ -413,8 +424,9 @@ config/routes.php          → skeleton config (поки не використо
 - [x] **DataMasker extension**: glue → `dataMaskerFactory` у log-related providers (не `$container->has()` у extension)
 - [x] **Database extension**: `DatabaseEloquentServiceProvider`, `PaginationConfiguratorServiceProvider`, db CLI, `GET /test/db`
 - [x] **Config extension**: `ConfigServiceProvider` + `config/` → glue
-- [x] **PathManager extension**: `pathMap` у `providers.php`, шляхи через `PathManager::get()` / `root()`
-- [x] `ApplicationServiceProvider` — glue для extensions і resolver chain
+- [x] **Profiles**: `APP_PROFILE` у `bootstrap/app.php`, `minimal` / `full` у `bootstrap/profiles/`
+- [x] **Layer glue (full profile)**: Foundation, Logging, ErrorHandling, Validation, Database, Http, Console, View — monolith `ApplicationServiceProvider` видалено
+- [x] **`DataMaskerFactory`**: спільна factory для Validation/DB/Logger glue
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
 
@@ -422,12 +434,9 @@ config/routes.php          → skeleton config (поки не використо
 
 > **Components** — відкладено до повного проходження всіх extensions (не чіпати зараз).
 
-1. **Event / Telemetry** — config уже є, ASP1 — шаблон
-2. **Розбити glue** — окремі providers за шарами
-3. **Profiles** — formalize `minimal` / `full` замість дублікатів `*1.php`
-4. **Boot validation** — dev/CLI smoke після зборки
-
-Reference full stack: `ApplicationServiceProvider1.php` + `providers1.php`.
+1. **Event / Telemetry** — окремий layer, не в full поки не готові
+2. **Profiles** — `api` та інші між minimal і full
+3. **Boot validation** — dev/CLI smoke після зборки
 
 ## Команди
 
@@ -461,7 +470,7 @@ readlink -f /var/www/concept-skeleton-dev-2/vendor/php-concept/core-2
 - **Імена класів** — без префікса `Container` (`FormRequestFactory`, `FormRequestArgumentResolver`, `TypedRouteParameterArgumentResolver`); lazy-отримання залежностей — всередині класу, не в назві
 - **Arrow functions** — без пробілу після `fn`: `fn()`, `fn(): Type`, `fn($x): Type`, `static fn(Route $a, Route $b): int`. Не `fn ()`, не `fn ($x)`.
 - **Anonymous functions** — без пробілу після `function`: `function()`, `function($x)`, `function() use ($c): Type`. Не `function ()`, не `function ($x)`.
-- **Літерали в app glue** (`ApplicationServiceProvider`, `bootstrap/*.php`) — bootstrap-only values (pathMap keys); cache/log file names та подібне — у `config/` + `ConfigKey`, не `private const` у glue
+- **Літерали в app glue** (layer providers, `bootstrap/*.php`) — bootstrap-only values (pathMap keys); cache/log file names та подібне — у `config/` + `ConfigKey`, не `private const` у glue
 - Не комітити без явного запиту користувача
 - Не створювати markdown/docs без запиту (крім цього AGENTS.md)
 
