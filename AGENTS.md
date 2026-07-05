@@ -159,6 +159,7 @@ Absolute paths будує **layer** через `ApplicationPaths` / `PathManager
 |-----------|------------|
 | `$config->get(ConfigKey::…)` → constructor extension provider | Routes, controllers |
 | `$paths->logFile(...)`, `resolveList()` | Business rules |
+| `ContainerDependency::get($container, Interface::class)` — typed resolve у `boot()` і factory closures | `$container->get()` + `@var` у glue |
 | `new XxxServiceProvider(...)` з явними args | Middleware stack для web |
 | App glue: error renderers, resolver chain, `DataMaskerFactory` | «God layer» (новий domain без нового layer) |
 | Один domain на layer | `$container->get()` cross-extension у extension-класах |
@@ -608,6 +609,7 @@ readlink -f /var/www/concept-skeleton-dev-2/vendor/php-concept/core-2
 - **Arrow functions** — без пробілу після `fn`: `fn()`, `fn(): Type`, `fn($x): Type`, `static fn(Route $a, Route $b): int`. Не `fn ()`, не `fn ($x)`.
 - **Anonymous functions** — без пробілу після `function`: `function()`, `function($x)`, `function() use ($c): Type`. Не `function ()`, не `function ($x)`.
 - **Літерали в app glue** (layer providers, `bootstrap/*.php`) — bootstrap-only values (pathMap keys); cache/log file names та подібне — у `config/` + `ConfigKey`, не `private const` у glue
+- **Container resolve у glue** — `ContainerDependency::get($container, Interface::class)` замість `$container->get()` + `@var` у layer providers і factory closures
 - Не комітити без явного запиту користувача
 - Не створювати markdown/docs без запиту (крім цього AGENTS.md)
 

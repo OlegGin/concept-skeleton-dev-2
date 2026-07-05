@@ -5,6 +5,7 @@ namespace Concept\App\Providers\Layers;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\App\Providers\Support\ApplicationPaths;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\View\ViewServiceProvider;
@@ -27,10 +28,8 @@ final class ViewLayerProvider extends AbstractServiceProvider implements Bootabl
     {
         $container = $this->getContainer();
 
-        /** @var PathManager $pathManager */
-        $pathManager = $container->get(PathManager::class);
-        /** @var ConfigInterface $config */
-        $config = $container->get(ConfigInterface::class);
+        $pathManager = ContainerDependency::get($container, PathManager::class);
+        $config = ContainerDependency::get($container, ConfigInterface::class);
         $paths = new ApplicationPaths($pathManager);
 
         /** @var array<string, string> $viewPaths */
@@ -40,7 +39,7 @@ final class ViewLayerProvider extends AbstractServiceProvider implements Bootabl
         /** @var list<class-string> $viewExtensions */
         $viewExtensions = $config->get(ConfigKey::VIEW_EXTENSIONS) ?? [];
         $container->addServiceProvider(new ViewServiceProvider(
-            paths: $paths->resolveList($viewPaths),
+            paths: $paths->resolveMap($viewPaths),
             extensions: $viewExtensions,
             routeNamespace: $routeNamespace,
         ));

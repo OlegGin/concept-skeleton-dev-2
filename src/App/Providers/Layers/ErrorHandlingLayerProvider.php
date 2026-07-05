@@ -6,6 +6,7 @@ use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\App\Http\Error\AppExceptionReporter;
 use Concept\App\Http\Error\TwigHttpErrorRenderer;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
@@ -35,39 +36,39 @@ final class ErrorHandlingLayerProvider extends AbstractServiceProvider implement
     {
         $container = $this->getContainer();
 
-        /** @var PathManager $pathManager */
-        $pathManager = $container->get(PathManager::class);
-        /** @var ConfigInterface $config */
-        $config = $container->get(ConfigInterface::class);
+        $pathManager = ContainerDependency::get($container, PathManager::class);
+        $config = ContainerDependency::get($container, ConfigInterface::class);
 
         $fallbackPath = $pathManager->get(PathName::ERRORS_FALLBACK_VIEWS);
 
         $container->add(ExceptionReporterInterface::class, function() use ($container): AppExceptionReporter {
             return new AppExceptionReporter(
-                logger: $container->get(LoggerInterface::class),
-                request: $container->get(ServerRequestInterface::class),
+                logger: ContainerDependency::get($container, LoggerInterface::class),
+                request: ContainerDependency::get($container, ServerRequestInterface::class),
             );
         })->setShared(true);
 
         $container->add(TwigHttpErrorRenderer::class, function() use ($container, $fallbackPath): TwigHttpErrorRenderer {
             return new TwigHttpErrorRenderer(
-                responseFactory: $container->get(ResponseFactoryInterface::class),
-                viewResponse: $container->get(ViewResponseFactoryInterface::class),
-                requestFormat: $container->get(RequestFormat::class),
-                routeNamespaceResolver: $container->get(ViewRouteNamespaceResolver::class),
-                exceptionReporter: $container->get(ExceptionReporterInterface::class),
+                responseFactory: ContainerDependency::get($container, ResponseFactoryInterface::class),
+                viewResponse: ContainerDependency::get($container, ViewResponseFactoryInterface::class),
+                requestFormat: ContainerDependency::get($container, RequestFormat::class),
+                routeNamespaceResolver: ContainerDependency::get($container, ViewRouteNamespaceResolver::class),
+                exceptionReporter: ContainerDependency::get($container, ExceptionReporterInterface::class),
                 fallbackPath: $fallbackPath,
             );
         });
 
-        $container->add(HttpErrorRendererInterface::class, fn(): TwigHttpErrorRenderer => $container->get(TwigHttpErrorRenderer::class))
-            ->setShared(true);
+        $container->add(
+            HttpErrorRendererInterface::class,
+            fn(): TwigHttpErrorRenderer => ContainerDependency::get($container, TwigHttpErrorRenderer::class),
+        )->setShared(true);
 
         $container->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
             debug: $config->getBool(ConfigKey::APP_DEBUG),
             errorsFallbackPath: $fallbackPath,
-            exceptionReporter: fn(): ExceptionReporterInterface => $container->get(ExceptionReporterInterface::class),
-            httpErrorRenderer: fn(): HttpErrorRendererInterface => $container->get(HttpErrorRendererInterface::class),
+            exceptionReporter: fn(): ExceptionReporterInterface => ContainerDependency::get($container, ExceptionReporterInterface::class),
+            httpErrorRenderer: fn(): HttpErrorRendererInterface => ContainerDependency::get($container, HttpErrorRendererInterface::class),
         ));
     }
 }

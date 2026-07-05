@@ -3,6 +3,7 @@
 namespace Concept\App\Providers\Layers;
 
 use Concept\App\Foundation\PathName;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\ConfigServiceProvider;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\PathManager\PathManagerServiceProvider;
@@ -38,8 +39,7 @@ final class FoundationLayerProvider extends AbstractServiceProvider implements B
             pathMap: $this->pathMap,
         ));
 
-        /** @var PathManager $pathManager */
-        $pathManager = $container->get(PathManager::class);
+        $pathManager = ContainerDependency::get($container, PathManager::class);
 
         $container->addServiceProvider(new ConfigServiceProvider(
             root: $this->root,

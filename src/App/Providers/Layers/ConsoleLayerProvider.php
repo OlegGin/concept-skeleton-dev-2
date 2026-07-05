@@ -3,6 +3,7 @@
 namespace Concept\App\Providers\Layers;
 
 use Concept\App\Foundation\ConfigKey;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use League\Container\ServiceProvider\AbstractServiceProvider;
@@ -24,8 +25,7 @@ final class ConsoleLayerProvider extends AbstractServiceProvider implements Boot
     {
         $container = $this->getContainer();
 
-        /** @var ConfigInterface $config */
-        $config = $container->get(ConfigInterface::class);
+        $config = ContainerDependency::get($container, ConfigInterface::class);
 
         /** @var list<class-string<Command>> $commands */
         $commands = $config->get(ConfigKey::COMMANDS) ?? [];

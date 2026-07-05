@@ -5,6 +5,7 @@ namespace Concept\App\Providers\Layers;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Providers\Support\ApplicationPaths;
 use Concept\App\Providers\Support\DataMaskerFactory;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\DatabaseEloquent\DatabaseEloquentServiceProvider;
 use Concept\Extensions\DatabaseEloquent\PaginationConfiguratorServiceProvider;
@@ -33,10 +34,8 @@ final class DatabaseLayerProvider extends AbstractServiceProvider implements Boo
     {
         $container = $this->getContainer();
 
-        /** @var PathManager $pathManager */
-        $pathManager = $container->get(PathManager::class);
-        /** @var ConfigInterface $config */
-        $config = $container->get(ConfigInterface::class);
+        $pathManager = ContainerDependency::get($container, PathManager::class);
+        $config = ContainerDependency::get($container, ConfigInterface::class);
         $paths = new ApplicationPaths($pathManager);
 
         $container->addServiceProvider(new PaginationConfiguratorServiceProvider());

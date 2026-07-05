@@ -2,6 +2,7 @@
 
 namespace Concept\App\Providers\Support;
 
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Closure;
 use Psr\Container\ContainerInterface;
@@ -13,6 +14,12 @@ final class DataMaskerFactory
      */
     public static function fromContainer(ContainerInterface $container): Closure
     {
-        return fn(): ?DataMaskerInterface => $container->get(DataMaskerInterface::class);
+        return function() use ($container): ?DataMaskerInterface {
+            if (!$container->has(DataMaskerInterface::class)) {
+                return null;
+            }
+
+            return ContainerDependency::get($container, DataMaskerInterface::class);
+        };
     }
 }

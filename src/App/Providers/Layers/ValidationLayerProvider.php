@@ -5,6 +5,7 @@ namespace Concept\App\Providers\Layers;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Providers\Support\ApplicationPaths;
 use Concept\App\Providers\Support\DataMaskerFactory;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\PathManager\PathManager;
@@ -28,10 +29,8 @@ final class ValidationLayerProvider extends AbstractServiceProvider implements B
     {
         $container = $this->getContainer();
 
-        /** @var PathManager $pathManager */
-        $pathManager = $container->get(PathManager::class);
-        /** @var ConfigInterface $config */
-        $config = $container->get(ConfigInterface::class);
+        $pathManager = ContainerDependency::get($container, PathManager::class);
+        $config = ContainerDependency::get($container, ConfigInterface::class);
         $paths = new ApplicationPaths($pathManager);
 
         $container->addServiceProvider(new ValidationServiceProvider(
@@ -42,8 +41,10 @@ final class ValidationLayerProvider extends AbstractServiceProvider implements B
             dataMaskerFactory: DataMaskerFactory::fromContainer($container),
         ));
 
+        /** @var array<string> $globalExcept */
+        $globalExcept = $config->getArray(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT);
         $container->addServiceProvider(new FormRequestServiceProvider(
-            globalExcept: $config->getArray(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT),
+            globalExcept: $globalExcept,
         ));
     }
 

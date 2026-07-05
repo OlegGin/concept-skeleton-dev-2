@@ -5,7 +5,9 @@ namespace Concept\App\Providers\Layers;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Providers\Support\ApplicationPaths;
 use Concept\App\Providers\Support\DataMaskerFactory;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\PathManager\PathManager;
@@ -27,18 +29,16 @@ final class LoggingLayerProvider extends AbstractServiceProvider implements Boot
     {
         $container = $this->getContainer();
 
-        /** @var PathManager $pathManager */
-        $pathManager = $container->get(PathManager::class);
-        /** @var ConfigInterface $config */
-        $config = $container->get(ConfigInterface::class);
+        $pathManager = ContainerDependency::get($container, PathManager::class);
+        $config = ContainerDependency::get($container, ConfigInterface::class);
         $paths = new ApplicationPaths($pathManager);
 
         /** @var array<string, string> $patterns */
-        $patterns = $config->get(ConfigKey::MASKING_PATTERNS) ?? [];
+        $patterns = $config->getArray(ConfigKey::MASKING_PATTERNS);
         /** @var list<string> $keyPatterns */
-        $keyPatterns = $config->get(ConfigKey::MASKING_KEY_PATTERNS) ?? [];
-        /** @var list<class-string> $rules */
-        $rules = $config->get(ConfigKey::MASKING_RULES) ?? [];
+        $keyPatterns = $config->getArray(ConfigKey::MASKING_KEY_PATTERNS);
+        /** @var list<class-string<DataMaskerRuleInterface>> $rules */
+        $rules = $config->getArray(ConfigKey::MASKING_RULES);
         $container->addServiceProvider(new DataMaskerServiceProvider(
             patterns: $patterns,
             keyPatterns: $keyPatterns,

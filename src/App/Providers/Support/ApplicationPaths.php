@@ -20,11 +20,25 @@ final class ApplicationPaths
     }
 
     /**
-     * @param list<string>|array<string, string> $paths
-     * @return list<string>|array<string, string>
+     * @param list<string> $paths
+     * @return list<string>
      */
     public function resolveList(array $paths): array
     {
-        return array_map(fn(string $path): string => $this->root($path), $paths);
+        return array_values(array_map(fn(string $path): string => $this->root($path), $paths));
+    }
+
+    /**
+     * @param array<string, string> $paths
+     * @return array<string, string>
+     */
+    public function resolveMap(array $paths): array
+    {
+        $resolved = [];
+        foreach ($paths as $key => $path) {
+            $resolved[$key] = $this->root($path);
+        }
+
+        return $resolved;
     }
 }

@@ -3,6 +3,7 @@
 namespace Concept\App\Providers;
 
 use Concept\App\Foundation\ConfigKey;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Components\ComponentsServiceProvider;
 use Concept\Extensions\Components\Contracts\ComponentInterface;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
@@ -24,8 +25,7 @@ final class ApplicationComponentsServiceProvider extends AbstractServiceProvider
     {
         $container = $this->getContainer();
 
-        /** @var ConfigInterface $config */
-        $config = $container->get(ConfigInterface::class);
+        $config = ContainerDependency::get($container, ConfigInterface::class);
 
         /** @var list<class-string<ComponentInterface>> $componentClasses */
         $componentClasses = $config->get(ConfigKey::COMPONENTS) ?? [];

@@ -6,6 +6,7 @@ use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\App\Middleware\RenderHttpErrorMiddleware;
 use Concept\App\Providers\Support\ApplicationPaths;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
@@ -44,10 +45,8 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
     {
         $container = $this->getContainer();
 
-        /** @var PathManager $pathManager */
-        $pathManager = $container->get(PathManager::class);
-        /** @var ConfigInterface $config */
-        $config = $container->get(ConfigInterface::class);
+        $pathManager = ContainerDependency::get($container, PathManager::class);
+        $config = ContainerDependency::get($container, ConfigInterface::class);
         $paths = new ApplicationPaths($pathManager);
 
         /** @var list<class-string> $transformerClasses */
@@ -89,7 +88,7 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
             new FormRequestArgumentResolver($container),
             new ServerRequestArgumentResolver(),
             new TypedRouteParameterArgumentResolver(
-                fn(): CasterInterface => $container->get(CasterInterface::class),
+                fn(): CasterInterface => ContainerDependency::get($container, CasterInterface::class),
             ),
             new RouteParameterArgumentResolver(),
         ];
