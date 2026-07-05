@@ -53,7 +53,7 @@ final class ValidationLayerProvider extends AbstractServiceProvider implements B
     private function getValidatorRules(ConfigInterface $config): array
     {
         /** @var array<string, class-string<RuleInterface>> $rules */
-        $rules = $config->get(ConfigKey::VALIDATOR_RULES) ?? [];
+        $rules = $config->getArray(ConfigKey::VALIDATOR_RULES);
 
         return $rules;
     }

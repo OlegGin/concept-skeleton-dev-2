@@ -28,7 +28,7 @@ final class ConsoleLayerProvider extends AbstractServiceProvider implements Boot
         $config = ContainerDependency::get($container, ConfigInterface::class);
 
         /** @var list<class-string<Command>> $commands */
-        $commands = $config->get(ConfigKey::COMMANDS) ?? [];
+        $commands = $config->getArray(ConfigKey::COMMANDS);
         $container->addServiceProvider(new ConsoleSymfonyServiceProvider(
             appName: $config->getString(ConfigKey::APP_NAME),
             appVersion: $config->getString(ConfigKey::APP_VERSION),

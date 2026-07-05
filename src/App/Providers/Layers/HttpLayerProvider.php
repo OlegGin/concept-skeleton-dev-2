@@ -48,7 +48,7 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
         $config = ContainerDependency::get($container, ConfigInterface::class);
 
         /** @var list<class-string> $transformerClasses */
-        $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];
+        $transformerClasses = $config->getArray(ConfigKey::CASTER_TRANSFORMERS);
         $container->addServiceProvider(new CastingServiceProvider(
             cacheDirectory: $pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR)),
             transformerClasses: $transformerClasses,
@@ -63,9 +63,9 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
         $container->addServiceProvider(new CsrfServiceProvider());
 
         /** @var list<string> $routesList */
-        $routesList = $config->get(ConfigKey::ROUTES_LIST) ?? [];
+        $routesList = $config->getArray(ConfigKey::ROUTES_LIST);
         /** @var list<class-string<RouteInterceptorInterface>> $interceptors */
-        $interceptors = $config->get(ConfigKey::ROUTES_INTERCEPTORS) ?? [];
+        $interceptors = $config->getArray(ConfigKey::ROUTES_INTERCEPTORS);
 
         $container->addServiceProvider(new HttpKernelServiceProvider(
             routePaths: $pathManager->rootList($routesList),

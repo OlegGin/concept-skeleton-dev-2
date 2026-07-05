@@ -28,7 +28,7 @@ final class ApplicationComponentsServiceProvider extends AbstractServiceProvider
         $config = ContainerDependency::get($container, ConfigInterface::class);
 
         /** @var list<class-string<ComponentInterface>> $componentClasses */
-        $componentClasses = $config->get(ConfigKey::COMPONENTS) ?? [];
+        $componentClasses = $config->getArray(ConfigKey::COMPONENTS);
 
         $container->addServiceProvider(new ComponentsServiceProvider(
             componentClasses: $componentClasses,

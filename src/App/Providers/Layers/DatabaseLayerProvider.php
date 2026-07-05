@@ -40,9 +40,9 @@ final class DatabaseLayerProvider extends AbstractServiceProvider implements Boo
         $container->addServiceProvider(new PaginationConfiguratorServiceProvider());
 
         /** @var list<string> $migrationPaths */
-        $migrationPaths = $config->get(ConfigKey::MIGRATIONS_PATHS) ?? [];
+        $migrationPaths = $config->getArray(ConfigKey::MIGRATIONS_PATHS);
         /** @var list<class-string> $seeders */
-        $seeders = $config->get(ConfigKey::SEEDERS_LIST) ?? [];
+        $seeders = $config->getArray(ConfigKey::SEEDERS_LIST);
         $container->addServiceProvider(new DatabaseEloquentServiceProvider(
             connection: $this->getConnectionOptions($config),
             migrationPaths: $pathManager->rootList($migrationPaths),

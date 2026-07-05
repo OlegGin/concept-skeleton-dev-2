@@ -31,11 +31,11 @@ final class ViewLayerProvider extends AbstractServiceProvider implements Bootabl
         $config = ContainerDependency::get($container, ConfigInterface::class);
 
         /** @var array<string, string> $viewPaths */
-        $viewPaths = $config->get(ConfigKey::VIEW_PATHS) ?? [];
+        $viewPaths = $config->getArray(ConfigKey::VIEW_PATHS);
         /** @var array<string, string> $routeNamespace */
-        $routeNamespace = $config->get(ConfigKey::VIEW_ROUTE_NAMESPACE) ?? [];
+        $routeNamespace = $config->getArray(ConfigKey::VIEW_ROUTE_NAMESPACE);
         /** @var list<class-string> $viewExtensions */
-        $viewExtensions = $config->get(ConfigKey::VIEW_EXTENSIONS) ?? [];
+        $viewExtensions = $config->getArray(ConfigKey::VIEW_EXTENSIONS);
         $container->addServiceProvider(new ViewServiceProvider(
             paths: $pathManager->rootMap($viewPaths),
             extensions: $viewExtensions,
