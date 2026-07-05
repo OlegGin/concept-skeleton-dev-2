@@ -13,5 +13,6 @@ return [
         ],
         'route_namespace' => [
         ],
+        'cache_dir' => 'views',
     ],
 ];

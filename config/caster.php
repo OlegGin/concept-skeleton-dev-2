@@ -3,5 +3,6 @@
 return [
     'caster' => [
         'transformers' => [],
+        'cache_dir' => 'valinor',
     ],
 ];

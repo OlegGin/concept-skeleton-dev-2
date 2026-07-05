@@ -2,6 +2,7 @@
 
 return [
     'log' => [
+        'file' => 'app.log',
         'name' => 'app',
         'level' => 'ERROR',
         'max_files' => 7,

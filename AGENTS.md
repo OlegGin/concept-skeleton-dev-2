@@ -66,7 +66,9 @@ Composer skeleton підключає core через path repository:
 - `config/dev/app.php` — `debug => true` (при `APP_ENV=dev`)
 - `.env` — `APP_DEBUG=true`, `DB_HOST=…` перекриває все інше
 
-**Шляхи без PathManager (зараз):** glue резолвить relative paths з config через `$root` helpers (`rootPath`, `logPath`, `cachePath`).
+**Шляхи:** `PathManager` + `PathName` constants; `pathMap` задається в `bootstrap/providers.php`.
+
+**Логи:** config — `log.file` / `db.log_file` / `validator.log_file` (ім’я файлу під `PathName::LOGS`); glue → `logFilePath` (absolute шлях до файлу для Monolog).
 
 **Reference-конфіги** старого додатку: `core-2/storage/config/` — довідник ключів/структури при переносі.
 
@@ -124,7 +126,7 @@ ApplicationRuntimeServiceProvider    → post-config runtime (timezone, …)
 
 | «Хочу…» | Glue робить |
 |---------|---------------|
-| Логування помилок | `new LoggerMonologServiceProvider(path:, level:, …)` → glue передає `ExceptionReporterInterface` у `ErrorHandlerWhoopsServiceProvider` |
+| Логування помилок | `new LoggerMonologServiceProvider(logFilePath:, level:, …)` → glue передає `ExceptionReporterInterface` у `ErrorHandlerWhoopsServiceProvider` |
 | Гарні сторінки помилок | skeleton: `TwigHttpErrorRenderer` → glue: `httpErrorRenderer: fn() => …` у Whoops provider (lazy closures) |
 | Шаблонізатор | `ViewServiceProvider(paths:, extensions:)` + `TwigViewServiceProvider(viewsPath:, cacheDir:, debug:)` |
 | Розширення Twig | `extensions: [TwigAppExtension::class, …]` у `ViewServiceProvider` constructor |
@@ -410,7 +412,8 @@ config/routes.php          → skeleton config (поки не використо
 - [x] **Json middleware**: `routes/api.php`, `ParseJsonBodyMiddleware`, `ForceJsonResponseMiddleware`; CSRF/session middleware лише на web group
 - [x] **DataMasker extension**: glue → `dataMaskerFactory` у log-related providers (не `$container->has()` у extension)
 - [x] **Database extension**: `DatabaseEloquentServiceProvider`, `PaginationConfiguratorServiceProvider`, db CLI, `GET /test/db`
-- [x] **Config extension**: `ConfigServiceProvider` + `config/` → glue; без PathManager (`rootPath`/`logPath`/`cachePath` helpers)
+- [x] **Config extension**: `ConfigServiceProvider` + `config/` → glue
+- [x] **PathManager extension**: `pathMap` у `providers.php`, шляхи через `PathManager::get()` / `root()`
 - [x] `ApplicationServiceProvider` — glue для extensions і resolver chain
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
@@ -419,11 +422,10 @@ config/routes.php          → skeleton config (поки не використо
 
 > **Components** — відкладено до повного проходження всіх extensions (не чіпати зараз).
 
-1. **PathManager** — замінити path helpers у glue (`rootPath`, `logPath`, …)
-2. **Event / Telemetry** — якщо потрібні поза components
-3. **Розбити glue** — окремі providers за шарами
-4. **Profiles** — formalize `minimal` / `full` замість дублікатів `*1.php`
-5. **Boot validation** — dev/CLI smoke після зборки
+1. **Event / Telemetry** — config уже є, ASP1 — шаблон
+2. **Розбити glue** — окремі providers за шарами
+3. **Profiles** — formalize `minimal` / `full` замість дублікатів `*1.php`
+4. **Boot validation** — dev/CLI smoke після зборки
 
 Reference full stack: `ApplicationServiceProvider1.php` + `providers1.php`.
 
@@ -459,7 +461,7 @@ readlink -f /var/www/concept-skeleton-dev-2/vendor/php-concept/core-2
 - **Імена класів** — без префікса `Container` (`FormRequestFactory`, `FormRequestArgumentResolver`, `TypedRouteParameterArgumentResolver`); lazy-отримання залежностей — всередині класу, не в назві
 - **Arrow functions** — без пробілу після `fn`: `fn()`, `fn(): Type`, `fn($x): Type`, `static fn(Route $a, Route $b): int`. Не `fn ()`, не `fn ($x)`.
 - **Anonymous functions** — без пробілу після `function`: `function()`, `function($x)`, `function() use ($c): Type`. Не `function ()`, не `function ($x)`.
-- **Літерали в app glue** (`ApplicationServiceProvider`, `bootstrap/*.php`) — рядкові magic values (шляхи, імена файлів, дефолти) виносити в `private const string` класу glue; не розкидати `'valinor'`, `'app.log'`, `'config'` inline у `boot()`. Приклад: `CACHE_VALINOR_DIR`, `LOG_APP_FILE`, `DEFAULT_DB_DRIVER` у `ApplicationServiceProvider`. Контрактні ключі масивів (`driver`, `host` у connection) — не константи, це API Eloquent/бібліотеки.
+- **Літерали в app glue** (`ApplicationServiceProvider`, `bootstrap/*.php`) — bootstrap-only values (pathMap keys); cache/log file names та подібне — у `config/` + `ConfigKey`, не `private const` у glue
 - Не комітити без явного запиту користувача
 - Не створювати markdown/docs без запиту (крім цього AGENTS.md)
 

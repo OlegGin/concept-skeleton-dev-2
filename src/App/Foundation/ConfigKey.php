@@ -32,21 +32,23 @@ final class ConfigKey
     public const string DB_PREFIX = 'db.prefix';
 
     public const string DB_LOG_ENABLED = 'db.log_enabled';
-    public const string DB_LOG_PATH = 'db.log_path';
+    public const string DB_LOG_FILE = 'db.log_file';
     public const string DB_LOG_MAX_FILES = 'db.log_max_files';
 
+    public const string LOG_FILE = 'log.file';
     public const string LOG_NAME = 'log.name';
     public const string LOG_LEVEL = 'log.level';
     public const string LOG_MAX_FILES = 'log.max_files';
 
     public const string VALIDATOR_RULES = 'validator.rules';
     public const string VALIDATOR_LOG_ENABLED = 'validator.log_enabled';
-    public const string VALIDATOR_LOG_PATH = 'validator.log_path';
+    public const string VALIDATOR_LOG_FILE = 'validator.log_file';
     public const string VALIDATOR_LOG_MAX_FILES = 'validator.log_max_files';
 
     public const string FORM_REQUEST_GLOBAL_EXCEPT = 'form_request.global_except';
 
     public const string CASTER_TRANSFORMERS = 'caster.transformers';
+    public const string CASTER_CACHE_DIR = 'caster.cache_dir';
 
     public const string MASKING_PATTERNS = 'masking.patterns';
     public const string MASKING_KEY_PATTERNS = 'masking.key_patterns';
@@ -72,6 +74,7 @@ final class ConfigKey
     public const string PAGINATION_PER_PAGE = 'pagination.per_page';
 
     public const string VIEW_PATHS = 'view.paths';
+    public const string VIEW_CACHE_DIR = 'view.cache_dir';
     public const string VIEW_EXTENSIONS = 'view.extensions';
     public const string VIEW_ROUTE_NAMESPACE = 'view.route_namespace';
 

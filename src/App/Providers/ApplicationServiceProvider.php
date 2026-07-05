@@ -3,9 +3,15 @@
 namespace Concept\App\Providers;
 
 use Concept\App\Foundation\ConfigKey;
+use Concept\App\Foundation\PathName;
 use Concept\App\Http\Error\AppExceptionReporter;
 use Concept\App\Http\Error\TwigHttpErrorRenderer;
 use Concept\App\Middleware\RenderHttpErrorMiddleware;
+use Concept\Core\Http\Contracts\ArgumentResolverInterface;
+use Concept\Core\Http\Contracts\RouteInterceptorInterface;
+use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
+use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
+use Concept\Core\Providers\Http\HttpKernelServiceProvider;
 use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
@@ -17,16 +23,18 @@ use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
 use Concept\Extensions\DatabaseEloquent\DatabaseEloquentServiceProvider;
 use Concept\Extensions\DatabaseEloquent\PaginationConfiguratorServiceProvider;
-use Concept\Extensions\FormRequest\FormRequestServiceProvider;
-use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
+use Concept\Extensions\FormRequest\FormRequestServiceProvider;
+use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\Http\Requests\RequestFormat;
 use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
+use Concept\Extensions\PathManager\PathManager;
+use Concept\Extensions\PathManager\PathManagerServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
@@ -34,11 +42,6 @@ use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
-use Concept\Core\Http\Contracts\ArgumentResolverInterface;
-use Concept\Core\Http\Contracts\RouteInterceptorInterface;
-use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
-use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
-use Concept\Core\Providers\Http\HttpKernelServiceProvider;
 use InvalidArgumentException;
 use Closure;
 use League\Container\DefinitionContainerInterface;
@@ -53,17 +56,6 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 {
     private const string INCORRECT_SESSION_FILE_PATH = 'Session file path must be a string or null, %s given.';
 
-    private const string CONFIG_DIR = '/config';
-    private const string CACHE_VALINOR_DIR = 'valinor';
-    private const string CACHE_VIEWS_DIR = 'views';
-    private const string ERRORS_FALLBACK_REL = 'resources/views/errors/fallback';
-    private const string LOG_APP_FILE = 'app.log';
-    private const string LOG_QUERY_FILE = 'query.log';
-    private const string LOG_VALIDATION_FILE = 'validation.log';
-    private const string LOGS_REL = 'storage/logs';
-    private const string CACHE_REL = 'storage/cache';
-    private const string VIEWS_REL = 'resources/views';
-    private const string STORAGE_REL = 'storage';
     private const string DEFAULT_MIGRATIONS_TABLE = 'migrations';
     private const string DEFAULT_DB_DRIVER = 'mysql';
     private const int DEFAULT_DB_PORT = 3306;
@@ -73,8 +65,12 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
     /**
      * @param string $root
+     * @param array<string, string> $pathMap
      */
-    public function __construct(private readonly string $root) {}
+    public function __construct(
+        private readonly string $root,
+        private readonly array $pathMap,
+    ) {}
 
     public function provides(string $id): bool
     {
@@ -89,21 +85,29 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
         $container = $this->getContainer();
 
+        $container->addServiceProvider(new PathManagerServiceProvider(
+            root: $this->root,
+            pathMap: $this->pathMap,
+        ));
+
+        /** @var PathManager $pathManager */
+        $pathManager = $container->get(PathManager::class);
+
         $container->addServiceProvider(new ConfigServiceProvider(
             root: $this->root,
-            configDirectory: $this->root . self::CONFIG_DIR,
+            configDirectory: $pathManager->get(PathName::CONFIG),
         ));
 
         /** @var ConfigInterface $config */
         $config = $container->get(ConfigInterface::class);
 
-        $fallbackPath = $this->rootPath(self::ERRORS_FALLBACK_REL);
+        $fallbackPath = $pathManager->get(PathName::ERRORS_FALLBACK_VIEWS);
         $this->registerErrorHandlers($container, $config, $fallbackPath);
 
         /** @var list<class-string> $transformerClasses */
         $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];
         $container->addServiceProvider(new CastingServiceProvider(
-            cacheDirectory: $this->cachePath(self::CACHE_VALINOR_DIR),
+            cacheDirectory: $pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR)),
             transformerClasses: $transformerClasses,
             debug: $config->getBool(ConfigKey::APP_DEBUG),
         ));
@@ -125,7 +129,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new ValidationServiceProvider(
             customRules: $this->getValidatorRules($config),
             logEnabled: $config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED),
-            logPath: $this->logPath($config->getString(ConfigKey::VALIDATOR_LOG_PATH, self::LOG_VALIDATION_FILE)),
+            logFilePath: $this->logFilePath($pathManager, $config->getString(ConfigKey::VALIDATOR_LOG_FILE)),
             dataMaskerFactory: $dataMaskerFactory,
         ));
 
@@ -135,7 +139,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
         $container->addServiceProvider(new SessionServiceProvider(
             sessionOptions: $this->getSessionOptions($config),
-            handler: $this->getSessionHandler($config),
+            handler: $this->getSessionHandler($config, $pathManager),
         ));
 
         $container->addServiceProvider(new CsrfServiceProvider());
@@ -146,7 +150,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $interceptors = $config->get(ConfigKey::ROUTES_INTERCEPTORS) ?? [];
 
         $container->addServiceProvider(new HttpKernelServiceProvider(
-            routePaths: $this->resolvePaths($routesList),
+            routePaths: $this->relativeToAbsolutePath($pathManager, $routesList),
             resolvers: $this->getArgumentResolvers($container),
             interceptors: $interceptors,
             notFoundMiddleware: RenderHttpErrorMiddleware::class,
@@ -155,7 +159,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new PaginationConfiguratorServiceProvider());
 
         $container->addServiceProvider(new LoggerMonologServiceProvider(
-            path: $this->logPath(self::LOG_APP_FILE),
+            logFilePath: $this->logFilePath($pathManager, $config->getString(ConfigKey::LOG_FILE)),
             level: $config->getString(ConfigKey::LOG_LEVEL),
             maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
             channel: $config->getString(ConfigKey::LOG_NAME),
@@ -168,11 +172,11 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $seeders = $config->get(ConfigKey::SEEDERS_LIST) ?? [];
         $container->addServiceProvider(new DatabaseEloquentServiceProvider(
             connection: $this->getConnectionOptions($config),
-            migrationPaths: $this->resolvePaths($migrationPaths),
+            migrationPaths: $this->relativeToAbsolutePath($pathManager, $migrationPaths),
             migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
             seeders: $seeders,
             logEnabled: $config->getBool(ConfigKey::DB_LOG_ENABLED),
-            logPath: $this->logPath($config->getString(ConfigKey::DB_LOG_PATH, self::LOG_QUERY_FILE)),
+            logFilePath: $this->logFilePath($pathManager, $config->getString(ConfigKey::DB_LOG_FILE)),
             logMaxFiles: $config->getInt(ConfigKey::DB_LOG_MAX_FILES, 7),
             dataMaskerFactory: $dataMaskerFactory,
             emitQueryEvents: $config->getBool(ConfigKey::TELEMETRY_DB_QUERIES),
@@ -195,14 +199,14 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         /** @var list<class-string> $viewExtensions */
         $viewExtensions = $config->get(ConfigKey::VIEW_EXTENSIONS) ?? [];
         $container->addServiceProvider(new ViewServiceProvider(
-            paths: $this->resolvePaths($viewPaths),
+            paths: $this->relativeToAbsolutePath($pathManager, $viewPaths),
             extensions: $viewExtensions,
             routeNamespace: $routeNamespace,
         ));
 
         $container->addServiceProvider(new TwigViewServiceProvider(
-            viewsPath: $this->rootPath(self::VIEWS_REL),
-            cacheDir: $this->cachePath(self::CACHE_VIEWS_DIR),
+            viewsPath: $pathManager->get(PathName::VIEWS),
+            cacheDir: $pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR)),
             debug: $config->getBool(ConfigKey::APP_DEBUG),
         ));
     }
@@ -222,6 +226,11 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         ];
     }
 
+    private function logFilePath(PathManager $pathManager, string $logFile): string
+    {
+        return $pathManager->get(PathName::LOGS, $logFile);
+    }
+
     /**
      * @return array<string, class-string<RuleInterface>>
      */
@@ -233,28 +242,13 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         return $rules;
     }
 
-    private function rootPath(string $path): string
-    {
-        return $this->root . '/' . ltrim($path, '/');
-    }
-
-    private function logPath(string $file): string
-    {
-        return $this->rootPath(self::LOGS_REL . '/' . ltrim($file, '/'));
-    }
-
-    private function cachePath(string $dir): string
-    {
-        return $this->rootPath(self::CACHE_REL . '/' . ltrim($dir, '/'));
-    }
-
     /**
      * @param list<string>|array<string, string> $paths
      * @return list<string>|array<string, string>
      */
-    private function resolvePaths(array $paths): array
+    private function relativeToAbsolutePath(PathManager $pathManager, array $paths): array
     {
-        return array_map(fn(string $path): string => $this->rootPath($path), $paths);
+        return array_map(fn(string $path): string => $pathManager->root($path), $paths);
     }
 
     /**
@@ -292,7 +286,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         ];
     }
 
-    private function getSessionHandler(ConfigInterface $config): SessionHandlerInterface
+    private function getSessionHandler(ConfigInterface $config, PathManager $pathManager): SessionHandlerInterface
     {
         $sessionFilePath = $config->get(ConfigKey::SESSION_FILE_PATH);
         if (!is_string($sessionFilePath) && !is_null($sessionFilePath)) {
@@ -304,7 +298,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         }
 
         return new NativeFileSessionHandler(
-            $this->rootPath(self::STORAGE_REL . '/' . ltrim($sessionFilePath, '/')),
+            $pathManager->get(PathName::STORAGE, $sessionFilePath),
         );
     }
 

@@ -10,7 +10,7 @@ return [
             'unique' => UniqueRule::class,
         ],
         'log_enabled' => false,
-        'log_path' => 'validation.log',
+        'log_file' => 'validation.log',
         'log_max_files' => 7,
     ],
 ];

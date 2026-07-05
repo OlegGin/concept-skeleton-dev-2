@@ -55,13 +55,6 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 {
     private const string INCORRECT_SESSION_FILE_PATH = 'Session file path must be a string or null, %s given.';
 
-    private const string CACHE_VALINOR_DIR = 'valinor';
-    private const string CACHE_VIEWS_DIR = 'views';
-
-    private const string LOG_APP_FILE = 'app.log';
-    private const string LOG_QUERY_FILE = 'query.log';
-    private const string LOG_VALIDATION_FILE = 'validation.log';
-
     private const string DEFAULT_MIGRATIONS_TABLE = 'migrations';
 
     private const string DEFAULT_DB_DRIVER = 'mysql';
@@ -112,7 +105,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         /** @var list<class-string> $transformerClasses */
         $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];
         $container->addServiceProvider(new CastingServiceProvider(
-            cacheDirectory: $pathManager->get(PathName::CACHE, self::CACHE_VALINOR_DIR),
+            cacheDirectory: $pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR)),
             transformerClasses: $transformerClasses,
             debug: $config->getBool(ConfigKey::APP_DEBUG),
         ));
@@ -132,7 +125,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $dataMaskerFactory = $this->dataMaskerFactory($container);
 
         $container->addServiceProvider(new LoggerMonologServiceProvider(
-            path: $pathManager->get(PathName::LOGS, self::LOG_APP_FILE),
+            logFilePath: $this->logFilePath($pathManager, $config->getString(ConfigKey::LOG_FILE)),
             level: $config->getString(ConfigKey::LOG_LEVEL),
             maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
             channel: $config->getString(ConfigKey::LOG_NAME),
@@ -153,7 +146,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
             seeders: $seeders,
             logEnabled: $config->getBool(ConfigKey::DB_LOG_ENABLED),
-            logPath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::DB_LOG_PATH, self::LOG_QUERY_FILE)),
+            logFilePath: $this->logFilePath($pathManager, $config->getString(ConfigKey::DB_LOG_FILE)),
             logMaxFiles: $config->getInt(ConfigKey::DB_LOG_MAX_FILES, 7),
             dataMaskerFactory: $dataMaskerFactory,
             emitQueryEvents: $config->getBool(ConfigKey::TELEMETRY_DB_QUERIES),
@@ -164,7 +157,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new ValidationServiceProvider(
             customRules: $validatorRules,
             logEnabled: $config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED),
-            logPath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::VALIDATOR_LOG_PATH, self::LOG_VALIDATION_FILE)),
+            logFilePath: $this->logFilePath($pathManager, $config->getString(ConfigKey::VALIDATOR_LOG_FILE)),
             logMaxFiles: $config->getInt(ConfigKey::VALIDATOR_LOG_MAX_FILES, 7),
             dataMaskerFactory: $dataMaskerFactory,
         ));
@@ -204,7 +197,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
 
         $container->addServiceProvider(new TwigViewServiceProvider(
             viewsPath: $pathManager->get(PathName::VIEWS),
-            cacheDir: $pathManager->get(PathName::CACHE, self::CACHE_VIEWS_DIR),
+            cacheDir: $pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR)),
             debug: $config->getBool(ConfigKey::APP_DEBUG),
         ));
 
@@ -276,6 +269,11 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         return array_map(function ($path) use ($pathManager) {
             return $pathManager->root($path);
         }, $paths);
+    }
+
+    private function logFilePath(PathManager $pathManager, string $logFile): string
+    {
+        return $pathManager->get(PathName::LOGS, $logFile);
     }
 
     /**
