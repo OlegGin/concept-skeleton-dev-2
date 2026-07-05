@@ -49,7 +49,24 @@ Composer skeleton підключає core через path repository:
 |-----|--------|
 | **Core** | Без config; тільки явні параметри provider-ів |
 | **Extensions** | Constructor params у `*ServiceProvider`; сервіси — через конструктор, не через `$container->get()` чужих типів |
-| **Skeleton glue** | Читає `config/` (+ `.env` через Config extension) → передає значення в providers/extensions |
+| **Skeleton glue** | Читає `ConfigInterface` (див. порядок merge нижче) → передає значення в providers/extensions |
+
+**Порядок merge конфігурації** (`ConfigServiceProvider`):
+
+```
+1. config/*.php              — базові значення (production-safe defaults)
+2. config/{APP_ENV}/*.php    — env overlay (dev/, production/, …)
+3. .env / getenv             — найвищий пріоритет (DB_*, APP_DEBUG, …)
+```
+
+`APP_ENV` для кроку 2 береться **лише з `.env`/environment** (до merge PHP-конфігів у dot-keys). Тобто `config/dev/` підвантажиться, коли в `.env` є `APP_ENV=dev`. Без `.env` — тільки базовий `config/`.
+
+Приклад skeleton:
+- `config/app.php` — `debug => false`
+- `config/dev/app.php` — `debug => true` (при `APP_ENV=dev`)
+- `.env` — `APP_DEBUG=true`, `DB_HOST=…` перекриває все інше
+
+**Шляхи без PathManager (зараз):** glue резолвить relative paths з config через `$root` helpers (`rootPath`, `logPath`, `cachePath`).
 
 **Reference-конфіги** старого додатку: `core-2/storage/config/` — довідник ключів/структури при переносі.
 
@@ -393,6 +410,7 @@ config/routes.php          → skeleton config (поки не використо
 - [x] **Json middleware**: `routes/api.php`, `ParseJsonBodyMiddleware`, `ForceJsonResponseMiddleware`; CSRF/session middleware лише на web group
 - [x] **DataMasker extension**: glue → `dataMaskerFactory` у log-related providers (не `$container->has()` у extension)
 - [x] **Database extension**: `DatabaseEloquentServiceProvider`, `PaginationConfiguratorServiceProvider`, db CLI, `GET /test/db`
+- [x] **Config extension**: `ConfigServiceProvider` + `config/` → glue; без PathManager (`rootPath`/`logPath`/`cachePath` helpers)
 - [x] `ApplicationServiceProvider` — glue для extensions і resolver chain
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
@@ -401,11 +419,11 @@ config/routes.php          → skeleton config (поки не використо
 
 > **Components** — відкладено до повного проходження всіх extensions (не чіпати зараз).
 
-1. **Config + PathManager** — замінити hardcoded consts у glue (фінальний етап extensions)
+1. **PathManager** — замінити path helpers у glue (`rootPath`, `logPath`, …)
 2. **Event / Telemetry** — якщо потрібні поза components
-4. **Розбити glue** — окремі providers за шарами
-5. **Profiles** — formalize `minimal` / `full` замість дублікатів `*1.php`
-6. **Boot validation** — dev/CLI smoke після зборки
+3. **Розбити glue** — окремі providers за шарами
+4. **Profiles** — formalize `minimal` / `full` замість дублікатів `*1.php`
+5. **Boot validation** — dev/CLI smoke після зборки
 
 Reference full stack: `ApplicationServiceProvider1.php` + `providers1.php`.
 

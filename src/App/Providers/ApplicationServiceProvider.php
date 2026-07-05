@@ -2,28 +2,19 @@
 
 namespace Concept\App\Providers;
 
+use Concept\App\Foundation\ConfigKey;
 use Concept\App\Http\Error\AppExceptionReporter;
 use Concept\App\Http\Error\TwigHttpErrorRenderer;
 use Concept\App\Middleware\RenderHttpErrorMiddleware;
-use Concept\App\View\Twig\TwigAppExtension;
-use Concept\Core\Http\Contracts\ArgumentResolverInterface;
-use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
-use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
-use Concept\Core\Providers\Http\HttpKernelServiceProvider;
 use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
+use Concept\Extensions\Config\ConfigServiceProvider;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
-use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrationPathsCommand;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
-use Concept\Extensions\DatabaseEloquent\Contracts\DatabaseInterface;
-use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrateCommand;
-use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrationListCommand;
-use Concept\Extensions\DatabaseEloquent\Console\Commands\DbRollbackCommand;
-use Concept\Extensions\DatabaseEloquent\Console\Commands\DbSeedCommand;
-use Concept\Extensions\DatabaseEloquent\Console\Commands\DbSeederListCommand;
 use Concept\Extensions\DatabaseEloquent\DatabaseEloquentServiceProvider;
 use Concept\Extensions\DatabaseEloquent\PaginationConfiguratorServiceProvider;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
@@ -32,23 +23,27 @@ use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
-use Concept\Extensions\Http\Console\Commands\RouteListCommand;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\Http\Requests\RequestFormat;
 use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
+use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
+use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
-use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
-use Database\Seeders\PageSeeder;
-use Dotenv\Dotenv;
+use Concept\Core\Http\Contracts\ArgumentResolverInterface;
+use Concept\Core\Http\Contracts\RouteInterceptorInterface;
+use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
+use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
+use Concept\Core\Providers\Http\HttpKernelServiceProvider;
+use InvalidArgumentException;
+use Closure;
 use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
-use Closure;
 use Psr\Http\Message\ServerRequestInterface;
 use SessionHandlerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -56,34 +51,25 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHa
 
 final class ApplicationServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
-    private const bool DEBUG = true;
+    private const string INCORRECT_SESSION_FILE_PATH = 'Session file path must be a string or null, %s given.';
 
-    private const string APP_NAME = 'Concept Skeleton';
-    private const string APP_VERSION = '1.0.0';
-
-    private const string ROUTES_WEB = '/routes/web.php';
-    private const string ROUTES_API = '/routes/api.php';
-    private const string VIEWS_FRONTEND = '/resources/views/frontend';
-    private const string VIEWS_ROOT = '/resources/views';
-    private const string CACHE_VALINOR = '/storage/cache/valinor';
-    private const string CACHE_VIEWS = '/storage/cache/views';
-    private const string ERRORS_FALLBACK = '/resources/views/errors/fallback';
-    private const string LOG_APP_FILE = '/storage/logs/app.log';
-    private const string LOG_VALIDATION_FILE = '/storage/logs/validation.log';
-    private const string LOG_QUERY_FILE = '/storage/logs/query.log';
-    private const string MIGRATIONS_DIR = '/database/migrations';
-    private const string SESSION_SAVE_PATH = '/storage/sessions';
+    private const string CONFIG_DIR = '/config';
+    private const string CACHE_VALINOR_DIR = 'valinor';
+    private const string CACHE_VIEWS_DIR = 'views';
+    private const string ERRORS_FALLBACK_REL = 'resources/views/errors/fallback';
+    private const string LOG_APP_FILE = 'app.log';
+    private const string LOG_QUERY_FILE = 'query.log';
+    private const string LOG_VALIDATION_FILE = 'validation.log';
+    private const string LOGS_REL = 'storage/logs';
+    private const string CACHE_REL = 'storage/cache';
+    private const string VIEWS_REL = 'resources/views';
+    private const string STORAGE_REL = 'storage';
+    private const string DEFAULT_MIGRATIONS_TABLE = 'migrations';
     private const string DEFAULT_DB_DRIVER = 'mysql';
-    private const string DEFAULT_DB_HOST = 'db';
     private const int DEFAULT_DB_PORT = 3306;
-    private const string DEFAULT_DB_DATABASE = 'concept_skeleton_dev_db_2';
-    private const string DEFAULT_DB_USERNAME = 'root';
-    private const string DEFAULT_DB_PASSWORD = 'root';
     private const string DEFAULT_DB_CHARSET = 'utf8mb4';
     private const string DEFAULT_DB_COLLATION = 'utf8mb4_unicode_ci';
-    private const string LOG_LEVEL = 'debug';
-    private const int LOG_MAX_FILES = 7;
-    private const string LOG_CHANNEL = 'app';
+    private const string DEFAULT_SESSION_PATH = 'sessions';
 
     /**
      * @param string $root
@@ -103,97 +89,121 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     {
         $container = $this->getContainer();
 
-        $this->loadEnvironment();
-
-        $fallbackPath = $this->root . self::ERRORS_FALLBACK;
-        $this->registerErrorHandlers($container, $fallbackPath);
-
-        $container->addServiceProvider(new CastingServiceProvider(
-            cacheDirectory: $this->root . self::CACHE_VALINOR,
-            transformerClasses: [],
-            debug: self::DEBUG,
+        $container->addServiceProvider(new ConfigServiceProvider(
+            root: $this->root,
+            configDirectory: $this->root . self::CONFIG_DIR,
         ));
 
+        /** @var ConfigInterface $config */
+        $config = $container->get(ConfigInterface::class);
+
+        $fallbackPath = $this->rootPath(self::ERRORS_FALLBACK_REL);
+        $this->registerErrorHandlers($container, $config, $fallbackPath);
+
+        /** @var list<class-string> $transformerClasses */
+        $transformerClasses = $config->get(ConfigKey::CASTER_TRANSFORMERS) ?? [];
+        $container->addServiceProvider(new CastingServiceProvider(
+            cacheDirectory: $this->cachePath(self::CACHE_VALINOR_DIR),
+            transformerClasses: $transformerClasses,
+            debug: $config->getBool(ConfigKey::APP_DEBUG),
+        ));
+
+        /** @var array<string, string> $patterns */
+        $patterns = $config->get(ConfigKey::MASKING_PATTERNS) ?? [];
+        /** @var list<string> $keyPatterns */
+        $keyPatterns = $config->get(ConfigKey::MASKING_KEY_PATTERNS) ?? [];
+        /** @var list<class-string> $rules */
+        $rules = $config->get(ConfigKey::MASKING_RULES) ?? [];
         $container->addServiceProvider(new DataMaskerServiceProvider(
-            patterns: $this->getDataMaskerPatterns(),
-            keyPatterns: $this->getDataMaskerKeyPatterns(),
-            rules: [],
+            patterns: $patterns,
+            keyPatterns: $keyPatterns,
+            rules: $rules,
         ));
 
         $dataMaskerFactory = $this->dataMaskerFactory($container);
 
         $container->addServiceProvider(new ValidationServiceProvider(
-            customRules: [],
-            logEnabled: self::DEBUG,
-            logPath: $this->root . self::LOG_VALIDATION_FILE,
+            customRules: $this->getValidatorRules($config),
+            logEnabled: $config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED),
+            logPath: $this->logPath($config->getString(ConfigKey::VALIDATOR_LOG_PATH, self::LOG_VALIDATION_FILE)),
             dataMaskerFactory: $dataMaskerFactory,
         ));
 
         $container->addServiceProvider(new FormRequestServiceProvider(
-            globalExcept: ['_csrf_token'],
+            globalExcept: $config->getArray(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT),
         ));
 
         $container->addServiceProvider(new SessionServiceProvider(
-            sessionOptions: $this->getSessionOptions(),
-            handler: $this->getSessionHandler(),
+            sessionOptions: $this->getSessionOptions($config),
+            handler: $this->getSessionHandler($config),
         ));
 
         $container->addServiceProvider(new CsrfServiceProvider());
 
+        /** @var list<string> $routesList */
+        $routesList = $config->get(ConfigKey::ROUTES_LIST) ?? [];
+        /** @var list<class-string<RouteInterceptorInterface>> $interceptors */
+        $interceptors = $config->get(ConfigKey::ROUTES_INTERCEPTORS) ?? [];
+
         $container->addServiceProvider(new HttpKernelServiceProvider(
-            routePaths: [
-                $this->root . self::ROUTES_WEB,
-                $this->root . self::ROUTES_API,
-            ],
+            routePaths: $this->resolvePaths($routesList),
             resolvers: $this->getArgumentResolvers($container),
+            interceptors: $interceptors,
             notFoundMiddleware: RenderHttpErrorMiddleware::class,
         ));
 
         $container->addServiceProvider(new PaginationConfiguratorServiceProvider());
 
         $container->addServiceProvider(new LoggerMonologServiceProvider(
-            path: $this->root . self::LOG_APP_FILE,
-            level: self::LOG_LEVEL,
-            maxFiles: self::LOG_MAX_FILES,
-            channel: self::LOG_CHANNEL,
+            path: $this->logPath(self::LOG_APP_FILE),
+            level: $config->getString(ConfigKey::LOG_LEVEL),
+            maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
+            channel: $config->getString(ConfigKey::LOG_NAME),
             dataMaskerFactory: $dataMaskerFactory,
         ));
 
+        /** @var list<string> $migrationPaths */
+        $migrationPaths = $config->get(ConfigKey::MIGRATIONS_PATHS) ?? [];
+        /** @var list<class-string> $seeders */
+        $seeders = $config->get(ConfigKey::SEEDERS_LIST) ?? [];
         $container->addServiceProvider(new DatabaseEloquentServiceProvider(
-            connection: $this->getDatabaseConnection(),
-            migrationPaths: [
-                $this->root . self::MIGRATIONS_DIR,
-            ],
-            seeders: [
-                PageSeeder::class,
-            ],
-            logEnabled: self::DEBUG,
-            logPath: $this->root . self::LOG_QUERY_FILE,
-            logMaxFiles: self::LOG_MAX_FILES,
+            connection: $this->getConnectionOptions($config),
+            migrationPaths: $this->resolvePaths($migrationPaths),
+            migrationsTable: $config->getString(ConfigKey::MIGRATIONS_TABLE, self::DEFAULT_MIGRATIONS_TABLE),
+            seeders: $seeders,
+            logEnabled: $config->getBool(ConfigKey::DB_LOG_ENABLED),
+            logPath: $this->logPath($config->getString(ConfigKey::DB_LOG_PATH, self::LOG_QUERY_FILE)),
+            logMaxFiles: $config->getInt(ConfigKey::DB_LOG_MAX_FILES, 7),
             dataMaskerFactory: $dataMaskerFactory,
+            emitQueryEvents: $config->getBool(ConfigKey::TELEMETRY_DB_QUERIES),
         ));
 
         $container->addServiceProvider(new HttpServiceProvider());
 
+        /** @var list<class-string<Command>> $commands */
+        $commands = $config->get(ConfigKey::COMMANDS) ?? [];
         $container->addServiceProvider(new ConsoleSymfonyServiceProvider(
-            appName: self::APP_NAME,
-            appVersion: self::APP_VERSION,
-            commands: $this->getConsoleCommands(),
+            appName: $config->getString(ConfigKey::APP_NAME),
+            appVersion: $config->getString(ConfigKey::APP_VERSION),
+            commands: $commands,
         ));
 
+        /** @var array<string, string> $viewPaths */
+        $viewPaths = $config->get(ConfigKey::VIEW_PATHS) ?? [];
+        /** @var array<string, string> $routeNamespace */
+        $routeNamespace = $config->get(ConfigKey::VIEW_ROUTE_NAMESPACE) ?? [];
+        /** @var list<class-string> $viewExtensions */
+        $viewExtensions = $config->get(ConfigKey::VIEW_EXTENSIONS) ?? [];
         $container->addServiceProvider(new ViewServiceProvider(
-            paths: [
-                'frontend' => $this->root . self::VIEWS_FRONTEND,
-            ],
-            extensions: [
-                TwigAppExtension::class,
-            ],
+            paths: $this->resolvePaths($viewPaths),
+            extensions: $viewExtensions,
+            routeNamespace: $routeNamespace,
         ));
 
         $container->addServiceProvider(new TwigViewServiceProvider(
-            viewsPath: $this->root . self::VIEWS_ROOT,
-            cacheDir: $this->root . self::CACHE_VIEWS,
-            debug: self::DEBUG,
+            viewsPath: $this->rootPath(self::VIEWS_REL),
+            cacheDir: $this->cachePath(self::CACHE_VIEWS_DIR),
+            debug: $config->getBool(ConfigKey::APP_DEBUG),
         ));
     }
 
@@ -213,89 +223,89 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
     }
 
     /**
-     * @return list<class-string<Command>>
+     * @return array<string, class-string<RuleInterface>>
      */
-    private function getConsoleCommands(): array
+    private function getValidatorRules(ConfigInterface $config): array
     {
-        return [
-            RouteListCommand::class,
-            DbMigrateCommand::class,
-            DbMigrationListCommand::class,
-            DbMigrationPathsCommand::class,
-            DbRollbackCommand::class,
-            DbSeedCommand::class,
-            DbSeederListCommand::class,
-        ];
+        /** @var array<string, class-string<RuleInterface>> $rules */
+        $rules = $config->get(ConfigKey::VALIDATOR_RULES) ?? [];
+
+        return $rules;
     }
 
-    private function loadEnvironment(): void
+    private function rootPath(string $path): string
     {
-        $envFile = $this->root . '/.env';
-        if (!is_file($envFile)) {
-            return;
-        }
+        return $this->root . '/' . ltrim($path, '/');
+    }
 
-        Dotenv::createImmutable($this->root)->safeLoad();
+    private function logPath(string $file): string
+    {
+        return $this->rootPath(self::LOGS_REL . '/' . ltrim($file, '/'));
+    }
+
+    private function cachePath(string $dir): string
+    {
+        return $this->rootPath(self::CACHE_REL . '/' . ltrim($dir, '/'));
+    }
+
+    /**
+     * @param list<string>|array<string, string> $paths
+     * @return list<string>|array<string, string>
+     */
+    private function resolvePaths(array $paths): array
+    {
+        return array_map(fn(string $path): string => $this->rootPath($path), $paths);
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function getDatabaseConnection(): array
+    private function getConnectionOptions(ConfigInterface $config): array
     {
         return [
-            'driver' => $this->envString('DB_DRIVER', self::DEFAULT_DB_DRIVER),
-            'host' => $this->envString('DB_HOST', self::DEFAULT_DB_HOST),
-            'port' => $this->envInt('DB_PORT', self::DEFAULT_DB_PORT),
-            'database' => $this->envString('DB_DATABASE', self::DEFAULT_DB_DATABASE),
-            'username' => $this->envString('DB_USERNAME', self::DEFAULT_DB_USERNAME),
-            'password' => $this->envString('DB_PASSWORD', self::DEFAULT_DB_PASSWORD),
-            'charset' => $this->envString('DB_CHARSET', self::DEFAULT_DB_CHARSET),
-            'collation' => $this->envString('DB_COLLATION', self::DEFAULT_DB_COLLATION),
-            'prefix' => $this->envString('DB_PREFIX', ''),
+            'driver' => $config->getString(ConfigKey::DB_DRIVER, self::DEFAULT_DB_DRIVER),
+            'host' => $config->getString(ConfigKey::DB_HOST),
+            'port' => $config->getInt(ConfigKey::DB_PORT, self::DEFAULT_DB_PORT),
+            'database' => $config->getString(ConfigKey::DB_DATABASE),
+            'username' => $config->getString(ConfigKey::DB_USERNAME),
+            'password' => $config->getString(ConfigKey::DB_PASSWORD),
+            'charset' => $config->getString(ConfigKey::DB_CHARSET, self::DEFAULT_DB_CHARSET),
+            'collation' => $config->getString(ConfigKey::DB_COLLATION, self::DEFAULT_DB_COLLATION),
+            'prefix' => $config->getString(ConfigKey::DB_PREFIX),
         ];
-    }
-
-    private function envString(string $key, string $default): string
-    {
-        $value = $_ENV[$key] ?? getenv($key);
-        if (!is_string($value) || $value === '') {
-            return $default;
-        }
-
-        return $value;
-    }
-
-    private function envInt(string $key, int $default): int
-    {
-        $value = $_ENV[$key] ?? getenv($key);
-        if (!is_string($value) || !is_numeric($value)) {
-            return $default;
-        }
-
-        return (int) $value;
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function getSessionOptions(): array
+    private function getSessionOptions(ConfigInterface $config): array
     {
         return [
-            'cookie_lifetime' => 0,
-            'cookie_path' => '/',
-            'cookie_secure' => false,
-            'cookie_httponly' => true,
-            'cookie_domain' => '',
-            'cookie_samesite' => 'Lax',
-            'use_only_cookies' => true,
-            'use_strict_mode' => true,
+            'cookie_lifetime' => $config->getInt(ConfigKey::SESSION_COOKIE_LIFETIME, 0),
+            'cookie_path' => $config->getString(ConfigKey::SESSION_COOKIE_PATH, '/'),
+            'cookie_secure' => $config->getBool(ConfigKey::SESSION_COOKIE_SECURE, false),
+            'cookie_httponly' => $config->getBool(ConfigKey::SESSION_COOKIE_HTTPONLY, true),
+            'cookie_domain' => $config->getString(ConfigKey::SESSION_COOKIE_DOMAIN, ''),
+            'cookie_samesite' => $config->getString(ConfigKey::SESSION_COOKIE_SAMESITE, 'Lax'),
+            'use_only_cookies' => $config->getBool(ConfigKey::SESSION_OPTIONS_USE_ONLY_COOKIES, true),
+            'use_strict_mode' => $config->getBool(ConfigKey::SESSION_OPTIONS_USE_STRICT_MODE, true),
         ];
     }
 
-    private function getSessionHandler(): SessionHandlerInterface
+    private function getSessionHandler(ConfigInterface $config): SessionHandlerInterface
     {
-        return new NativeFileSessionHandler($this->root . self::SESSION_SAVE_PATH);
+        $sessionFilePath = $config->get(ConfigKey::SESSION_FILE_PATH);
+        if (!is_string($sessionFilePath) && !is_null($sessionFilePath)) {
+            throw new InvalidArgumentException(sprintf(self::INCORRECT_SESSION_FILE_PATH, get_debug_type($sessionFilePath)));
+        }
+
+        if ($sessionFilePath === null || $sessionFilePath === '') {
+            $sessionFilePath = self::DEFAULT_SESSION_PATH;
+        }
+
+        return new NativeFileSessionHandler(
+            $this->rootPath(self::STORAGE_REL . '/' . ltrim($sessionFilePath, '/')),
+        );
     }
 
     /**
@@ -306,35 +316,11 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
         return fn(): ?DataMaskerInterface => $container->get(DataMaskerInterface::class);
     }
 
-    /**
-     * @return array<string, string>
-     */
-    private function getDataMaskerPatterns(): array
-    {
-        return [
-            '/[a-z0-9_\-\+\.]+@[a-z0-9\-]+\.[a-z]{2,}/i' => '***@***.***',
-            '/\d{4}-\d{4}-\d{4}-\d{4}/' => '****-****-****-****',
-            '/(password|passwd|pwd|repeat_password|password_confirmation|token|_csrf_token|csrf_token|api_key|secret|authorization)[:=]+([^\s,;]+)/i' => '$1=*****',
-        ];
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function getDataMaskerKeyPatterns(): array
-    {
-        return [
-            '/.*password.*/i',
-            '/.*token.*/i',
-            '/.*_csrf_token.*/i',
-            '/.*secret.*/i',
-            '/api_key/i',
-            '/authorization/i',
-        ];
-    }
-
-    private function registerErrorHandlers(DefinitionContainerInterface $container, string $fallbackPath): void
-    {
+    private function registerErrorHandlers(
+        DefinitionContainerInterface $container,
+        ConfigInterface $config,
+        string $fallbackPath,
+    ): void {
         $container->add(ExceptionReporterInterface::class, function() use ($container): AppExceptionReporter {
             return new AppExceptionReporter(
                 logger: $container->get(LoggerInterface::class),
@@ -357,7 +343,7 @@ final class ApplicationServiceProvider extends AbstractServiceProvider implement
             ->setShared(true);
 
         $container->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
-            debug: self::DEBUG,
+            debug: $config->getBool(ConfigKey::APP_DEBUG),
             errorsFallbackPath: $fallbackPath,
             exceptionReporter: fn(): ExceptionReporterInterface => $container->get(ExceptionReporterInterface::class),
             httpErrorRenderer: fn(): HttpErrorRendererInterface => $container->get(HttpErrorRendererInterface::class),

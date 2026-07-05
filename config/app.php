@@ -2,7 +2,7 @@
 
 return [
     'app' => [
-        'name' => 'Concept',
+        'name' => 'Concept Skeleton',
         'version' => '1.0.0',
         'timezone' => 'UTC',
         'locale' => 'en',

@@ -7,11 +7,11 @@ return [
         'prefix' => '',
 
         'driver' => 'mysql',
-        'host' => '127.0.0.1',
+        'host' => 'concept_skeleton_dev_db_2',
         'port' => 3306,
-        'database' => 'concept_db',
+        'database' => 'concept_skeleton_dev_db_2',
         'username' => 'root',
-        'password' => '',
+        'password' => 'root',
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
 
