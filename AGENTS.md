@@ -105,13 +105,149 @@ ErrorHandlingLayerProvider           → Whoops + skeleton error renderers
 ValidationLayerProvider              → ValidationRakit + FormRequest
 DatabaseLayerProvider                → DatabaseEloquent + PaginationConfigurator
 HttpLayerProvider                    → Casting, Session, CSRF, HttpKernel, Http extension
-ConsoleLayerProvider               → ConsoleSymfony
-ViewLayerProvider                  → View + Twig
+ConsoleLayerProvider                 → ConsoleSymfony
+ViewLayerProvider                    → View + Twig
 ApplicationRuntimeServiceProvider    → post-config runtime (timezone, …)
 ApplicationComponentsServiceProvider → feature components (manifest modules)
 ```
 
 **Glue** = конструктор. **Extension ServiceProvider** = блок конструктора з явними параметрами. **Component** = plug-in module (routes, views, migrations, …) поверх уже зібраного стеку.
+
+### Розподіл glue: layer vs config vs routes
+
+> Glue переїхав з core у skeleton — це ціна гнучкості. Правила нижче тримають його передбачуваним; app code лишається тонким.
+
+**Три рівні (зверху вниз):**
+
+```
+providers.php     → ЩО увімкнено (стек)
+config/           → ЯК налаштовано (значення)
+LayerProvider     → ЯК з’єднано (wiring)
+routes/*.php      → ЩО обробляє HTTP (surface)
+src/App/          → бізнес-логіка додатку
+Extensions        → бібліотеки (без app/config)
+Core              → dispatch + routing contract
+```
+
+**Правило одного погляду:** щодня — **routes + controllers**; стек — **`providers.php`**; layer/config — лише при зміні capability.
+
+#### `bootstrap/profiles/{profile}/providers.php`
+
+| Дозволено | Заборонено |
+|-----------|------------|
+| Список `*LayerProvider` | Читання config |
+| Порядок layer-ів (за потреби) | `new *ServiceProvider(...)` extension напряму |
+| `$root`, `path-map.php` для Foundation | Business logic, middleware lists |
+| `ApplicationRuntimeServiceProvider` | Умови «якщо prod — …» |
+
+Новий продукт = новий **profile** (інший список layers), не fork extensions.
+
+#### `config/*.php`
+
+| Дозволено | Заборонено |
+|-----------|------------|
+| Дані: paths (відносні), flags, lists, імена файлів | `$container->get(...)` |
+| `'routes.list' => ['routes/web.php']` | `new ServiceProvider(...)` |
+| Env overlay `config/{APP_ENV}/` | Middleware class lists |
+| Один файл або багато — без різниці для правил | Виклики PathManager |
+
+Absolute paths будує **layer** через `ApplicationPaths` / `PathManager`.
+
+#### `*LayerProvider`
+
+| Дозволено | Заборонено |
+|-----------|------------|
+| `$config->get(ConfigKey::…)` → constructor extension provider | Routes, controllers |
+| `$paths->logFile(...)`, `resolveList()` | Business rules |
+| `new XxxServiceProvider(...)` з явними args | Middleware stack для web |
+| App glue: error renderers, resolver chain, `DataMaskerFactory` | «God layer» (новий domain без нового layer) |
+| Один domain на layer | `$container->get()` cross-extension у extension-класах |
+
+**Новий layer** — новий **infrastructure domain** (Telemetry, Locale, Components). **Не новий layer** — зміна значення (log level, db host) → лише config.
+
+#### `routes/*.php`
+
+| Дозволено | Заборонено |
+|-----------|------------|
+| `$router->lazyMiddlewares([...])` — явний список класів | Реєстрація service providers |
+| `$router->get/post/...`, route names, groups | Wiring container |
+| API vs web — різні файли та middleware | Inline closures з business logic |
+
+Session/CSRF middleware — у **web** routes, не в api. Приклад admin-web surface: `routes/web1.php` (middleware chain + login/home).
+
+#### `src/App/` (controllers, middleware, requests)
+
+| Дозволено | Заборонено |
+|-----------|------------|
+| Controllers, FormRequests, app middleware | `addServiceProvider` |
+| App-specific middleware (`ShareViewDataMiddleware`) | Дублювати wiring з layers |
+| Domain services | Читати config напряму (краще inject) |
+
+Reusable middleware (`VerifyCsrfTokenMiddleware`) — у extension; app-specific — у `Concept\App\Middleware\`.
+
+#### Extensions vs Components
+
+| | Extension | Component |
+|--|-----------|-----------|
+| Що | Generic library (Http, Validation, CSRF) | Feature module (ACL, Admin) |
+| Config | Ні — лише constructor params | Manifest + свої routes/views |
+| Glue | `*LayerProvider` | `ComponentsLayerProvider` (майбутнє) або profile |
+| Приклад | `ValidationServiceProvider` | ACL + `HandleAccessDeniedMiddleware` у routes |
+
+#### Decision tree
+
+```
+Змінюю значення (host, log file, debug)?     → config/
+Змінюю стек (додати DB, прибрати View)?     → providers.php (± layer)
+Змінюю wiring extension (paths, deps)?      → LayerProvider (один domain)
+Змінюю URL / middleware на маршрутах?     → routes/
+Змінюю поведінку endpoint?                  → Controller / FormRequest / app middleware
+Нова reusable бібліотека?                   → Extension (+ layer glue)
+Нова feature area (admin, billing)?         → Component (+ routes)
+```
+
+#### Anti-patterns
+
+| ❌ | ✅ |
+|----|-----|
+| Middleware list у `HttpLayerProvider` | Middleware у `routes/web.php` |
+| `DatabaseLayerProvider` знає про ACL | ACL middleware у routes + Component |
+| Config містить middleware stacks | Middleware у routes; interceptors у config — лише якщо layer документує |
+| Новий проєкт копіює 8 layers | Новий profile з існуючих layers |
+| Extension читає `ConfigInterface` | Layer читає config → передає params |
+| Monolith `ApplicationServiceProvider` | Розбиті layers + profile |
+
+#### Map: full profile layers
+
+| Layer | Config (приклад) | Не його зона |
+|-------|------------------|--------------|
+| Foundation | path-map, config dir | routes |
+| Logging | `masking.*`, `log.*` | validation rules |
+| ErrorHandling | — (app renderers у glue) | middleware stack |
+| Validation | `validator.*`, `form-request.*` | twig paths |
+| Database | `db.*`, `migrations.*` | session |
+| Http | `caster.*`, `session.*`, `routes.*` | view extensions |
+| Console | `console.*`, `commands` | HTTP middleware |
+| View | `view.*` | DB connection |
+
+#### Profiles (recipes)
+
+| Profile | Layers (ідея) | Routes |
+|---------|---------------|--------|
+| `minimal` | Http only (hardcoded glue) | `api.php` |
+| `api` | Foundation, Logging, Error, Validation, Database, Http (без Session) | `api.php` |
+| `admin` | … + Session/CSRF, View, Components | `web.php` + ACL middleware |
+| `full` | усі layers (див. `profiles/full/providers.php`) | `web.php` + `api.php` |
+
+Profile відрізняється **manifest + routes**, не fork extensions.
+
+#### Чеклист PR (glue review)
+
+- [ ] Wiring не з’явився у controller/route?
+- [ ] Config лишився data-only?
+- [ ] Немає cross-extension `$container->get()` у extension-класах?
+- [ ] Зміна стеку = ±1 рядок у `providers.php`?
+- [ ] Web/api middleware — у правильному route file?
 
 ### Правила залежностей extensions (цільовий стан)
 
@@ -175,9 +311,9 @@ ApplicationComponentsServiceProvider → feature components (manifest modules)
 - Resolvers з `$container` у constructor (`FormRequestArgumentResolver`, `TypedRouteParameterArgumentResolver`) — glue **передає** їх у `HttpKernelServiceProvider`, не core
 - Hardcoded assumptions «ViewRegistry вже є», «Router вже зареєстрований» — документувати в boot order
 
-### Профілі збірки (майбутнє)
+### Профілі збірки
 
-Named profiles (`minimal`, `full`) + layer providers за шарами. Legacy `ApplicationServiceProvider1`, `providers1.php` — видалено.
+Named profiles (`minimal`, `full`, майбутні `api` / `admin`) + layer providers. Див. таблицю **Profiles (recipes)** у «Розподіл glue». Legacy `ApplicationServiceProvider1`, `providers1.php` — видалено.
 
 ### Що виноситься в Extensions (skeleton `src/Extensions/`)
 
@@ -415,7 +551,8 @@ config/routes.php          → skeleton config (поки не використо
 - [x] **Validation extension**: magewirephp/validation, Rule, exceptions
 - [x] **FormRequest extension**: factory, resolver, abstract FormRequest
 - [x] **Validation + FormRequest у glue**: `ValidationServiceProvider`, `FormRequestServiceProvider`, `new FormRequestArgumentResolver($container)` у resolver chain
-- [x] `HandleHttpErrorMiddleware` — `ValidationException` → 422 JSON (Accept) або HTML renderer
+- [x] `HandleHttpErrorMiddleware` — 404, `HttpErrorException`, 500 (без `ValidationException`)
+- [x] `HandleValidationExceptionMiddleware` — `ValidationException` → 422 JSON або redirect + flash (web)
 - [x] Тест: `POST /test/echo` + `TestEchoRequest` (name, email)
 - [x] **Console extension**: `ConsoleSymfonyServiceProvider`, `route:list`
 - [x] **Session + CSRF**: `SessionServiceProvider`, `CsrfServiceProvider`, middleware chain у `web.php`

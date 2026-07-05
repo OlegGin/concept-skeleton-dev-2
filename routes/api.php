@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Concept\App\Controllers\ApiController;
+use Concept\App\Middleware\HandleValidationExceptionMiddleware;
 use Concept\Extensions\Json\Middleware\ForceJsonResponseMiddleware;
 use Concept\Extensions\Json\Middleware\ParseJsonBodyMiddleware;
 use League\Route\RouteGroup;
@@ -13,4 +14,5 @@ $router->group('/api', function(RouteGroup $router): void {
 })->lazyMiddlewares([
     ParseJsonBodyMiddleware::class,
     ForceJsonResponseMiddleware::class,
+    HandleValidationExceptionMiddleware::class,
 ]);
