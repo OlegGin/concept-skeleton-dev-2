@@ -101,7 +101,7 @@ bootstrap/profiles/{name}/providers.php
 bootstrap/shared/path-map.php        → pathMap для full profile
 FoundationLayerProvider              → PathManager + Config
 LoggingLayerProvider                 → DataMasker + LoggerMonolog (`DataMaskerFactory::fromContainer`)
-ErrorHandlingLayerProvider           → Whoops + skeleton error renderers
+ErrorHandlingLayerProvider           → HttpErrorHandler, Whoops (report + debug), TwigHttpErrorRenderer
 ValidationLayerProvider              → ValidationRakit + FormRequest
 DatabaseLayerProvider                → DatabaseEloquent + PaginationConfigurator
 HttpLayerProvider                    → Casting, Session, CSRF, HttpKernel, Http extension
@@ -275,8 +275,9 @@ Profile відрізняється **manifest + routes**, не fork extensions.
 
 | «Хочу…» | Glue робить |
 |---------|---------------|
-| Логування помилок | `new LoggerMonologServiceProvider(logFilePath:, level:, …)` → glue передає `ExceptionReporterInterface` у `ErrorHandlerWhoopsServiceProvider` |
-| Гарні сторінки помилок | skeleton: `TwigHttpErrorRenderer` → glue: `httpErrorRenderer: fn() => …` у Whoops provider (lazy closures) |
+| Логування помилок | `AppExceptionReporter` → `LoggerMonolog` + `PhpErrorLogWriter`; Whoops awake: лише `ExceptionReporterInterface` |
+| HTTP error pages (production) | `HttpErrorHandler` → `TwigHttpErrorRenderer`; middleware делегує в handler |
+| Debug uncaught | `HandleHttpErrorMiddleware` rethrow → Whoops `PrettyPageHandler` (не renderer у Whoops) |
 | Шаблонізатор | `ViewServiceProvider(paths:, extensions:)` + `TwigViewServiceProvider(viewsPath:, cacheDir:, debug:)` |
 | Розширення Twig | `extensions: [TwigAppExtension::class, …]` у `ViewServiceProvider` constructor |
 | FormRequest + validation | glue збирає resolver chain + `ValidationServiceProvider` + `FormRequestServiceProvider`; instances/resolvers передає в `HttpKernelServiceProvider` |
@@ -554,7 +555,7 @@ config/routes.php          → skeleton config (поки не використо
 - [x] **Validation extension**: magewirephp/validation, Rule, exceptions
 - [x] **FormRequest extension**: factory, resolver, abstract FormRequest
 - [x] **Validation + FormRequest у glue**: `ValidationServiceProvider`, `FormRequestServiceProvider`, `new FormRequestArgumentResolver($container)` у resolver chain
-- [x] `HandleHttpErrorMiddleware` — 404, `HttpErrorException`, 500 (без `ValidationException`)
+- [x] **Error handling**: `HttpErrorHandler` (log + render), `HandleHttpErrorMiddleware` / `HandleNotFoundMiddleware` — thin delegates; Whoops — bootstrap + debug uncaught only; 404 — twig + log завжди
 - [x] `HandleValidationExceptionMiddleware` — `ValidationException` → 422 JSON або redirect + flash (web)
 - [x] Тест: `POST /test/echo` + `TestEchoRequest` (name, email)
 - [x] **Console extension**: `ConsoleSymfonyServiceProvider`, `route:list`
@@ -638,6 +639,38 @@ public/index.php
 | Enriched | `prepareRequest()` → resolvers → handler | Так |
 
 Extensions (FormRequest, ResponseFactory): отримують `$request` **явно** з resolver/параметра методу, не `$container->get(ServerRequestInterface::class)`.
+
+## Error handling (узгоджена модель)
+
+**Правило:** HTTP `Response` завжди з middleware/handler. Whoops — bootstrap + неперехоплені винятки в debug.
+
+```
+EarlyWhoopsBootstrap (bootstrap/app.php)
+  → fatals до container
+
+HTTP request:
+  HandleHttpErrorMiddleware (router lazy, зовнішній)
+    → domain middleware (Validation, CSrf, …)
+    → controller
+
+  Route not found (League prepend):
+    HandleNotFoundMiddleware → HttpErrorHandler::notFound()
+
+HttpErrorHandler (skeleton glue — єдине місце log+render для HTTP):
+  notFound()           → ExceptionReporter + TwigHttpErrorRenderer (debug і prod однаково)
+  fromThrowable()      → ExceptionReporter + Twig (лише production path)
+
+Debug (APP_DEBUG=true):
+  NotFoundException    → notFound() (twig + log, без Whoops)
+  інший Throwable      → rethrow → Whoops: report + PrettyPage
+
+Production:
+  будь-який Throwable  → fromThrowable() → log + twig/json
+
+Whoops awake (ErrorHandlerWhoopsServiceProvider):
+  ExceptionReporter + PrettyPage (debug web) / PlainText (debug cli)
+  БЕЗ HttpErrorRendererHandler — HTTP render не через Whoops
+```
 
 ## Ключові контракти
 

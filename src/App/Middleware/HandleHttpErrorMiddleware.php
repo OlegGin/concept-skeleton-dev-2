@@ -2,10 +2,9 @@
 
 namespace Concept\App\Middleware;
 
-use Concept\App\Http\Exception\HttpErrorException;
-use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
-use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
-use Concept\Extensions\Http\Protocol\HttpStatusCode;
+use Concept\App\Foundation\ConfigKey;
+use Concept\App\Http\Error\HttpErrorHandler;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
 use League\Route\Http\Exception\NotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -15,39 +14,27 @@ use Throwable;
 
 final class HandleHttpErrorMiddleware implements MiddlewareInterface
 {
+    private readonly bool $debug;
+
     public function __construct(
-        private readonly HttpErrorRendererInterface $httpErrorRenderer,
-        private readonly ExceptionReporterInterface $exceptionReporter,
-    ) {}
+        private readonly HttpErrorHandler $httpErrorHandler,
+        ConfigInterface $config,
+    ) {
+        $this->debug = $config->getBool(ConfigKey::APP_DEBUG);
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
             return $handler->handle($request);
         } catch (NotFoundException $exception) {
-            $this->exceptionReporter->report($exception);
-
-            return $this->httpErrorRenderer->render(
-                $request,
-                HttpStatusCode::NOT_FOUND,
-                $exception->getMessage(),
-            );
-        } catch (HttpErrorException $exception) {
-            $this->exceptionReporter->report($exception);
-
-            return $this->httpErrorRenderer->render(
-                $request,
-                $exception->getStatusCode(),
-                $exception->getMessage(),
-            );
+            return $this->httpErrorHandler->notFound($request, exception: $exception);
         } catch (Throwable $exception) {
-            $this->exceptionReporter->report($exception);
+            if ($this->debug) {
+                throw $exception;
+            }
 
-            return $this->httpErrorRenderer->render(
-                $request,
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                HttpStatusCode::getReasonPhrase(HttpStatusCode::INTERNAL_SERVER_ERROR),
-            );
+            return $this->httpErrorHandler->fromThrowable($request, $exception);
         }
     }
 }

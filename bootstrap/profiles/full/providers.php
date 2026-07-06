@@ -22,12 +22,12 @@ return function(string $root): array {
     return [
         new FoundationLayerProvider($root, $pathMap),
         new LoggingLayerProvider(),
-        new ErrorHandlingLayerProvider(),
         new ValidationLayerProvider(),
         new DatabaseLayerProvider(),
         new HttpLayerProvider(),
         new ConsoleLayerProvider(),
         new ViewLayerProvider(),
+        new ErrorHandlingLayerProvider(),
         new ApplicationRuntimeServiceProvider(),
     ];
 };
