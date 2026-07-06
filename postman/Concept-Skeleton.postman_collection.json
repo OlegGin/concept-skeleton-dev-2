@@ -1,0 +1,288 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Concept Skeleton 2",
+		"description": "JSON/API smoke tests for Concept Skeleton 2.\n\nBase URL: http://localhost:8088 (Docker port 8088:80).\n\nFolders:\n- **API** — `/api/*`, no CSRF, JSON forced by middleware\n- **Web GET** — test endpoints returning JSON\n- **Web POST** — run **Get CSRF token** first (stores cookie + `csrfToken` variable)\n- **Errors** — 404/500; set `APP_DEBUG=false` in `.env` for JSON error pages",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8088"
+		},
+		{
+			"key": "csrfToken",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "API (no CSRF)",
+			"description": "Routes from `routes/api.php`. ParseJsonBody + ForceJsonResponse middleware active.",
+			"item": [
+				{
+					"name": "Ping",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/ping",
+						"description": "Health check. Expected: `{ \"status\": \"success\", \"code\": 200, \"data\": { \"message\": \"pong\" } }`"
+					},
+					"response": []
+				},
+				{
+					"name": "Echo — valid JSON",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Oleh\",\n    \"email\": \"test@example.com\"\n}"
+						},
+						"url": "{{baseUrl}}/api/echo",
+						"description": "Echoes parsed JSON body. No validation on this endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Echo — empty body",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": "{{baseUrl}}/api/echo",
+						"description": "Empty body → `received: []`."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Web GET (JSON)",
+			"description": "Test routes from `routes/web.php`. Controllers return JSON directly; no CSRF on GET.",
+			"item": [
+				{
+					"name": "Hello",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/test/hello/world",
+						"description": "Route param resolver test."
+					},
+					"response": []
+				},
+				{
+					"name": "User by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/test/user/42",
+						"description": "Typed route parameter (int) via Casting extension."
+					},
+					"response": []
+				},
+				{
+					"name": "Database check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/test/db",
+						"description": "Requires DB connection (MySQL in Docker)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Web POST (CSRF)",
+			"description": "Web group has `VerifyCsrfTokenMiddleware`. Run **Get CSRF token** first — Postman stores session cookie and sets `csrfToken` collection variable.",
+			"item": [
+				{
+					"name": "Get CSRF token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const html = pm.response.text();",
+									"const match = html.match(/name=\"_csrf_token\"\\s+value=\"([^\"]+)\"/);",
+									"",
+									"pm.test('CSRF token found in HTML', function () {",
+									"    pm.expect(match, 'Open GET / and check _csrf_token hidden input').to.not.be.null;",
+									"});",
+									"",
+									"if (match) {",
+									"    pm.collectionVariables.set('csrfToken', match[1]);",
+									"    console.log('csrfToken saved:', match[1]);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/",
+						"description": "Loads home page form with `_csrf_token`. Session cookie is stored automatically by Postman."
+					},
+					"response": []
+				},
+				{
+					"name": "Echo — valid (FormRequest)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (!pm.collectionVariables.get('csrfToken')) {",
+									"    console.warn('Run \"Get CSRF token\" first or set csrfToken manually.');",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrfToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Oleh\",\n    \"email\": \"test@example.com\"\n}"
+						},
+						"url": "{{baseUrl}}/test/echo",
+						"description": "FormRequest validation + JSON response when Accept is application/json."
+					},
+					"response": []
+				},
+				{
+					"name": "Echo — validation error 422",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrfToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\",\n    \"email\": \"not-an-email\"\n}"
+						},
+						"url": "{{baseUrl}}/test/echo",
+						"description": "Expected: 422 JSON with `status: error` and `errors` object."
+					},
+					"response": []
+				},
+				{
+					"name": "Echo — CSRF missing (419)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Oleh\",\n    \"email\": \"test@example.com\"\n}"
+						},
+						"url": "{{baseUrl}}/test/echo",
+						"description": "No X-CSRF-TOKEN header. Expected: `{ \"code\": 419, \"message\": \"CSRF token mismatch\" }`."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Errors",
+			"description": "With `APP_DEBUG=true` Whoops returns HTML (PrettyPage), not JSON. Set `APP_DEBUG=false` and restart container to test JSON error responses.",
+			"item": [
+				{
+					"name": "404 Not Found",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": "{{baseUrl}}/no-such-page",
+						"description": "League Router throws NotFoundException → Whoops → TwigHttpErrorRenderer (production) or PrettyPage (debug)."
+					},
+					"response": []
+				},
+				{
+					"name": "500 Intentional boom",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": "{{baseUrl}}/test/boom",
+						"description": "Throws RuntimeException for stack trace testing."
+					},
+					"response": []
+				},
+				{
+					"name": "503 HTTP error",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": "{{baseUrl}}/test/http-error",
+						"description": "Throws HttpErrorException with status 503."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

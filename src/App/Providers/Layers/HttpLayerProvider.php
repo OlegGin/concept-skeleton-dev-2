@@ -4,7 +4,6 @@ namespace Concept\App\Providers\Layers;
 
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
-use Concept\App\Middleware\HandleNotFoundMiddleware;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
@@ -71,7 +70,6 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
             routePaths: $pathManager->rootList($routesList),
             resolvers: $this->getArgumentResolvers($container),
             interceptors: $interceptors,
-            notFoundMiddleware: HandleNotFoundMiddleware::class,
         ));
 
         $container->addServiceProvider(new HttpServiceProvider());
