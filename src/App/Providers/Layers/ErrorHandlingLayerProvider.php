@@ -5,7 +5,6 @@ namespace Concept\App\Providers\Layers;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\App\Http\Error\AppExceptionReporter;
-use Concept\App\Http\Error\HttpErrorHandler;
 use Concept\App\Http\Error\TwigHttpErrorRenderer;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
@@ -64,17 +63,11 @@ final class ErrorHandlingLayerProvider extends AbstractServiceProvider implement
             fn(): TwigHttpErrorRenderer => ContainerDependency::get($container, TwigHttpErrorRenderer::class),
         )->setShared(true);
 
-        $container->add(HttpErrorHandler::class, function() use ($container): HttpErrorHandler {
-            return new HttpErrorHandler(
-                httpErrorRenderer: ContainerDependency::get($container, HttpErrorRendererInterface::class),
-                exceptionReporter: ContainerDependency::get($container, ExceptionReporterInterface::class),
-            );
-        })->setShared(true);
-
         $container->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
             debug: $config->getBool(ConfigKey::APP_DEBUG),
             errorsFallbackPath: $fallbackPath,
             exceptionReporter: fn(): ExceptionReporterInterface => ContainerDependency::get($container, ExceptionReporterInterface::class),
+            httpErrorRenderer: fn(): HttpErrorRendererInterface => ContainerDependency::get($container, HttpErrorRendererInterface::class),
         ));
     }
 }

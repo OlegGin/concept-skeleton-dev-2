@@ -2,7 +2,6 @@
 
 use Concept\App\Controllers\IndexController;
 use Concept\App\Controllers\TestController;
-use Concept\App\Middleware\HandleHttpErrorMiddleware;
 use Concept\App\Middleware\HandleValidationExceptionMiddleware;
 use Concept\App\Middleware\ShareViewDataMiddleware;
 use Concept\App\Middleware\StorePreviousUrlMiddleware;
@@ -12,10 +11,6 @@ use League\Route\RouteGroup;
 use League\Route\Router;
 
 /** @var Router $router */
-$router->lazyMiddlewares([
-    HandleHttpErrorMiddleware::class,
-]);
-
 $router->group('', function(RouteGroup $router): void {
     $router->get('/', [IndexController::class, 'index'])->setName('home');
 

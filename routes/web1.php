@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 use Concept\App\Controllers\IndexController;
-use Concept\App\Middleware\HandleHttpErrorMiddleware;
 use Concept\App\Middleware\HandleValidationExceptionMiddleware;
 use Concept\App\Middleware\ShareViewDataMiddleware;
 use Concept\App\Middleware\StorePreviousUrlMiddleware;
@@ -13,7 +12,6 @@ use League\Route\Router;
 
 /** @var Router $router */
 $router->lazyMiddlewares([
-    HandleHttpErrorMiddleware::class,
     HandleAccessDeniedMiddleware::class,
     StorePreviousUrlMiddleware::class,
     HandleValidationExceptionMiddleware::class,

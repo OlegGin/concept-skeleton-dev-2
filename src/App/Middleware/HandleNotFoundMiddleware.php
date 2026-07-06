@@ -2,7 +2,10 @@
 
 namespace Concept\App\Middleware;
 
-use Concept\App\Http\Error\HttpErrorHandler;
+use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
+use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
+use Concept\Extensions\Http\Protocol\HttpStatusCode;
+use League\Route\Http\Exception\NotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -10,12 +13,18 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class HandleNotFoundMiddleware implements MiddlewareInterface
 {
+    private const string NOT_FOUND_MESSAGE = 'Not Found';
+
     public function __construct(
-        private readonly HttpErrorHandler $httpErrorHandler,
+        private readonly HttpErrorRendererInterface $httpErrorRenderer,
+        private readonly ExceptionReporterInterface $exceptionReporter,
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->httpErrorHandler->notFound($request);
+        $exception = new NotFoundException(self::NOT_FOUND_MESSAGE);
+        $this->exceptionReporter->report($exception);
+
+        return $this->httpErrorRenderer->render($request, HttpStatusCode::NOT_FOUND, self::NOT_FOUND_MESSAGE);
     }
 }
