@@ -2,14 +2,15 @@
 
 namespace Concept\App\Http\Error;
 
+use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Throwable;
 
-final class PhpErrorLogWriter
+final class PhpErrorLogWriter implements ExceptionReporterInterface
 {
-    private const string LOG_LINE_FORMAT = '[%s] app.ERROR: %s %s';
-    private const string LOG_LINE_FALLBACK_FORMAT = '[%s] app.ERROR: %s';
+    private const string LOG_LINE_FORMAT = "[%s] app.ERROR: %s %s\n";
+    private const string LOG_LINE_FALLBACK_FORMAT = "[%s] app.ERROR: %s\n";
 
-    public function write(Throwable $exception, string $uri = '', bool $bootstrap = false): void
+    public function report(Throwable $exception, string $uri = '', bool $bootstrap = false): void
     {
         if ($uri === '' && isset($_SERVER['REQUEST_URI']) && is_string($_SERVER['REQUEST_URI'])) {
             $uri = $_SERVER['REQUEST_URI'];
@@ -26,14 +27,14 @@ final class PhpErrorLogWriter
             ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 
             $line = sprintf(
-                "[%s] app.ERROR: %s %s\n",
+                self::LOG_LINE_FORMAT,
                 date('c'),
                 $exception->getMessage(),
                 $context,
             );
         } catch (Throwable) {
             $line = sprintf(
-                "[%s] app.ERROR: %s\n",
+                self::LOG_LINE_FALLBACK_FORMAT,
                 date('c'),
                 $exception->getMessage(),
             );

@@ -56,7 +56,7 @@ final class ErrorHandlingLayerProvider extends AbstractServiceProvider implement
                 exceptionReporter: ContainerDependency::get($container, ExceptionReporterInterface::class),
                 fallbackPath: $fallbackPath,
             );
-        });
+        })->setShared(true);
 
         $container->add(
             HttpErrorRendererInterface::class,

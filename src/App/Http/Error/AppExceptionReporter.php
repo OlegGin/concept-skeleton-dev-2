@@ -17,12 +17,16 @@ final class AppExceptionReporter implements ExceptionReporterInterface
         private readonly PhpErrorLogWriter $phpErrorLogWriter = new PhpErrorLogWriter(),
     ) {}
 
-    public function report(Throwable $exception): void
+    public function report(Throwable $exception, string $uri = '', bool $bootstrap = false): void
     {
-        $uri = $this->resolveRequestUri();
-        $this->phpErrorLogWriter->write(
+        if (empty($uri)) {
+            $uri = $this->resolveRequestUri();
+        }
+
+        $this->phpErrorLogWriter->report(
             $exception,
             $uri,
+            $bootstrap,
         );
 
         $this->logger->exception(

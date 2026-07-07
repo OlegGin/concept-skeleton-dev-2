@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Concept\App\Foundation\AppProfile;
+use Concept\App\Http\Error\PhpErrorLogWriter;
 use Concept\Core\App;
 use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsBootstrap;
 use League\Container\Container;
@@ -23,8 +24,9 @@ if (!is_file($profileProvidersFile)) {
 $app = App::create();
 /** @var Container $container */
 $container = $app->getContainer();
-$errorsFallbackPath = $root . '/resources/views/errors/fallback';
-$container->add(Whoops::class, EarlyWhoopsBootstrap::register($errorsFallbackPath))->setShared(true);
+$phpErrorLogWriter = new PhpErrorLogWriter();
+$errorsFallbackFilePath = $root . '/resources/views/errors/fallback/500.php';
+$container->add(Whoops::class, EarlyWhoopsBootstrap::register($errorsFallbackFilePath, $phpErrorLogWriter))->setShared(true);
 
 /** @var callable(string): list<ServiceProviderInterface> $providersFactory */
 $providersFactory = require $profileProvidersFile;
