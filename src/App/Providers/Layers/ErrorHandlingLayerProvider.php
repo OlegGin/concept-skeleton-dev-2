@@ -66,8 +66,8 @@ final class ErrorHandlingLayerProvider extends AbstractServiceProvider implement
         $container->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
             debug: $config->getBool(ConfigKey::APP_DEBUG),
             errorsFallbackPath: $fallbackPath,
-            exceptionReporter: fn(): ExceptionReporterInterface => ContainerDependency::get($container, ExceptionReporterInterface::class),
-            httpErrorRenderer: fn(): HttpErrorRendererInterface => ContainerDependency::get($container, HttpErrorRendererInterface::class),
+//            exceptionReporter: fn(): ExceptionReporterInterface => ContainerDependency::get($container, ExceptionReporterInterface::class),
+//            httpErrorRenderer: fn(): HttpErrorRendererInterface => ContainerDependency::get($container, HttpErrorRendererInterface::class),
         ));
     }
 }
