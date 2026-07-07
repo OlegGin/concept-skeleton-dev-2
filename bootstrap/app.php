@@ -5,7 +5,7 @@ use Concept\App\Http\Error\Handlers\FallbackFileHandler;
 use Concept\App\Http\Error\Handlers\ReportExceptionHandler;
 use Concept\App\Http\Error\PhpErrorLogWriter;
 use Concept\Core\App;
-use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsBootstrap;
+use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsServiceProvider;
 use League\Container\Container;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 use Whoops\Handler\PlainTextHandler;
@@ -38,7 +38,7 @@ $earlyRenderHandler = match (true) {
     default => new FallbackFileHandler($errorsFallbackFilePath),
 };
 
-$container->add(Whoops::class, EarlyWhoopsBootstrap::register(
+$container->add(Whoops::class, EarlyWhoopsServiceProvider::register(
     $earlyRenderHandler,
     new ReportExceptionHandler(static fn() => new PhpErrorLogWriter()),
 ))->setShared(true);
