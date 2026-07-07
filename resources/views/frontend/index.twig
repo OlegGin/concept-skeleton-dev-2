@@ -19,6 +19,7 @@
                     <div class="mt-4">
                         <h2 class="h5 text-white-50">Stack test links</h2>
                         <ul class="list-unstyled mb-0">
+                            <li><a href="{{ uri('test.errors') }}" class="link-light fw-semibold">Error handling playground</a> — <code>/test/errors</code></li>
                             <li><a href="{{ uri('test.user', {id: 42}) }}" class="link-light">Casting (int route param)</a> — <code>/test/user/42</code></li>
                             <li><a href="{{ uri('test.hello', {name: 'world'}) }}" class="link-light">Resolver chain</a> — <code>/test/hello/world</code></li>
                             <li><a href="{{ uri('api.ping') }}" class="link-light">API ping</a> — <code>/api/ping</code></li>

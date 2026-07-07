@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use Concept\App\Controllers\ErrorTestController;
 use Concept\App\Controllers\IndexController;
 use Concept\App\Controllers\TestController;
 use Concept\App\Middleware\HandleValidationExceptionMiddleware;
@@ -13,6 +14,7 @@ use League\Route\Router;
 /** @var Router $router */
 $router->group('', function(RouteGroup $router): void {
     $router->get('/', [IndexController::class, 'index'])->setName('home');
+    $router->get('/test/errors', [ErrorTestController::class, 'index'])->setName('test.errors');
 
     $router->get('/test/boom', [TestController::class, 'boom'])->setName('test.boom');
     $router->get('/test/http-error', [TestController::class, 'httpError'])->setName('test.http_error');

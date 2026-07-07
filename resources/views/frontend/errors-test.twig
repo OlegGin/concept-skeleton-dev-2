@@ -1,0 +1,224 @@
+{% extends '@frontend/layouts/base.twig' %}
+
+{% block title %}Error handling tests{% endblock %}
+{% block body_class %}errors-test-page{% endblock %}
+
+{% block body %}
+    <section class="content-block">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-xl-10">
+                    <div class="mb-4">
+                        <h1 class="h2 fw-semibold mb-2">Error handling playground</h1>
+                        <p class="text-muted mb-0">
+                            Web links open a new tab. Forms submit in-page. JSON buttons call endpoints with
+                            <code>Accept: application/json</code> and show the raw response below.
+                        </p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-header fw-semibold">Uncaught errors (HTML navigation)</div>
+                                <div class="card-body">
+                                    <p class="small text-muted">Whoops awake chain → PrettyPage (debug) or Twig error pages (prod).</p>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                            <span><strong>404</strong> — route not found</span>
+                                            <a href="/no-such-page-{{ 'now'|date('U') }}" class="btn btn-sm btn-outline-dark" target="_blank" rel="noopener">Open</a>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                            <span><strong>500</strong> — <code>RuntimeException</code></span>
+                                            <a href="{{ uri('test.boom') }}" class="btn btn-sm btn-outline-danger" target="_blank" rel="noopener">Open</a>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                            <span><strong>503</strong> — <code>HttpErrorException</code></span>
+                                            <a href="{{ uri('test.http_error') }}" class="btn btn-sm btn-outline-warning" target="_blank" rel="noopener">Open</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-header fw-semibold">Uncaught errors (JSON fetch)</div>
+                                <div class="card-body">
+                                    <p class="small text-muted">Same endpoints via <code>fetch()</code> → <code>TwigHttpErrorRenderer::jsonError()</code>.</p>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm json-test" data-label="404 JSON" data-url="/no-such-page-{{ 'now'|date('U') }}">GET 404 JSON</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm json-test" data-label="500 JSON" data-url="{{ uri('test.boom') }}">GET 500 JSON</button>
+                                        <button type="button" class="btn btn-outline-warning btn-sm json-test" data-label="503 JSON" data-url="{{ uri('test.http_error') }}">GET 503 JSON</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-header fw-semibold">Validation (web form)</div>
+                                <div class="card-body">
+                                    <p class="small text-muted"><code>HandleValidationExceptionMiddleware</code> → redirect + flash or 422 JSON.</p>
+                                    {% if flashes is defined and flashes.error is defined %}
+                                        {% for message in flashes.error %}
+                                            <div class="alert alert-danger py-2 small">{{ message }}</div>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <form method="post" action="{{ uri('test.echo') }}" class="vstack gap-3">
+                                        {% if csrf_token is defined %}
+                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                                        {% endif %}
+                                        <div>
+                                            <label for="valid-name" class="form-label small mb-1">Name</label>
+                                            <input type="text" class="form-control form-control-sm{% if errors.name is defined %} is-invalid{% endif %}" id="valid-name" name="name" value="{{ old.name|default('') }}" placeholder="required">
+                                            {% if errors.name is defined %}
+                                                <div class="invalid-feedback d-block small">
+                                                    {% for rule, message in errors.name %}{{ message }}{% if not loop.last %}, {% endif %}{% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <label for="valid-email" class="form-label small mb-1">Email</label>
+                                            <input type="email" class="form-control form-control-sm{% if errors.email is defined %} is-invalid{% endif %}" id="valid-email" name="email" value="{{ old.email|default('') }}" placeholder="required|email">
+                                            {% if errors.email is defined %}
+                                                <div class="invalid-feedback d-block small">
+                                                    {% for rule, message in errors.email %}{{ message }}{% if not loop.last %}, {% endif %}{% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <button type="submit" class="btn btn-dark btn-sm" formaction="{{ uri('test.echo') }}" name="intent" value="valid">Submit valid</button>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" formaction="{{ uri('test.echo') }}" onclick="document.getElementById('valid-name').value=''; document.getElementById('valid-email').value='';">Submit invalid (empty)</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-header fw-semibold">Validation &amp; CSRF (JSON fetch)</div>
+                                <div class="card-body">
+                                    <p class="small text-muted">Domain middleware before Whoops.</p>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" id="json-validation-fail">POST 422 validation JSON</button>
+                                        <button type="button" class="btn btn-outline-dark btn-sm" id="json-validation-ok">POST 200 validation JSON</button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" id="json-csrf-fail">POST 419 CSRF JSON</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm json-test" data-label="API ping" data-url="{{ uri('api.ping') }}">GET /api/ping</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card shadow-sm border-warning">
+                                <div class="card-header fw-semibold">CSRF mismatch (web form, no token)</div>
+                                <div class="card-body">
+                                    <p class="small text-muted mb-3"><code>HandleCsrfExceptionMiddleware</code> → redirect back with flash.</p>
+                                    <form method="post" action="{{ uri('test.echo') }}" class="row g-2 align-items-end">
+                                        <div class="col-md-4">
+                                            <label for="csrf-name" class="form-label small mb-1">Name</label>
+                                            <input type="text" class="form-control form-control-sm" id="csrf-name" name="name" value="csrf-test">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="csrf-email" class="form-label small mb-1">Email</label>
+                                            <input type="email" class="form-control form-control-sm" id="csrf-email" name="email" value="csrf@example.com">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type="submit" class="btn btn-warning btn-sm w-100">POST without CSRF token</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card shadow-sm bg-dark text-white">
+                                <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+                                    <span>JSON response output</span>
+                                    <button type="button" class="btn btn-sm btn-outline-light" id="json-output-clear">Clear</button>
+                                </div>
+                                <div class="card-body p-0">
+                                    <pre id="json-output" class="mb-0 p-3 small text-bg-dark border-0" style="min-height: 8rem; white-space: pre-wrap;">Run a JSON test to see the response here.</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{{ uri('home') }}" class="btn btn-outline-secondary btn-sm">Back to home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        (function() {
+            const output = document.getElementById('json-output');
+            const csrfToken = {{ csrf_token|default('')|json_encode|raw }};
+            const echoUrl = {{ uri('test.echo')|json_encode|raw }};
+
+            function showResult(label, status, body) {
+                output.textContent = label + '\nHTTP ' + status + '\n\n' + body;
+            }
+
+            async function fetchJson(label, url, options) {
+                options = options || {};
+                options.headers = Object.assign({
+                    'Accept': 'application/json'
+                }, options.headers || {});
+
+                try {
+                    const response = await fetch(url, options);
+                    const body = await response.text();
+                    showResult(label, response.status, body);
+                } catch (error) {
+                    showResult(label, 'network error', String(error));
+                }
+            }
+
+            document.querySelectorAll('.json-test').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    fetchJson(button.dataset.label, button.dataset.url, { method: 'GET' });
+                });
+            });
+
+            document.getElementById('json-validation-fail').addEventListener('click', function() {
+                fetchJson('422 validation JSON', echoUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: new URLSearchParams({ name: '', email: 'not-an-email' })
+                });
+            });
+
+            document.getElementById('json-validation-ok').addEventListener('click', function() {
+                fetchJson('200 validation JSON', echoUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: new URLSearchParams({ name: 'Ann', email: 'ann@example.com' })
+                });
+            });
+
+            document.getElementById('json-csrf-fail').addEventListener('click', function() {
+                fetchJson('419 CSRF JSON', echoUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ name: 'Ann', email: 'ann@example.com' })
+                });
+            });
+
+            document.getElementById('json-output-clear').addEventListener('click', function() {
+                output.textContent = 'Run a JSON test to see the response here.';
+            });
+        })();
+    </script>
+{% endblock %}

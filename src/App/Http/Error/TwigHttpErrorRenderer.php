@@ -2,8 +2,8 @@
 
 namespace Concept\App\Http\Error;
 
-use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
-use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
+use Concept\App\Http\Error\Contracts\ExceptionReporterInterface;
+use Concept\App\Http\Error\Contracts\HttpErrorRendererInterface;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Protocol\HttpHeader;
 use Concept\Extensions\Http\Protocol\HttpStatusCode;
