@@ -4,6 +4,7 @@ use Concept\App\Foundation\AppProfile;
 use Concept\App\Http\Error\PhpErrorLogWriter;
 use Concept\Core\App;
 use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsBootstrap;
+use Concept\Extensions\ErrorHandlerWhoops\Handlers\PhpErrorLogHandler;
 use League\Container\Container;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 use Whoops\Run as Whoops;
@@ -24,9 +25,9 @@ if (!is_file($profileProvidersFile)) {
 $app = App::create();
 /** @var Container $container */
 $container = $app->getContainer();
-$phpErrorLogWriter = new PhpErrorLogWriter();
+$phpErrorLogHandler = new PhpErrorLogHandler(new PhpErrorLogWriter());
 $errorsFallbackFilePath = $root . '/resources/views/errors/fallback/500.php';
-$container->add(Whoops::class, EarlyWhoopsBootstrap::register($errorsFallbackFilePath, $phpErrorLogWriter))->setShared(true);
+$container->add(Whoops::class, EarlyWhoopsBootstrap::register($errorsFallbackFilePath, $phpErrorLogHandler))->setShared(true);
 
 /** @var callable(string): list<ServiceProviderInterface> $providersFactory */
 $providersFactory = require $profileProvidersFile;
