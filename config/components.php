@@ -2,6 +2,7 @@
 
 use Concept\Components\Acl\AclComponent;
 use Concept\Components\AuthAdmin\AuthAdminComponent;
+use Concept\Components\Health\HealthComponent;
 use Concept\Components\SettingsManager\SettingsManagerComponent;
 
 return [
@@ -9,5 +10,6 @@ return [
         AclComponent::class => AclComponent::class,
         AuthAdminComponent::class => AuthAdminComponent::class,
         SettingsManagerComponent::class => SettingsManagerComponent::class,
+        HealthComponent::class => HealthComponent::class,
     ],
 ];
