@@ -8,6 +8,7 @@ use Concept\App\Providers\Layers\FoundationLayerProvider;
 use Concept\App\Providers\Layers\HttpLayerProvider;
 use Concept\App\Providers\Layers\LoggingLayerProvider;
 use Concept\App\Providers\Layers\SessionLayerProvider;
+use Concept\App\Providers\Layers\TelemetryLayerProvider;
 use Concept\App\Providers\Layers\ValidationLayerProvider;
 use Concept\App\Providers\Layers\ViewLayerProvider;
 use League\Container\ServiceProvider\ServiceProviderInterface;
@@ -23,6 +24,7 @@ return function(string $root): array {
     return [
         new FoundationLayerProvider($root, $pathMap),
         new LoggingLayerProvider(),
+        new TelemetryLayerProvider(),
         new ValidationLayerProvider(),
         new DatabaseLayerProvider(),
         new SessionLayerProvider(),
