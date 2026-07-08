@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use Concept\App\Providers\ApplicationComponentsServiceProvider;
 use Concept\App\Providers\ApplicationRuntimeServiceProvider;
 use Concept\App\Providers\Layers\ConsoleLayerProvider;
 use Concept\App\Providers\Layers\DatabaseLayerProvider;
@@ -32,6 +33,7 @@ return function(string $root): array {
         new ConsoleLayerProvider(),
         new ViewLayerProvider(),
         new ErrorHandlingLayerProvider(),
+        new ApplicationComponentsServiceProvider(),
         new ApplicationRuntimeServiceProvider(),
     ];
 };

@@ -17,11 +17,11 @@ use Twig\TwigFunction;
 class TwigAppExtension extends AbstractExtension
 {
     public function __construct(
-//        private readonly ConfigInterface $config,
+        private readonly ConfigInterface $config,
         private readonly ViewRouteNamespaceResolver $routeNamespaceResolver,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly ServerRequestInterface $request,
-        //private readonly ComponentRegistry $componentRegistry,
+        private readonly ComponentRegistry $componentRegistry,
     ) {}
 
     /**
@@ -42,12 +42,12 @@ class TwigAppExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-//            new TwigFunction('config', [$this->config, 'get']),
+            new TwigFunction('config', [$this->config, 'get']),
             new TwigFunction('route_namespace', fn(): ?string => $this->routeNamespaceResolver->resolve($this->request)),
             new TwigFunction('uri', [$this->urlGenerator, 'uri']),
             new TwigFunction('url', [$this->urlGenerator, 'url']),
             new TwigFunction('base_url', [$this->urlGenerator, 'base']),
-//            new TwigFunction('has_component', fn(string $name): bool => $this->componentRegistry->has($name)),
+            new TwigFunction('has_component', fn(string $name): bool => $this->componentRegistry->has($name)),
         ];
     }
 }
