@@ -7,6 +7,7 @@ use Concept\App\Providers\Layers\ErrorHandlingLayerProvider;
 use Concept\App\Providers\Layers\FoundationLayerProvider;
 use Concept\App\Providers\Layers\HttpLayerProvider;
 use Concept\App\Providers\Layers\LoggingLayerProvider;
+use Concept\App\Providers\Layers\SessionLayerProvider;
 use Concept\App\Providers\Layers\ValidationLayerProvider;
 use Concept\App\Providers\Layers\ViewLayerProvider;
 use League\Container\ServiceProvider\ServiceProviderInterface;
@@ -24,6 +25,7 @@ return function(string $root): array {
         new LoggingLayerProvider(),
         new ValidationLayerProvider(),
         new DatabaseLayerProvider(),
+        new SessionLayerProvider(),
         new HttpLayerProvider(),
         new ConsoleLayerProvider(),
         new ViewLayerProvider(),
