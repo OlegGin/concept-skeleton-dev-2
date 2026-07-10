@@ -2,6 +2,7 @@
 
 namespace Concept\App\Providers\Layers;
 
+use Closure;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\Core\Container\ContainerDependency;
@@ -21,6 +22,7 @@ use Concept\Extensions\PathManager\PathManager;
 use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use Psr\Container\ContainerInterface;
 
 final class HttpLayerProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -63,7 +65,7 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
         $container->addServiceProvider(new HttpKernelServiceProvider(
             routePaths: $pathManager->rootList($routesList),
             resolvers: $this->getArgumentResolvers($container),
-            interceptors: $interceptors,
+            interceptors: $this->getRouteInterceptors($interceptors),
         ));
 
         $container->addServiceProvider(new HttpServiceProvider());
@@ -88,5 +90,21 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
             ),
             new RouteParameterArgumentResolver(),
         ];
+    }
+
+    /**
+     * @param list<class-string<RouteInterceptorInterface>> $interceptors
+     * @return list<Closure(ContainerInterface): RouteInterceptorInterface>
+     */
+    private function getRouteInterceptors(array $interceptors): array
+    {
+        return array_map(
+            static fn(string $interceptorClass): Closure => static function(
+                ContainerInterface $container,
+            ) use ($interceptorClass): RouteInterceptorInterface {
+                return ContainerDependency::get($container, $interceptorClass);
+            },
+            $interceptors,
+        );
     }
 }
