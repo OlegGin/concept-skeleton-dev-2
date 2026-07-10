@@ -3,156 +3,230 @@
     "repositories": [
         {
             "type": "path",
+            "url": "../concept-extensions/support",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/support": "1.0.0"
+                }
+            }
+        },
+        {
+            "type": "path",
             "url": "../concept-core-2",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/core-2": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-casting-valinor",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-casting-valinor": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-components",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-components": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-config",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-config": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-console-symfony",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-console-symfony": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-csrf",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-csrf": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-database-eloquent",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-database-eloquent": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-data-masker",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-data-masker": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-error-handler-whoops",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-error-handler-whoops": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-event",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-event": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-form-request",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-form-request": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-http",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-http": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-json",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-json": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-logger-monolog",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-logger-monolog": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-path-manager",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-path-manager": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-session-symfony",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-session-symfony": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-telemetry",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-telemetry": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-validation-rakit",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-validation-rakit": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-view",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-view": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-view-plates",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-view-plates": "1.0.0"
+                }
             }
         },
         {
             "type": "path",
             "url": "../concept-extensions/extension-view-twig",
             "options": {
-                "symlink": true
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-view-twig": "1.0.0"
+                }
             }
         }
     ],
     "autoload": {
         "psr-4": {
             "Concept\\": "src/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Concept\\Support\\": "../concept-extensions/support/src/"
         }
     },
     "autoload-dev": {
@@ -188,6 +262,7 @@
         "php-concept/extension-components": "^1.0",
         "php-concept/extension-event": "^1.0",
         "php-concept/extension-telemetry": "^1.0",
+        "php-concept/support": "^1.0",
         "laminas/laminas-permissions-acl": "^2.18",
         "vlucas/phpdotenv": "^5.6"
     },
@@ -201,7 +276,6 @@
         "publish-assets": [
             "mkdir -p public/vendor/bootstrap",
             "cp -R vendor/twbs/bootstrap/dist/. public/vendor/bootstrap/",
-
             "mkdir -p public/vendor/bootstrap-icons",
             "cp -R vendor/twbs/bootstrap-icons/font/. public/vendor/bootstrap-icons/"
         ],

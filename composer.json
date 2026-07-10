@@ -24,6 +24,7 @@
         "php-concept/extension-components": "^1.0",
         "php-concept/extension-event": "^1.0",
         "php-concept/extension-telemetry": "^1.0",
+        "php-concept/support": "^1.0",
         "laminas/laminas-permissions-acl": "^2.18",
         "vlucas/phpdotenv": "^5.6"
     },

@@ -8,6 +8,7 @@ use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\PathManager\PathManager;
+use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
 use InvalidArgumentException;
 use League\Container\ServiceProvider\AbstractServiceProvider;
@@ -40,7 +41,9 @@ final class SessionLayerProvider extends AbstractServiceProvider implements Boot
             handler: $this->getSessionHandler($config, $pathManager),
         ));
 
-        $container->addServiceProvider(new CsrfServiceProvider());
+        $container->addServiceProvider(new CsrfServiceProvider(
+            sessionFactory: fn(): SessionInterface => ContainerDependency::get($container, SessionInterface::class),
+        ));
     }
 
     /**

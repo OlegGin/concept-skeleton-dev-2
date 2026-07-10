@@ -5,8 +5,11 @@ namespace Concept\App\Providers\Layers;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\Core\Container\ContainerDependency;
+use Concept\Core\Http\Contracts\RequestContextInterface;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\PathManager\PathManager;
+use Concept\Extensions\View\Contracts\ViewInterface;
 use Concept\Extensions\View\ViewServiceProvider;
 use Concept\Extensions\ViewTwig\TwigViewServiceProvider;
 use League\Container\ServiceProvider\AbstractServiceProvider;
@@ -37,6 +40,15 @@ final class ViewLayerProvider extends AbstractServiceProvider implements Bootabl
         /** @var list<class-string> $viewExtensions */
         $viewExtensions = $config->getArray(ConfigKey::VIEW_EXTENSIONS);
         $container->addServiceProvider(new ViewServiceProvider(
+            responseFactoryFactory: fn(): ResponseFactoryInterface => ContainerDependency::get(
+                $container,
+                ResponseFactoryInterface::class,
+            ),
+            viewFactory: fn(): ViewInterface => ContainerDependency::get($container, ViewInterface::class),
+            requestContextFactory: fn(): RequestContextInterface => ContainerDependency::get(
+                $container,
+                RequestContextInterface::class,
+            ),
             paths: $pathManager->rootMap($viewPaths),
             extensions: $viewExtensions,
             routeNamespace: $routeNamespace,

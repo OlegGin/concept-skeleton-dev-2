@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4d11b5ed804c1789b58543bede695c4",
+    "content-hash": "024125ffb4a6f23a4ab7f396fd063d9f",
     "packages": [
         {
             "name": "brick/math",
@@ -2121,7 +2121,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-core-2",
-                "reference": "b3ac52a8b655580dcfc8f235d4e24c3952123fdd"
+                "reference": "d310b4baf9713f580a38d41c0ce3c87c0d25c5af"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
@@ -2156,7 +2156,7 @@
             "description": "Concept Framework Core Engine",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2165,7 +2165,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-casting-valinor",
-                "reference": "5257d2e8451ad8856caca7f7095a7e27130583fc"
+                "reference": "27452770ba8b61319ce87a97eef4235ef19cc722"
             },
             "require": {
                 "cuyz/valinor": "^2.0",
@@ -2173,6 +2173,7 @@
                 "php": "^8.4",
                 "php-concept/core-2": "^1.0",
                 "php-concept/extension-event": "^1.0",
+                "php-concept/support": "^1.0",
                 "psr/event-dispatcher": "^1.0"
             },
             "type": "library",
@@ -2187,7 +2188,7 @@
             "description": "Concept Casting extension — Valinor caster and typed route parameter resolving",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2196,7 +2197,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-components",
-                "reference": "8443f553f9cd3838750322df676e24ac0ffe53e4"
+                "reference": "7bec3a877f5b2dd069ac4ee81d47f9611f109d9c"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2223,7 +2224,7 @@
             "description": "Concept Components extension — plugin manifest registry and boot wiring",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2232,7 +2233,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-config",
-                "reference": "9780f85e5b85f79d28255fae4c5026f525e72aaf"
+                "reference": "fc29db0335ab6289d78df155ac19a94a887aa64f"
             },
             "require": {
                 "hassankhan/config": "^3.2",
@@ -2254,7 +2255,7 @@
             "description": "Concept Config extension — PHP config files and .env merge",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2263,7 +2264,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-console-symfony",
-                "reference": "0bdc9a1a72f65f1d013de5ed14e2f3f68525c666"
+                "reference": "8807607cec6cba11de2d4ba352d704f0829d2de6"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2284,7 +2285,7 @@
             "description": "Concept Console extension — Symfony Console application shell",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2293,7 +2294,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-csrf",
-                "reference": "2e5a7135fe60dde6aceec5002a4348ecebae51c8"
+                "reference": "6dea7136063b81750bee3405678705789e7a59a4"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2302,6 +2303,7 @@
                 "php-concept/extension-event": "^1.0",
                 "php-concept/extension-http": "^1.0",
                 "php-concept/extension-session-symfony": "^1.0",
+                "php-concept/support": "^1.0",
                 "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0",
                 "psr/http-server-middleware": "^1.0"
@@ -2318,7 +2320,7 @@
             "description": "Concept CSRF extension — token manager and verification middleware",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2327,7 +2329,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-data-masker",
-                "reference": "a4f71505813e5308f7cdb70b60852f4340b42056"
+                "reference": "88fc67e847867699fb344e9072987a006ab043f1"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2347,7 +2349,7 @@
             "description": "Concept DataMasker extension — redact sensitive values in logs and debug output",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2356,7 +2358,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-database-eloquent",
-                "reference": "14c10bd4a19360a3c7d59dc149b4435464f92e54"
+                "reference": "288a0fd04ed8b5b62fddaf1c1b3abccf08a625c8"
             },
             "require": {
                 "illuminate/container": "^13.1",
@@ -2370,6 +2372,7 @@
                 "php-concept/core-2": "^1.0",
                 "php-concept/extension-data-masker": "^1.0",
                 "php-concept/extension-event": "^1.0",
+                "php-concept/support": "^1.0",
                 "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0",
                 "symfony/console": "^7.2|^8.0"
@@ -2386,7 +2389,7 @@
             "description": "Concept Database extension — Illuminate Eloquent via Capsule",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2395,20 +2398,15 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-error-handler-whoops",
-                "reference": "ff1b9eb52728a0e3bc513fa0c7eae5886de0f03a"
+                "reference": "1399e972a1148c33fbce0ab764007256f89c4502"
             },
             "require": {
                 "filp/whoops": "^2.18",
-                "laminas/laminas-httphandlerrunner": "^2.13",
                 "league/container": "^5.1",
                 "php": "^8.4",
                 "php-concept/extension-event": "^1.0",
-                "php-concept/extension-http": "^1.0",
-                "php-concept/extension-logger-monolog": "^1.0",
-                "php-concept/extension-view": "^1.0",
                 "psr/container": "^2.0",
-                "psr/event-dispatcher": "^1.0",
-                "psr/http-message": "^2.0"
+                "psr/event-dispatcher": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -2422,7 +2420,7 @@
             "description": "Concept Error Handler extension — Whoops integration",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2431,7 +2429,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-event",
-                "reference": "389582c4e9aafb4ebfe23deab075accbdf98506f"
+                "reference": "1145ba9b4c35ac24d908b9bfd8bea578c375cedc"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2452,7 +2450,7 @@
             "description": "Concept Event extension — League Event dispatcher wiring",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2461,7 +2459,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-form-request",
-                "reference": "401a686699b6257d050c9c2f3e4d0c10ee0c421b"
+                "reference": "05db88d9487a1e1f994e875648e85109bb50ae75"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2470,6 +2468,7 @@
                 "php-concept/extension-casting-valinor": "^1.0",
                 "php-concept/extension-event": "^1.0",
                 "php-concept/extension-validation-rakit": "^1.0",
+                "php-concept/support": "^1.0",
                 "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0"
             },
@@ -2485,7 +2484,7 @@
             "description": "Concept FormRequest extension — form request factory and argument resolver",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2494,7 +2493,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-http",
-                "reference": "245892ced1c501ec252c395c97c26f6de7322359"
+                "reference": "a993b0e18ebab6892c13aa2185549f2e39976f36"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
@@ -2518,7 +2517,7 @@
             "description": "Concept HTTP extension — responses, URLs, route introspection",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2527,7 +2526,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-json",
-                "reference": "cbc0e2fd73b035aa32f821b0bb46951c2d8b0a5d"
+                "reference": "3dec283ffbdb20923ef2bbcf3d2dea0c3f02ddc2"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2548,7 +2547,7 @@
             "description": "Concept JSON extension — parse JSON body and force JSON responses",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2557,7 +2556,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-logger-monolog",
-                "reference": "406b46d2180a85871765ed3049aa6abc1794846d"
+                "reference": "84cb3608d83791cc6b64dff90d54ac4eefa1b571"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2565,6 +2564,7 @@
                 "php": "^8.4",
                 "php-concept/extension-data-masker": "^1.0",
                 "php-concept/extension-event": "^1.0",
+                "php-concept/support": "^1.0",
                 "psr/event-dispatcher": "^1.0",
                 "psr/log": "^3"
             },
@@ -2580,7 +2580,7 @@
             "description": "Concept Logger extension — Monolog rotating file logging with optional data masking",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2589,7 +2589,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-path-manager",
-                "reference": "a66f2631626d01c4290b25202ae10c91e7922d27"
+                "reference": "2a3e8002272d519f780ffec28ef96e14c5b2d3e2"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2609,7 +2609,7 @@
             "description": "Concept PathManager extension — project root and named path map resolution",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2618,7 +2618,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-session-symfony",
-                "reference": "ed6fd181d362e9e774084642b43e85ac3e3a68e3"
+                "reference": "f681b50314387e32f9c2b2f3b37d0a2a1df18cae"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2640,7 +2640,7 @@
             "description": "Concept Session extension — session and flash bag",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2649,7 +2649,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-telemetry",
-                "reference": "18553f091d6b9ca548d8d0a36e2132fbed9b5a32"
+                "reference": "5834b82e712a0aa3e7e7d48e98e658a1230ae885"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2669,7 +2669,7 @@
             "description": "Concept Telemetry extension — in-request collector",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2678,7 +2678,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-validation-rakit",
-                "reference": "48981312d390bd237379848a3a90f6dd4801b16f"
+                "reference": "b5f0e34d5f67a1afe73c3ebbf134c8740eef8805"
             },
             "require": {
                 "ext-mbstring": "*",
@@ -2687,6 +2687,7 @@
                 "php": "^8.4",
                 "php-concept/core-2": "^1.0",
                 "php-concept/extension-event": "^1.0",
+                "php-concept/support": "^1.0",
                 "psr/event-dispatcher": "^1.0"
             },
             "type": "library",
@@ -2701,7 +2702,7 @@
             "description": "Concept Validation extension — magewirephp/validation and validation exceptions",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2710,7 +2711,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-view",
-                "reference": "5122e6a3be4b1fce1614d78da9d27ea42b2b786c"
+                "reference": "ad081b93f830c589b3165a0896ce5259226e6f98"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2718,6 +2719,7 @@
                 "php-concept/core-2": "^1.0",
                 "php-concept/extension-event": "^1.0",
                 "php-concept/extension-http": "^1.0",
+                "php-concept/support": "^1.0",
                 "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0"
             },
@@ -2733,7 +2735,7 @@
             "description": "Concept View extension — view contracts, response factory, registries",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2742,7 +2744,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-view-plates",
-                "reference": "af9a33712c7c03ca0b526260f1be4391fb8c7609"
+                "reference": "598db6f9cc03b3d664f2dbaffb564a93b7c571bd"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2765,7 +2767,7 @@
             "description": "Concept View Plates engine — PlatesView implementation",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
             }
         },
         {
@@ -2774,7 +2776,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-view-twig",
-                "reference": "7f3ba2b63df1e625f12aaa2a6048c6dcaa44f24e"
+                "reference": "81c673d146608b86c9f129a4a5a9f1d4b6358270"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2798,7 +2800,41 @@
             "description": "Concept View Twig engine — TwigView implementation",
             "transport-options": {
                 "symlink": true,
-                "relative": false
+                "relative": true
+            }
+        },
+        {
+            "name": "php-concept/support",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "../concept-extensions/support",
+                "reference": "4c83c8136866c6953b9aa2d0c677086351ac6173"
+            },
+            "require": {
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Support\\": "src/"
+                }
+            },
+            "scripts": {
+                "phpstan": [
+                    "vendor/bin/phpstan analyze --memory-limit=2G"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept Support — dependency-free runtime contract and factory helpers",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
             }
         },
         {
