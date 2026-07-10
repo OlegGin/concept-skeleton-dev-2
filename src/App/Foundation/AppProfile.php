@@ -5,6 +5,7 @@ namespace Concept\App\Foundation;
 final class AppProfile
 {
     public const string MINIMAL = 'minimal';
+    public const string API = 'api';
     public const string FULL = 'full';
 
     /**
@@ -14,6 +15,7 @@ final class AppProfile
     {
         return [
             self::MINIMAL,
+            self::API,
             self::FULL,
         ];
     }

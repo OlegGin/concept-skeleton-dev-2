@@ -14,7 +14,7 @@ use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
-use Concept\Extensions\Csrf\CsrfServiceProvider;
+use Concept\Extensions\FormRequest\Contracts\FormRequestFactoryInterface;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Extensions\PathManager\PathManager;
@@ -24,6 +24,13 @@ use League\Container\ServiceProvider\BootableServiceProviderInterface;
 
 final class HttpLayerProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    /**
+     * @param list<string>|null $routePaths Relative paths under project root (overrides config routes.list when set)
+     */
+    public function __construct(
+        private readonly ?array $routePaths = null,
+    ) {}
+
     public function provides(string $id): bool
     {
         return false;
@@ -48,10 +55,8 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
             debug: $config->getBool(ConfigKey::APP_DEBUG),
         ));
 
-        $container->addServiceProvider(new CsrfServiceProvider());
-
         /** @var list<string> $routesList */
-        $routesList = $config->getArray(ConfigKey::ROUTES_LIST);
+        $routesList = $this->routePaths ?? $config->getArray(ConfigKey::ROUTES_LIST);
         /** @var list<class-string<RouteInterceptorInterface>> $interceptors */
         $interceptors = $config->getArray(ConfigKey::ROUTES_INTERCEPTORS);
 
@@ -70,7 +75,13 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
     private function getArgumentResolvers(DefinitionContainerInterface $container): array
     {
         return [
-            new FormRequestArgumentResolver($container),
+            new FormRequestArgumentResolver(
+                formRequestFactory: fn(): FormRequestFactoryInterface => ContainerDependency::get(
+                    $container,
+                    FormRequestFactoryInterface::class,
+                ),
+                container: $container,
+            ),
             new ServerRequestArgumentResolver(),
             new TypedRouteParameterArgumentResolver(
                 fn(): CasterInterface => ContainerDependency::get($container, CasterInterface::class),

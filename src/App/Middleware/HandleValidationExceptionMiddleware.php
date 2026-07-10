@@ -13,6 +13,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+/**
+ * Web / HTML: validation errors → flash + redirect back.
+ * JSON Accept still returns 422 without flash.
+ */
 final class HandleValidationExceptionMiddleware implements MiddlewareInterface
 {
     public function __construct(

@@ -6,10 +6,13 @@ use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\App\Providers\Support\DataMaskerFactory;
 use Concept\Core\Container\ContainerDependency;
+use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
+use Concept\Extensions\ValidationRakit\Contracts\ValidatorInterface;
+use Concept\Extensions\ValidationRakit\ValidationLogger;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
@@ -43,7 +46,22 @@ final class ValidationLayerProvider extends AbstractServiceProvider implements B
         /** @var array<string> $globalExcept */
         $globalExcept = $config->getArray(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT);
         $container->addServiceProvider(new FormRequestServiceProvider(
+            validatorFactory: fn(): ValidatorInterface => ContainerDependency::get($container, ValidatorInterface::class),
             globalExcept: $globalExcept,
+            casterFactory: function() use ($container): ?CasterInterface {
+                if (!$container->has(CasterInterface::class)) {
+                    return null;
+                }
+
+                return ContainerDependency::get($container, CasterInterface::class);
+            },
+            validationLoggerFactory: function() use ($container): ?ValidationLogger {
+                if (!$container->has(ValidationLogger::class)) {
+                    return null;
+                }
+
+                return ContainerDependency::get($container, ValidationLogger::class);
+            },
         ));
     }
 

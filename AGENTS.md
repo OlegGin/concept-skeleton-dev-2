@@ -101,7 +101,9 @@ bootstrap/profiles/{name}/providers.php
 bootstrap/shared/path-map.php        → pathMap для full profile
 FoundationLayerProvider              → PathManager + Config
 LoggingLayerProvider                 → DataMasker + LoggerMonolog (`DataMaskerFactory::fromContainer`)
-ErrorHandlingLayerProvider           → Whoops (report + debug), TwigHttpErrorRenderer
+ErrorHandlingLayerProvider           → Whoops + reporter; отримує HttpErrorRenderer factory
+TwigErrorHandlingLayerProvider       → ErrorHandling + TwigHttpErrorRenderer (full/web)
+JsonErrorHandlingLayerProvider       → ErrorHandling + JsonHttpErrorRenderer (api)
 ValidationLayerProvider              → ValidationRakit + FormRequest
 DatabaseLayerProvider                → DatabaseEloquent + PaginationConfigurator
 HttpLayerProvider                    → Casting, Session, CSRF, HttpKernel, Http extension
@@ -238,7 +240,7 @@ Reusable middleware (`VerifyCsrfTokenMiddleware`) — у extension; app-specific
 | Profile | Layers (ідея) | Routes |
 |---------|---------------|--------|
 | `minimal` | Http only (hardcoded glue) | `api.php` |
-| `api` | Foundation, Logging, Error, Validation, Database, Http (без Session) | `api.php` |
+| `api` | Foundation, Logging, Telemetry, Validation, Database, Http (без Session/CSRF/View/Components) | `api.php` |
 | `admin` | … + Session/CSRF, View, Components | `web.php` + ACL middleware |
 | `full` | усі layers (див. `profiles/full/providers.php`) | `web.php` + `api.php` |
 
@@ -313,7 +315,7 @@ Profile відрізняється **manifest + routes**, не fork extensions.
 
 - `$container->get()` на типи інших extensions без явного контракту в constructor provider-а
 - `EventDispatcherResolver::optional($container)` — допустимо для optional telemetry, але не заміна явної залежності для critical path
-- Resolvers з `$container` у constructor (`FormRequestArgumentResolver`, `TypedRouteParameterArgumentResolver`) — glue **передає** їх у `HttpKernelServiceProvider`, не core
+- Resolvers з Closure factories (`FormRequestArgumentResolver`, `TypedRouteParameterArgumentResolver`) — glue **передає** їх у `HttpKernelServiceProvider`, не core
 - Hardcoded assumptions «ViewRegistry вже є», «Router вже зареєстрований» — документувати в boot order
 
 ### Профілі збірки
@@ -555,19 +557,20 @@ config/routes.php          → skeleton config (поки не використо
 - [x] **Casting extension**: Caster (Valinor), DtoInterface, Dto, TypedRouteParameterArgumentResolver
 - [x] **Validation extension**: magewirephp/validation, Rule, exceptions
 - [x] **FormRequest extension**: factory, resolver, abstract FormRequest
-- [x] **Validation + FormRequest у glue**: `ValidationServiceProvider`, `FormRequestServiceProvider`, `new FormRequestArgumentResolver($container)` у resolver chain
+- [x] **Validation + FormRequest у glue**: `ValidationServiceProvider`, `FormRequestServiceProvider`; `FormRequestArgumentResolver` через closures (factory + optional dispatcher), як Casting resolver
 - [x] **Error handling**: Whoops-centric (report + PrettyPage debug / HttpErrorRenderer prod); `HandleNotFoundMiddleware` для route 404
 - [x] `HandleValidationExceptionMiddleware` — `ValidationException` → 422 JSON або redirect + flash (web)
 - [x] Тест: `POST /test/echo` + `TestEchoRequest` (name, email)
 - [x] **Console extension**: `ConsoleSymfonyServiceProvider`, `route:list`
-- [x] **Session + CSRF**: `SessionServiceProvider`, `CsrfServiceProvider`, middleware chain у `web.php`
+- [x] **Session + CSRF**: обидва в `SessionLayerProvider`; middleware chain у `web.php` (api-профіль без Session → без CSRF)
 - [x] **Validation redirect flow**: `HandleValidationExceptionMiddleware` + flash + форма на `/` з errors/old
 - [x] **Json middleware**: `routes/api.php`, `ParseJsonBodyMiddleware`, `ForceJsonResponseMiddleware`; CSRF/session middleware лише на web group
 - [x] **DataMasker extension**: glue → `dataMaskerFactory` у log-related providers (не `$container->has()` у extension)
 - [x] **Database extension**: `DatabaseEloquentServiceProvider`, `PaginationConfiguratorServiceProvider`, db CLI, `GET /test/db`
 - [x] **Config extension**: `ConfigServiceProvider` + `config/` → glue
-- [x] **Profiles**: `APP_PROFILE` у `bootstrap/app.php`, `minimal` / `full` у `bootstrap/profiles/`
+- [x] **Profiles**: `APP_PROFILE` у `bootstrap/app.php`, `minimal` / `api` / `full` у `bootstrap/profiles/`
 - [x] **Layer glue (full profile)**: Foundation, Logging, ErrorHandling, Validation, Database, Http, Console, View — monolith `ApplicationServiceProvider` видалено
+- [x] **`api` profile**: Foundation → Logging → Telemetry → Validation → Database → Http → Console → `JsonErrorHandlingLayerProvider` → Runtime; routes тільки `api.php`
 - [x] **`DataMaskerFactory`**: спільна factory для Validation/DB/Logger glue
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
@@ -577,7 +580,7 @@ config/routes.php          → skeleton config (поки не використо
 > **Components** — відкладено до повного проходження всіх extensions (не чіпати зараз).
 
 1. **Event / Telemetry** — окремий layer, не в full поки не готові
-2. **Profiles** — `api` та інші між minimal і full
+2. **Profiles** — `admin` та інші між `api` і `full`
 3. **Boot validation** — dev/CLI smoke після зборки
 
 ## Команди

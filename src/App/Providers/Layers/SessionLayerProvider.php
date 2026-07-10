@@ -6,6 +6,7 @@ use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\Csrf\CsrfServiceProvider;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
 use InvalidArgumentException;
@@ -38,6 +39,8 @@ final class SessionLayerProvider extends AbstractServiceProvider implements Boot
             sessionOptions: $this->getSessionOptions($config),
             handler: $this->getSessionHandler($config, $pathManager),
         ));
+
+        $container->addServiceProvider(new CsrfServiceProvider());
     }
 
     /**
