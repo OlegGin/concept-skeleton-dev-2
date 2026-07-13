@@ -52,8 +52,8 @@ final class HttpLayerProvider extends AbstractServiceProvider implements Bootabl
         /** @var list<class-string> $transformerClasses */
         $transformerClasses = $config->getArray(ConfigKey::CASTER_TRANSFORMERS);
         $container->addServiceProvider(new CastingServiceProvider(
-            cacheDirectory: $pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR)),
             transformerClasses: $transformerClasses,
+            cacheDirectory: $pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR)),
             debug: $config->getBool(ConfigKey::APP_DEBUG),
         ));
 

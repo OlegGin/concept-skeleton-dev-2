@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "024125ffb4a6f23a4ab7f396fd063d9f",
+    "content-hash": "aed31c81ba0dd3928c3a320205cff19c",
     "packages": [
         {
             "name": "brick/math",
@@ -2121,7 +2121,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-core-2",
-                "reference": "d310b4baf9713f580a38d41c0ce3c87c0d25c5af"
+                "reference": "f0a41fac86eaa72b96eef2607aa5e1d59582fda3"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
@@ -2165,7 +2165,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-casting-valinor",
-                "reference": "27452770ba8b61319ce87a97eef4235ef19cc722"
+                "reference": "14e42745ce1281e1d1b11b81cdecfcb035501062"
             },
             "require": {
                 "cuyz/valinor": "^2.0",
@@ -2197,17 +2197,14 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-components",
-                "reference": "7bec3a877f5b2dd069ac4ee81d47f9611f109d9c"
+                "reference": "390526e828d9d723ebdd4e20e9956ab676e24348"
             },
             "require": {
                 "league/container": "^5.1",
-                "league/route": "^6.2",
                 "php": "^8.4",
-                "php-concept/core-2": "^1.0",
-                "php-concept/extension-config": "^1.0",
                 "php-concept/extension-database-eloquent": "^1.0",
                 "php-concept/extension-event": "^1.0",
-                "php-concept/extension-view": "^1.0",
+                "psr/container": "^2.0",
                 "psr/event-dispatcher": "^1.0",
                 "symfony/console": "^7.2",
                 "symfony/filesystem": "^7.2"
@@ -2233,7 +2230,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-config",
-                "reference": "fc29db0335ab6289d78df155ac19a94a887aa64f"
+                "reference": "071fcca9f8e73132f8f6ea1eb761a8f46db43161"
             },
             "require": {
                 "hassankhan/config": "^3.2",
@@ -2264,7 +2261,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-console-symfony",
-                "reference": "8807607cec6cba11de2d4ba352d704f0829d2de6"
+                "reference": "7a9b2a34639403a8e3c8965ae525ebf990696cde"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2294,7 +2291,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-csrf",
-                "reference": "6dea7136063b81750bee3405678705789e7a59a4"
+                "reference": "d81eaea1f666f8e6563afaa804c0686c254bcb17"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2329,7 +2326,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-data-masker",
-                "reference": "88fc67e847867699fb344e9072987a006ab043f1"
+                "reference": "a0b95055ee0d6d50bf633655fb2b8a69daa509d2"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2358,7 +2355,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-database-eloquent",
-                "reference": "288a0fd04ed8b5b62fddaf1c1b3abccf08a625c8"
+                "reference": "0631b43cd403fff47145d3089ef6ccbb68732eb3"
             },
             "require": {
                 "illuminate/container": "^13.1",
@@ -2398,7 +2395,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-error-handler-whoops",
-                "reference": "1399e972a1148c33fbce0ab764007256f89c4502"
+                "reference": "cdefd66d33a46a93ef8f177686b7b79b2feca461"
             },
             "require": {
                 "filp/whoops": "^2.18",
@@ -2429,7 +2426,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-event",
-                "reference": "1145ba9b4c35ac24d908b9bfd8bea578c375cedc"
+                "reference": "1d62aa4e21c0d0c30fc33f6ddc81ac70bbd34610"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2459,7 +2456,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-form-request",
-                "reference": "05db88d9487a1e1f994e875648e85109bb50ae75"
+                "reference": "3eee6e23830b59990d88f5e352256e72d358c1e2"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2493,7 +2490,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-http",
-                "reference": "a993b0e18ebab6892c13aa2185549f2e39976f36"
+                "reference": "8fa133110abe9ffa4256a4d6845470296694d0f3"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
@@ -2526,7 +2523,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-json",
-                "reference": "3dec283ffbdb20923ef2bbcf3d2dea0c3f02ddc2"
+                "reference": "2ed40d9e1208697dfa063554ff3a2f1cf02b0450"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2556,7 +2553,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-logger-monolog",
-                "reference": "84cb3608d83791cc6b64dff90d54ac4eefa1b571"
+                "reference": "3bdd77f21bde2ae361f64bf8d7f581cd3fa5bbac"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2589,7 +2586,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-path-manager",
-                "reference": "2a3e8002272d519f780ffec28ef96e14c5b2d3e2"
+                "reference": "dc0978dd1f6fa18fd90167e853f021e3620d2e2f"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2618,7 +2615,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-session-symfony",
-                "reference": "f681b50314387e32f9c2b2f3b37d0a2a1df18cae"
+                "reference": "bb4ccbb409a14c01f27389ae896dcee715484f22"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2649,7 +2646,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-telemetry",
-                "reference": "5834b82e712a0aa3e7e7d48e98e658a1230ae885"
+                "reference": "e52c3ec96975650f9402dc216c2cbf5c477ae560"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2678,7 +2675,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-validation-rakit",
-                "reference": "b5f0e34d5f67a1afe73c3ebbf134c8740eef8805"
+                "reference": "cd6480e084e9a8a7ea9a061f4fad3b9a2cd85842"
             },
             "require": {
                 "ext-mbstring": "*",
@@ -2711,7 +2708,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-view",
-                "reference": "ad081b93f830c589b3165a0896ce5259226e6f98"
+                "reference": "21852154bbf8ecce099732460570f27b292ce97c"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2744,7 +2741,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-view-plates",
-                "reference": "598db6f9cc03b3d664f2dbaffb564a93b7c571bd"
+                "reference": "754dd65b56cbbf543cb45089bf3eb95a350e81ad"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2776,7 +2773,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/extension-view-twig",
-                "reference": "81c673d146608b86c9f129a4a5a9f1d4b6358270"
+                "reference": "91bf186cb8570db3f983f75c9a09911f1a5d59eb"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2804,12 +2801,48 @@
             }
         },
         {
+            "name": "php-concept/stack",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "../concept-stack",
+                "reference": "dbdb0e830514ad3fc70247a1ebc6ff41cdf129f4"
+            },
+            "require": {
+                "league/container": "^5.1",
+                "php": "^8.4",
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-casting-valinor": "^1.0",
+                "php-concept/extension-console-symfony": "^1.0",
+                "php-concept/extension-error-handler-whoops": "^1.0",
+                "php-concept/extension-http": "^1.0",
+                "symfony/console": "^7.3"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Stack\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept application stack recipes",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
             "name": "php-concept/support",
             "version": "1.0.0",
             "dist": {
                 "type": "path",
                 "url": "../concept-extensions/support",
-                "reference": "4c83c8136866c6953b9aa2d0c677086351ac6173"
+                "reference": "db140223590177f21ab39c905c4d90146e3673f9"
             },
             "require": {
                 "php": "^8.4"
@@ -5447,10 +5480,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "php-concept/stack": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
-    "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
 }

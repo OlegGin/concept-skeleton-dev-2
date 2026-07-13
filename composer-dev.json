@@ -23,6 +23,16 @@
         },
         {
             "type": "path",
+            "url": "../concept-stack",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/stack": "1.0.0"
+                }
+            }
+        },
+        {
+            "type": "path",
             "url": "../concept-extensions/extension-casting-valinor",
             "options": {
                 "symlink": true,
@@ -240,6 +250,7 @@
     },
     "require": {
         "php-concept/core-2": "^1.0",
+        "php-concept/stack": "@dev",
         "twbs/bootstrap": "^5.3",
         "twbs/bootstrap-icons": "^1.13",
         "php-concept/extension-http": "^1.0",
