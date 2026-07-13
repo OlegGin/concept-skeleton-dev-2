@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use Concept\App\Foundation\AppProfile;
 use Concept\App\Http\Error\Handlers\FallbackFileHandler;
 use Concept\App\Http\Error\Handlers\ReportExceptionHandler;
 use Concept\App\Http\Error\PhpErrorLogWriter;
@@ -12,18 +11,7 @@ use Whoops\Handler\PlainTextHandler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run as Whoops;
 
-const APP_PROFILE = AppProfile::FULL;
-
 $root = dirname(__DIR__);
-
-if (!AppProfile::isValid(APP_PROFILE)) {
-    throw new \RuntimeException(sprintf('Unknown application profile: %s', APP_PROFILE));
-}
-
-$profileProvidersFile = __DIR__ . '/profiles/' . APP_PROFILE . '/providers.php';
-if (!is_file($profileProvidersFile)) {
-    throw new \RuntimeException(sprintf('Profile providers file not found: %s', $profileProvidersFile));
-}
 
 $app = App::create();
 /** @var Container $container */
@@ -44,7 +32,7 @@ $container->add(Whoops::class, EarlyWhoopsServiceProvider::register(
 ))->setShared(true);
 
 /** @var callable(string): list<ServiceProviderInterface> $providersFactory */
-$providersFactory = require $profileProvidersFile;
+$providersFactory = require __DIR__ . '/providers.php';
 $app->registerServiceProviders($providersFactory($root));
 
 return $app;
