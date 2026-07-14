@@ -13,6 +13,9 @@ use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
 use Concept\Extensions\PathManager\PathManager;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Level;
+use Throwable;
 
 final class LoggingLayerProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -45,11 +48,25 @@ final class LoggingLayerProvider extends AbstractServiceProvider implements Boot
         ));
 
         $container->addServiceProvider(new LoggerMonologServiceProvider(
-            logFilePath: $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::LOG_FILE)),
-            level: $config->getString(ConfigKey::LOG_LEVEL),
-            maxFiles: $config->getInt(ConfigKey::LOG_MAX_FILES),
+            handlers: [
+                new RotatingFileHandler(
+                    $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::LOG_FILE)),
+                    $config->getInt(ConfigKey::LOG_MAX_FILES),
+                    $this->resolveLevel($config->getString(ConfigKey::LOG_LEVEL)),
+                ),
+            ],
             channel: $config->getString(ConfigKey::LOG_NAME),
             dataMaskerFactory: DataMaskerFactory::fromContainer($container),
         ));
+    }
+
+    private function resolveLevel(string $level): Level
+    {
+        try {
+            /** @phpstan-ignore-next-line */
+            return Level::fromName($level);
+        } catch (Throwable) {
+            return Level::Debug;
+        }
     }
 }

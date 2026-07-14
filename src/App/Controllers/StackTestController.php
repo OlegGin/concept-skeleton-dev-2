@@ -87,6 +87,10 @@ final class StackTestController
                 'keys' => ['password', 'api_token'],
                 'expected' => '*** in rotated stack-*.log',
             ],
+            'handlers' => [
+                'toRotatingFile',
+                'LogHandlerRegistry (extras)',
+            ],
             'file' => 'storage/logs/stack-*.log',
             'providers' => [
                 'LoggingStackProvider',

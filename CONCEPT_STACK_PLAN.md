@@ -20,6 +20,38 @@
 - `CapabilityRegistry` — явні залежності між capabilities
 - `Support/OptionalDependency` — lazy `Closure(): ?T` для optional cross-extension deps (masker тощо)
 
+### Модель Logging (additive handlers)
+
+`logging` приймає **один або кілька** Monolog handlers. Файл — лише один із варіантів, не єдина модель.
+
+| Метод | Що додає |
+|-------|----------|
+| `toRotatingFile($path, maxFiles, level?)` | `RotatingFileHandler` |
+| `toStderr(level?)` | `StreamHandler('php://stderr')` |
+| `toHandler($handler)` | будь-який готовий `HandlerInterface` |
+| `level()` / `channel()` | default level для helpers / Monolog channel name |
+| `withMasking()` | `dataMaskerFactory` → requires `masking` |
+
+```php
+ConceptStack::create()
+    ->withMasking()
+        ->keyPatterns(['/.*password.*/i', '/.*token.*/i'])
+        ->end()
+    ->withLogging()
+        ->level('debug')
+        ->channel('app')
+        ->toRotatingFile($root . '/storage/logs/app.log', maxFiles: 14)
+        ->toStderr()
+        ->withMasking()
+        ->end()
+    ->providers();
+```
+
+`withLogging()` без жодного `to*()` → `Capability "logging" requires at least one handler (...)`.
+`withLogging()->withMasking()` без `withMasking()` → `Capability "logging" requires "masking" to be enabled.`
+
+`LogHandlerRegistry` лишається для cross-extension additive sinks (напр. Telemetry) — handlers з registry додаються **після** explicit list.
+
 ### Модель залежностей Logging (opt-in masking)
 
 `masking` — **окрема capability** (`withMasking()`), що реєструє `DataMaskerServiceProvider`.
@@ -28,25 +60,6 @@
 | Метод | Що додає | Залежність (`requires`) |
 |-------|----------|-------------------------|
 | `LoggingBuilder::withMasking()` | `dataMaskerFactory` у `LoggerMonologServiceProvider` | `masking` |
-
-```php
-ConceptStack::create()
-    ->withMasking()
-        ->keyPatterns(['/.*password.*/i', '/.*token.*/i'])
-        ->patterns([...])
-        ->rules([...])
-        ->end()
-    ->withLogging()
-        ->file($root . '/storage/logs/app.log')
-        ->level('debug')
-        ->channel('app')
-        ->withMasking()   // requires masking capability
-        ->end()
-    ->providers();
-```
-
-`withLogging()->withMasking()` без `withMasking()` → `Capability "logging" requires "masking" to be enabled.`
-`withLogging()` без `file(...)` → `Capability "logging" requires option "file" to be set.`
 
 Stack test profile: `bootstrap/providers-stack.php` + `routes/stack.php` + `StackTestController`.
 
@@ -142,10 +155,9 @@ return function(): array {
 return function(string $root): array {
     return ConceptStack::create()
         ->withLogging()
-            ->file($root . '/storage/logs/app.log')
             ->level('debug')
             ->channel('app')
-            ->maxFiles(14)
+            ->toRotatingFile($root . '/storage/logs/app.log', maxFiles: 14)
             ->end()
         ->withTelemetry()
             ->enabled(true)
@@ -193,7 +205,7 @@ return function(string $root): array {
 Складний застосунок (опційно):
   app glue: Config + PathManager + path-map
   ConceptStack::create()
-    ->withLogging()->file(...)->end()
+    ->withLogging()->toRotatingFile(...)->end()
     ->providers()
 ```
 
@@ -234,8 +246,8 @@ return [
     new FoundationLayerProvider($root, $pathMap),
     ...ConceptStack::create()
         ->withLogging()
-            ->file($resolvedLogPath)
             ->level($resolvedLogLevel)
+            ->toRotatingFile($resolvedLogPath)
             ->end()
         ->providers(),
 ];
@@ -369,9 +381,10 @@ return ConceptStack::create()
    - Не читає config.
    - **Розділено на дві capabilities:**
      - `masking` (`withMasking()`): patterns, keyPatterns, rules → `DataMaskerServiceProvider`.
-     - `logging` (`withLogging()`): file, level, maxFiles, channel → `LoggerMonologServiceProvider`.
+     - `logging` (`withLogging()`): channel + additive handlers (`toRotatingFile` / `toStderr` / `toHandler`) → `LoggerMonologServiceProvider`.
    - Маскування логів — opt-in через `LoggingBuilder::withMasking()` + `requires masking`.
    - Masker передається через `OptionalDependency::factory` лише коли увімкнено.
+   - Extension: handlers list замість hardcoded RotatingFile; `LogHandlerRegistry` для extras (Telemetry).
 
 3. `TelemetryLayerProvider` -> `TelemetryStackProvider`
    - Не читає config.
@@ -435,9 +448,9 @@ return function(string $root): array {
         new FoundationLayerProvider($root, $pathMap), // app glue, не stack
         ...ConceptStack::create()
             ->withLogging()
-                ->file($root . '/storage/logs/app.log')
                 ->level('debug')
                 ->channel('app')
+                ->toRotatingFile($root . '/storage/logs/app.log')
                 ->end()
             ->withValidation()
                 ->logFile($root . '/storage/logs/validation.log')
