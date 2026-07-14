@@ -8,11 +8,12 @@ use Concept\Extensions\DatabaseEloquent\Contracts\DatabaseInterface;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
 use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
+use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Minimal controller for Concept Stack smoke testing (no config, no view).
+ * Minimal controller for Concept Stack smoke testing (no config).
  */
 final class StackTestController
 {
@@ -22,6 +23,7 @@ final class StackTestController
         private readonly SessionInterface $session,
         private readonly CsrfTokenManagerInterface $csrf,
         private readonly DatabaseInterface $database,
+        private readonly ViewResponseFactoryInterface $view,
     ) {}
 
     public function index(): ResponseInterface
@@ -137,6 +139,13 @@ final class StackTestController
                 'DatabaseEloquentServiceProvider',
                 'PaginationConfiguratorServiceProvider',
             ],
+        ]);
+    }
+
+    public function view(): ResponseInterface
+    {
+        return $this->view->create('@stack/smoke', [
+            'message' => 'Stack Twig view is working.',
         ]);
     }
 }

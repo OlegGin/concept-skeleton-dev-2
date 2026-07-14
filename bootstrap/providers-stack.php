@@ -17,75 +17,76 @@ use League\Container\ServiceProvider\ServiceProviderInterface;
  * @return list<ServiceProviderInterface>
  */
 return function(string $root): array {
-    $env = static function(string $key, string $default): string {
-        $value = getenv($key);
+    $stack = ConceptStack::create();
 
-        return is_string($value) && $value !== '' ? $value : $default;
-    };
+    $stack->withMasking()
+        ->keyPatterns(['/.*password.*/i', '/.*token.*/i']);
 
-    // Docker Compose service name is `db` (MYSQL_HOST). container_name is not a reliable DNS name.
-    $dbHost = $env('DB_HOST', $env('MYSQL_HOST', 'db'));
+    $stack->withLogging()
+        ->level('debug')
+        ->channel('stack')
+        ->toRotatingFile($root . '/storage/logs/stack.log')
+        ->withMasking();
 
-    return ConceptStack::create()
-        ->withMasking()
-            ->keyPatterns(['/.*password.*/i', '/.*token.*/i'])
-            ->end()
-        ->withLogging()
-            ->level('debug')
-            ->channel('stack')
-            ->toRotatingFile($root . '/storage/logs/stack.log')
-            ->withMasking()
-            ->end()
-        ->withDatabase()
-            ->connection([
-                'driver' => 'mysql',
-                'host' => 'db',
-                'port' => '3306',
-                'database' => 'concept_skeleton_dev_db_2',
-                'username' => 'root',
-                'password' => 'root',
-                'charset' => 'utf8mb4',
-                'collation' => 'utf8mb4_unicode_ci',
-                'prefix' => '',
-            ])
-            ->migrations([$root . '/database/migrations'])
-            ->seeders([PageSeeder::class])
-            ->withQueryLogging($root . '/storage/logs/query.log')
-            ->withMasking()
-            ->end()
-        ->withCasting()
-            ->cacheDir($root . '/storage/cache/casting')
-            ->debug(true)
-            ->end()
-        ->withValidation()
-            ->globalExcept(['password'])
-            ->end()
-        ->withSession()
-            ->options([
-                'cookie_httponly' => true,
-                'cookie_samesite' => 'Lax',
-                'use_only_cookies' => true,
-                'use_strict_mode' => true,
-            ])
-            ->withCsrf()
-            ->end()
-        ->withHttp()
-            ->routes([$root . '/routes/stack.php'])
-            ->withFormRequests()
-            ->withTypedRouteParameters()
-            ->end()
-        ->withConsole()
-            ->name('Concept Stack Test')
-            ->version('1.0.0')
-            ->commands([
-                RouteListCommand::class,
-                DbMigrateCommand::class,
-                DbMigrationListCommand::class,
-                DbMigrationPathsCommand::class,
-                DbRollbackCommand::class,
-                DbSeedCommand::class,
-                DbSeederListCommand::class,
-            ])
-            ->end()
-        ->providers();
+    $stack->withDatabase()
+        ->connection([
+            'driver' => 'mysql',
+            'host' => 'db',
+            'port' => '3306',
+            'database' => 'concept_skeleton_dev_db_2',
+            'username' => 'root',
+            'password' => 'root',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+        ])
+        ->migrations([$root . '/database/migrations'])
+        ->seeders([PageSeeder::class])
+        ->withQueryLogging($root . '/storage/logs/query.log')
+        ->withMasking();
+
+    $stack->withCasting()
+        ->cacheDir($root . '/storage/cache/casting')
+        ->debug(true);
+
+    $stack->withValidation()
+        ->globalExcept(['password']);
+
+    $stack->withSession()
+        ->options([
+            'cookie_httponly' => true,
+            'cookie_samesite' => 'Lax',
+            'use_only_cookies' => true,
+            'use_strict_mode' => true,
+        ])
+        ->withCsrf();
+
+    $stack->withHttp()
+        ->routes([$root . '/routes/stack.php'])
+        ->withFormRequests()
+        ->withTypedRouteParameters();
+
+    $stack->withView()
+        ->paths([
+            'stack' => $root . '/resources/views/stack',
+        ])
+        ->withTwig()
+        ->viewsPath($root . '/resources/views')
+        ->cacheDir($root . '/storage/cache/views')
+        ->debug(true);
+
+    $stack->withConsole()
+        ->name('Concept Stack Test')
+        ->version('1.0.0')
+        ->commands([
+            RouteListCommand::class,
+            DbMigrateCommand::class,
+            DbMigrationListCommand::class,
+            DbMigrationPathsCommand::class,
+            DbRollbackCommand::class,
+            DbSeedCommand::class,
+            DbSeederListCommand::class,
+        ]);
+
+    return $stack->providers();
 };

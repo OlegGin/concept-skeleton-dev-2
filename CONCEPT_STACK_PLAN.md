@@ -14,6 +14,7 @@
 | `session` | `SessionBuilder` | `SessionOptions` | `SessionStackProvider` | ✅ |
 | `http` | `HttpBuilder` | `HttpOptions` | `HttpStackProvider` | ✅ |
 | `console` | `ConsoleBuilder` | `ConsoleOptions` | `ConsoleStackProvider` | ✅ |
+| `view` | `ViewBuilder` | `ViewOptions` | `ViewStackProvider` | ✅ |
 
 Інфраструктура:
 
@@ -92,6 +93,30 @@ ConceptStack::create()
 ```
 
 DB console commands (`DbMigrateCommand`, …) реєструються явно в `withConsole()->commands([...])`, не автоматично stack-ом.
+
+### Модель View (nested Twig / Plates)
+
+`view` — одна capability. Engines — nested XOR під `withView()` (як CSRF під session): закривають перехресну залежність ViewRegistry ↔ ViewInterface всередині одного brick.
+
+| Метод | Що задає |
+|-------|----------|
+| `paths` / `extensions` / `routeNamespace` | View registries |
+| `withTwig()->viewsPath()->cacheDir()->debug()->end()` | Twig engine |
+| `withPlates()->viewsPath()->end()` | Plates engine |
+
+Requires `http`. Без engine → missing option `withTwig()/withPlates()`.
+
+```php
+$stack = ConceptStack::create();
+$stack->withHttp()->routes([$root . '/routes/web.php']);
+$stack->withView()
+    ->paths(['frontend' => $root . '/resources/views/frontend'])
+    ->withTwig()
+    ->viewsPath($root . '/resources/views')
+    ->cacheDir($root . '/storage/cache/views')
+    ->debug(true);
+return $stack->providers();
+```
 
 ### Модель залежностей Logging (opt-in masking)
 
@@ -308,40 +333,39 @@ return ConceptStack::create()
 
 ## Builder UX
 
-Для configurable capabilities використовуємо nested builders з явним `end()`:
+`withX()` **одразу** реєструє capability і повертає свій builder. Options mutable далі. `end()` немає.
 
 ```php
-->withConsole()
-    ->name('Concept Skeleton')
-    ->version('1.0.0')
-    ->commands([...])
-    ->end()
-->withHttp()
-    ->routes([...])
-    ->end()
+$stack = ConceptStack::create();
+
+$stack->withMasking()
+    ->keyPatterns(['/.*password.*/i']);
+
+$stack->withLogging()
+    ->toRotatingFile($root . '/storage/logs/app.log')
+    ->withMasking();
+
+$stack->withHttp()
+    ->routes([$root . '/routes/web.php']);
+
+return $stack->providers(); // валідація options + CapabilityRegistry requires
 ```
 
-`withConsole()` повертає `ConsoleBuilder`. `ConsoleBuilder` змінює `ConsoleOptions` і через `end()` повертає
-parent `StackBuilder`.
+Кожна гілка — окремий `withX()` від `$stack`. Довгу «ковбасу» з поверненням на parent не будуємо.
+Opt-in на builder (напр. `LoggingBuilder::withMasking()`, `HttpBuilder::withFormRequests()`) лише
+додає `requires` у реєстр і мутує options.
 
-Для простих capabilities можна залишити короткий виклик, якщо немає параметрів:
+Nested engines:
 
 ```php
-->withTelemetry()
-->withSession()
+$stack->withView()
+    ->paths(['frontend' => $root . '/resources/views/frontend'])
+    ->withTwig()
+    ->viewsPath($root . '/resources/views')
+    ->debug(true);
 ```
 
-Але якщо capability має параметри, основний стиль:
-
-```php
-->withDatabase()
-    ->connection([...])
-    ->migrations([...])
-    ->seeders([...])
-    ->end()
-```
-
-Callback-style не робимо основним UX, щоб bootstrap застосунку не був засмічений closures.
+Callback-style не робимо основним UX.
 
 ## Пропонована структура `/var/www/concept-stack/src`
 
@@ -352,9 +376,7 @@ src/
 │   ├── Capability.php
 │   └── CapabilityRegistry.php
 ├── Builder/
-│   ├── StackBuilder.php            ✅ (root fluent API)
-│   └── Contracts/
-│       └── StackCapabilityBuilder.php  ✅
+│   └── StackBuilder.php            ✅ (root fluent API; withX registers immediately)
 ├── Bricks/                         ✅ один brick = capability (Builder + Options + StackProvider поруч)
 │   ├── Masking/                    ✅ MaskingBuilder, MaskingOptions, MaskingStackProvider
 │   ├── Logging/                    ✅ LoggingBuilder, LoggingOptions, LoggingStackProvider
@@ -364,8 +386,8 @@ src/
 │   ├── Console/                    ✅ ConsoleBuilder, ConsoleOptions, ConsoleStackProvider
 │   ├── Session/                    ✅ SessionBuilder, SessionOptions, SessionStackProvider (opt-in CSRF)
 │   ├── Database/                   ✅ DatabaseBuilder, DatabaseOptions, DatabaseStackProvider
+│   ├── View/                       ✅ ViewBuilder + nested ViewTwigBuilder / ViewPlatesBuilder (requires http)
 │   ├── Telemetry/                  🔲
-│   ├── View/                       🔲
 │   └── ErrorHandling/              🔲
 ├── Support/
 │   └── OptionalDependency.php      ✅
@@ -468,9 +490,10 @@ return ConceptStack::create()
    - Options: app name, app version, command classes.
    - Основний UX через `ConsoleBuilder` і `end()`.
 
-10. `ViewLayerProvider` -> `ViewStackProvider`
-   - Options: view paths, route namespace, extensions, twig views path, cache dir, debug.
-   - Stack не вираховує paths.
+10. `ViewLayerProvider` -> `ViewStackProvider` ✅
+   - Options: paths, routeNamespace, extensions.
+   - Nested XOR engines: `withTwig()` / `withPlates()` (закривають ViewRegistry ↔ ViewInterface).
+   - Requires `http`. Absolute paths only.
 
 11. Error handling providers
     - Перенести тільки generic частину.
@@ -518,7 +541,7 @@ Stack від нього не залежить.
 
 ## Порядок робіт
 
-1. ✅ `ConceptStack`, `StackBuilder`, базовий contract для child builders з `end()`.
+1. ✅ `ConceptStack`, `StackBuilder` — `withX()` реєструє одразу, без `end()`.
 2. ✅ `Options/*Options.php` — частково (`Casting`, `Validation`, `Http`, `Console`).
 3. ✅ `ConsoleBuilder` як еталон nested builder UX.
 4. ✅ `ConsoleStackProvider`.
@@ -528,10 +551,11 @@ Stack від нього не залежить.
 8. ✅ `MaskingBuilder` / `MaskingStackProvider` + `LoggingBuilder` / `LoggingStackProvider` (opt-in masking).
 9. ✅ `SessionBuilder` / `SessionStackProvider` (opt-in `withCsrf()`).
 10. ✅ `DatabaseBuilder` / `DatabaseStackProvider` (opt-in query log/masking/telemetry).
-11. 🔲 view / telemetry providers з explicit options.
-12. 🔲 error handling через explicit factories або generic stack renderers.
-13. 🔲 Перевести `bootstrap/providers.php` на stack, залишивши config/path glue в skeleton.
-14. 🔲 Після parity видалити або deprecated-нути старі `src/App/Providers/Layers`.
+11. ✅ `ViewBuilder` / `ViewStackProvider` + nested `withTwig()` / `withPlates()`.
+12. 🔲 telemetry providers з explicit options.
+13. 🔲 error handling через explicit factories або generic stack renderers.
+14. 🔲 Перевести `bootstrap/providers.php` на stack, залишивши config/path glue в skeleton.
+15. 🔲 Після parity видалити або deprecated-нути старі `src/App/Providers/Layers`.
 
 ## Перевірки
 
@@ -544,11 +568,12 @@ vendor/bin/phpstan
 
 Додаткові smoke checks (stack profile):
 
-- `GET /stack`, `/stack/ping`, `/stack/log`, `/stack/session`, `/stack/db`, `/stack/hello/{name}`, `/stack/user/{id}`
+- `GET /stack`, `/stack/ping`, `/stack/log`, `/stack/session`, `/stack/db`, `/stack/view`, `/stack/hello/{name}`, `/stack/user/{id}`
 - `POST /stack/echo` (FormRequest + validation)
 - `GET /stack/log` → записи в `storage/logs/stack-*.log` + masking `password` / `*token*`
 - `GET /stack/session` → session started + CSRF token (без Verify middleware — лише wiring)
 - `GET /stack/db` → Eloquent connection + `pages` count
+- `GET /stack/view` → Twig `@stack/smoke`
 
 Додаткові smoke checks (full skeleton):
 
