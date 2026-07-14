@@ -1,6 +1,6 @@
 # План впровадження Concept Stack
 
-## Поточний стан (2026-07-13)
+## Поточний стан (2026-07-14)
 
 Реалізовано в `/var/www/concept-stack/src`:
 
@@ -10,6 +10,7 @@
 | `logging` | `LoggingBuilder` | `LoggingOptions` | `LoggingStackProvider` | ✅ |
 | `casting` | `CastingBuilder` | `CastingOptions` | `CastingStackProvider` | ✅ |
 | `validation` | `ValidationBuilder` | `ValidationOptions` | `ValidationStackProvider` | ✅ |
+| `session` | `SessionBuilder` | `SessionOptions` | `SessionStackProvider` | ✅ |
 | `http` | `HttpBuilder` | `HttpOptions` | `HttpStackProvider` | ✅ |
 | `console` | `ConsoleBuilder` | `ConsoleOptions` | `ConsoleStackProvider` | ✅ |
 
@@ -89,6 +90,30 @@ ConceptStack::create()
 Casting і validation — **окремі capabilities**. Stack не реєструє їх автоматично.
 
 **Порядок реєстрації:** залежності (`casting`, `validation`) мають бути викликані **перед** `withHttp()->end()`, бо provider boot order = registration order.
+
+### Модель Session (opt-in CSRF)
+
+`session` — окрема capability (`withSession()`). CSRF **не** окремий top-level brick: це opt-in на session, бо CSRF не має власних options і без session безглуздий.
+
+| Метод | Що додає | Залежність |
+|-------|----------|------------|
+| `SessionBuilder::withCsrf()` | `CsrfServiceProvider` (sessionFactory → `SessionInterface`) | частина session |
+
+```php
+ConceptStack::create()
+    ->withSession()
+        ->options([
+            'cookie_httponly' => true,
+            'cookie_samesite' => 'Lax',
+            'use_strict_mode' => true,
+        ])
+        ->handler($handler) // optional; default NativeFileSessionHandler()
+        ->withCsrf()        // opt-in CSRF token manager
+        ->end()
+    ->providers();
+```
+
+`withSession()` без `withCsrf()` — лише session/flash. Middleware (`VerifyCsrfTokenMiddleware`, `HandleCsrfExceptionMiddleware`) лишаються в routes — stack їх не реєструє.
 
 ## Ціль
 
@@ -284,9 +309,9 @@ src/
 │   ├── Validation/                 ✅ ValidationBuilder, ValidationOptions, ValidationStackProvider
 │   ├── Http/                       ✅ HttpBuilder, HttpOptions, HttpStackProvider
 │   ├── Console/                    ✅ ConsoleBuilder, ConsoleOptions, ConsoleStackProvider
+│   ├── Session/                    ✅ SessionBuilder, SessionOptions, SessionStackProvider (opt-in CSRF)
 │   ├── Telemetry/                  🔲
 │   ├── Database/                   🔲
-│   ├── Session/                    🔲
 │   ├── View/                       🔲
 │   └── ErrorHandling/              🔲
 ├── Support/
@@ -367,9 +392,11 @@ return ConceptStack::create()
    - Options: connection array, migration paths, migrations table, seeders, logging, query telemetry.
    - Усі paths передаються вже готовими absolute або application-resolved paths.
 
-7. `SessionLayerProvider` -> `SessionStackProvider`
+7. `SessionLayerProvider` -> `SessionStackProvider` ✅
    - Options: session options, optional `SessionHandlerInterface`.
    - Stack не будує file session path.
+   - Opt-in CSRF: `SessionBuilder::withCsrf()` → `CsrfServiceProvider` (не окремий top-level brick).
+   - CSRF/session middleware — у routes, не в stack.
 
 8. `HttpLayerProvider` -> `HttpStackProvider` ✅
    - Options: absolute route paths, interceptors, not-found middleware.
@@ -443,10 +470,11 @@ Stack від нього не залежить.
 6. ✅ `HttpBuilder` / `HttpStackProvider` — opt-in form requests і typed route params.
 7. ✅ `ValidationBuilder` / `ValidationStackProvider` + `OptionalDependency`.
 8. ✅ `MaskingBuilder` / `MaskingStackProvider` + `LoggingBuilder` / `LoggingStackProvider` (opt-in masking).
-9. 🔲 database / session / view / telemetry providers з explicit options.
-10. 🔲 error handling через explicit factories або generic stack renderers.
-11. 🔲 Перевести `bootstrap/providers.php` на stack, залишивши config/path glue в skeleton.
-12. 🔲 Після parity видалити або deprecated-нути старі `src/App/Providers/Layers`.
+9. ✅ `SessionBuilder` / `SessionStackProvider` (opt-in `withCsrf()`).
+10. 🔲 database / view / telemetry providers з explicit options.
+11. 🔲 error handling через explicit factories або generic stack renderers.
+12. 🔲 Перевести `bootstrap/providers.php` на stack, залишивши config/path glue в skeleton.
+13. 🔲 Після parity видалити або deprecated-нути старі `src/App/Providers/Layers`.
 
 ## Перевірки
 
@@ -459,9 +487,10 @@ vendor/bin/phpstan
 
 Додаткові smoke checks (stack profile):
 
-- `GET /stack`, `/stack/ping`, `/stack/log`, `/stack/hello/{name}`, `/stack/user/{id}`
+- `GET /stack`, `/stack/ping`, `/stack/log`, `/stack/session`, `/stack/hello/{name}`, `/stack/user/{id}`
 - `POST /stack/echo` (FormRequest + validation)
 - `GET /stack/log` → записи в `storage/logs/stack-*.log` + masking `password` / `*token*`
+- `GET /stack/session` → session started + CSRF token (без Verify middleware — лише wiring)
 
 Додаткові smoke checks (full skeleton):
 

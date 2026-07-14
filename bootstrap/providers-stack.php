@@ -27,6 +27,15 @@ return function(string $root): array {
         ->withValidation()
             ->globalExcept(['password'])
             ->end()
+        ->withSession()
+            ->options([
+                'cookie_httponly' => true,
+                'cookie_samesite' => 'Lax',
+                'use_only_cookies' => true,
+                'use_strict_mode' => true,
+            ])
+            ->withCsrf()
+            ->end()
         ->withHttp()
             ->routes([$root . '/routes/stack.php'])
             ->withFormRequests()

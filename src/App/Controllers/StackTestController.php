@@ -3,8 +3,10 @@
 namespace Concept\App\Controllers;
 
 use Concept\App\Http\Requests\TestEchoRequest;
+use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
+use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -16,6 +18,8 @@ final class StackTestController
     public function __construct(
         private readonly ResponseFactoryInterface $response,
         private readonly LoggerInterface $logger,
+        private readonly SessionInterface $session,
+        private readonly CsrfTokenManagerInterface $csrf,
     ) {}
 
     public function index(): ResponseInterface
@@ -89,6 +93,28 @@ final class StackTestController
                 'MaskingStackProvider',
                 'LoggerMonologServiceProvider',
             ],
+        ]);
+    }
+
+    public function session(): ResponseInterface
+    {
+        $this->session->set('stack_smoke', 'ok');
+
+        return $this->response->jsonSuccess([
+            'session' => [
+                'started' => $this->session->isStarted(),
+                'id' => $this->session->getId(),
+                'stack_smoke' => $this->session->get('stack_smoke'),
+            ],
+            'csrf' => [
+                'token' => $this->csrf->getToken(),
+            ],
+            'providers' => [
+                'SessionStackProvider',
+                'SessionServiceProvider',
+                'CsrfServiceProvider',
+            ],
+            'note' => 'VerifyCsrfTokenMiddleware stays in routes when needed — not registered by stack.',
         ]);
     }
 }
