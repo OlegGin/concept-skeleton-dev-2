@@ -459,8 +459,9 @@ vendor/bin/phpstan
 
 Додаткові smoke checks (stack profile):
 
-- `GET /stack`, `/stack/ping`, `/stack/hello/{name}`, `/stack/user/{id}`
+- `GET /stack`, `/stack/ping`, `/stack/log`, `/stack/hello/{name}`, `/stack/user/{id}`
 - `POST /stack/echo` (FormRequest + validation)
+- `GET /stack/log` → записи в `storage/logs/stack-*.log` + masking `password` / `*token*`
 
 Додаткові smoke checks (full skeleton):
 

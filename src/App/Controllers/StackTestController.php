@@ -4,6 +4,7 @@ namespace Concept\App\Controllers;
 
 use Concept\App\Http\Requests\TestEchoRequest;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
+use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -14,6 +15,7 @@ final class StackTestController
 {
     public function __construct(
         private readonly ResponseFactoryInterface $response,
+        private readonly LoggerInterface $logger,
     ) {}
 
     public function index(): ResponseInterface
@@ -59,6 +61,33 @@ final class StackTestController
             'resolvers' => [
                 'FormRequestArgumentResolver',
                 'ValidationServiceProvider',
+            ],
+        ]);
+    }
+
+    public function log(): ResponseInterface
+    {
+        $this->logger->debug('Stack log smoke: debug', ['step' => 'debug']);
+        $this->logger->info('Stack log smoke: info', ['user' => 'stack-tester']);
+        $this->logger->warning('Stack log smoke: warning with secrets', [
+            'password' => 'secret-password',
+            'api_token' => 'secret-token',
+            'email' => 'tester@example.com',
+        ]);
+
+        return $this->response->jsonSuccess([
+            'logged' => true,
+            'levels' => ['debug', 'info', 'warning'],
+            'masking' => [
+                'enabled' => true,
+                'keys' => ['password', 'api_token'],
+                'expected' => '*** in rotated stack-*.log',
+            ],
+            'file' => 'storage/logs/stack-*.log',
+            'providers' => [
+                'LoggingStackProvider',
+                'MaskingStackProvider',
+                'LoggerMonologServiceProvider',
             ],
         ]);
     }

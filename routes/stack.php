@@ -8,6 +8,7 @@ use League\Route\Router;
 $router->group('/stack', function(RouteGroup $router): void {
     $router->get('/', [StackTestController::class, 'index'])->setName('stack.index');
     $router->get('/ping', [StackTestController::class, 'ping'])->setName('stack.ping');
+    $router->get('/log', [StackTestController::class, 'log'])->setName('stack.log');
     $router->get('/hello/{name}', [StackTestController::class, 'hello'])->setName('stack.hello');
     $router->get('/user/{id}', [StackTestController::class, 'user'])->setName('stack.user');
     $router->post('/echo', [StackTestController::class, 'echo'])->setName('stack.echo');
