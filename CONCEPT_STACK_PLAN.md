@@ -10,6 +10,7 @@
 | `logging` | `LoggingBuilder` | `LoggingOptions` | `LoggingStackProvider` | ✅ |
 | `casting` | `CastingBuilder` | `CastingOptions` | `CastingStackProvider` | ✅ |
 | `validation` | `ValidationBuilder` | `ValidationOptions` | `ValidationStackProvider` | ✅ |
+| `database` | `DatabaseBuilder` | `DatabaseOptions` | `DatabaseStackProvider` | ✅ |
 | `session` | `SessionBuilder` | `SessionOptions` | `SessionStackProvider` | ✅ |
 | `http` | `HttpBuilder` | `HttpOptions` | `HttpStackProvider` | ✅ |
 | `console` | `ConsoleBuilder` | `ConsoleOptions` | `ConsoleStackProvider` | ✅ |
@@ -51,6 +52,46 @@ ConceptStack::create()
 `withLogging()->withMasking()` без `withMasking()` → `Capability "logging" requires "masking" to be enabled.`
 
 `LogHandlerRegistry` лишається для cross-extension additive sinks (напр. Telemetry) — handlers з registry додаються **після** explicit list.
+
+### Модель Database (explicit connection + opt-in query log/telemetry)
+
+`database` — окрема capability. Stack не будує connection/paths — передає готові absolute values.
+
+| Метод | Що додає | Залежність |
+|-------|----------|------------|
+| `connection([...])` | Illuminate connection array | обов'язково |
+| `migrations([...])` | absolute migration paths | — |
+| `migrationsTable()` / `seeders()` | migrations table name, seeder classes | — |
+| `withQueryLogging($path, maxFiles?)` | SQL query log (RotatingFile) | — |
+| `withMasking()` | masker для query log | `masking` |
+| `withQueryTelemetry()` | `DatabaseQueryExecuted` events | `telemetry` |
+
+```php
+ConceptStack::create()
+    ->withMasking()
+        ->keyPatterns(['/.*password.*/i'])
+        ->end()
+    ->withDatabase()
+        ->connection([
+            'driver' => 'mysql',
+            'host' => 'db',
+            'port' => 3306,
+            'database' => 'app',
+            'username' => 'root',
+            'password' => 'secret',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+        ])
+        ->migrations([$root . '/database/migrations'])
+        ->seeders([PageSeeder::class])
+        ->withQueryLogging($root . '/storage/logs/query.log')
+        ->withMasking()
+        ->end()
+    ->providers();
+```
+
+DB console commands (`DbMigrateCommand`, …) реєструються явно в `withConsole()->commands([...])`, не автоматично stack-ом.
 
 ### Модель залежностей Logging (opt-in masking)
 
@@ -322,8 +363,8 @@ src/
 │   ├── Http/                       ✅ HttpBuilder, HttpOptions, HttpStackProvider
 │   ├── Console/                    ✅ ConsoleBuilder, ConsoleOptions, ConsoleStackProvider
 │   ├── Session/                    ✅ SessionBuilder, SessionOptions, SessionStackProvider (opt-in CSRF)
+│   ├── Database/                   ✅ DatabaseBuilder, DatabaseOptions, DatabaseStackProvider
 │   ├── Telemetry/                  🔲
-│   ├── Database/                   🔲
 │   ├── View/                       🔲
 │   └── ErrorHandling/              🔲
 ├── Support/
@@ -401,9 +442,11 @@ return ConceptStack::create()
    - `CastingStackProvider` реєструє `CastingServiceProvider`.
    - HTTP отримує casting лише через `withTypedRouteParameters()` + `requires casting`.
 
-6. `DatabaseLayerProvider` -> `DatabaseStackProvider`
-   - Options: connection array, migration paths, migrations table, seeders, logging, query telemetry.
+6. `DatabaseLayerProvider` -> `DatabaseStackProvider` ✅
+   - Options: connection array, migration paths, migrations table, seeders, query logging, query telemetry.
    - Усі paths передаються вже готовими absolute або application-resolved paths.
+   - Opt-in: `withQueryLogging()`, `withMasking()` (requires masking), `withQueryTelemetry()` (requires telemetry).
+   - Реєструє `PaginationConfiguratorServiceProvider` + `DatabaseEloquentServiceProvider`.
 
 7. `SessionLayerProvider` -> `SessionStackProvider` ✅
    - Options: session options, optional `SessionHandlerInterface`.
@@ -484,10 +527,11 @@ Stack від нього не залежить.
 7. ✅ `ValidationBuilder` / `ValidationStackProvider` + `OptionalDependency`.
 8. ✅ `MaskingBuilder` / `MaskingStackProvider` + `LoggingBuilder` / `LoggingStackProvider` (opt-in masking).
 9. ✅ `SessionBuilder` / `SessionStackProvider` (opt-in `withCsrf()`).
-10. 🔲 database / view / telemetry providers з explicit options.
-11. 🔲 error handling через explicit factories або generic stack renderers.
-12. 🔲 Перевести `bootstrap/providers.php` на stack, залишивши config/path glue в skeleton.
-13. 🔲 Після parity видалити або deprecated-нути старі `src/App/Providers/Layers`.
+10. ✅ `DatabaseBuilder` / `DatabaseStackProvider` (opt-in query log/masking/telemetry).
+11. 🔲 view / telemetry providers з explicit options.
+12. 🔲 error handling через explicit factories або generic stack renderers.
+13. 🔲 Перевести `bootstrap/providers.php` на stack, залишивши config/path glue в skeleton.
+14. 🔲 Після parity видалити або deprecated-нути старі `src/App/Providers/Layers`.
 
 ## Перевірки
 
@@ -500,10 +544,11 @@ vendor/bin/phpstan
 
 Додаткові smoke checks (stack profile):
 
-- `GET /stack`, `/stack/ping`, `/stack/log`, `/stack/session`, `/stack/hello/{name}`, `/stack/user/{id}`
+- `GET /stack`, `/stack/ping`, `/stack/log`, `/stack/session`, `/stack/db`, `/stack/hello/{name}`, `/stack/user/{id}`
 - `POST /stack/echo` (FormRequest + validation)
 - `GET /stack/log` → записи в `storage/logs/stack-*.log` + masking `password` / `*token*`
 - `GET /stack/session` → session started + CSRF token (без Verify middleware — лише wiring)
+- `GET /stack/db` → Eloquent connection + `pages` count
 
 Додаткові smoke checks (full skeleton):
 

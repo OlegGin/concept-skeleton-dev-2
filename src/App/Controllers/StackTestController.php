@@ -4,6 +4,7 @@ namespace Concept\App\Controllers;
 
 use Concept\App\Http\Requests\TestEchoRequest;
 use Concept\Extensions\Csrf\Contracts\CsrfTokenManagerInterface;
+use Concept\Extensions\DatabaseEloquent\Contracts\DatabaseInterface;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
 use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
@@ -11,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Minimal controller for Concept Stack smoke testing (no config, no view, no db).
+ * Minimal controller for Concept Stack smoke testing (no config, no view).
  */
 final class StackTestController
 {
@@ -20,6 +21,7 @@ final class StackTestController
         private readonly LoggerInterface $logger,
         private readonly SessionInterface $session,
         private readonly CsrfTokenManagerInterface $csrf,
+        private readonly DatabaseInterface $database,
     ) {}
 
     public function index(): ResponseInterface
@@ -119,6 +121,22 @@ final class StackTestController
                 'CsrfServiceProvider',
             ],
             'note' => 'VerifyCsrfTokenMiddleware stays in routes when needed — not registered by stack.',
+        ]);
+    }
+
+    public function db(): ResponseInterface
+    {
+        $pages = $this->database->capsule()->table('pages');
+
+        return $this->response->jsonSuccess([
+            'connection' => 'ok',
+            'pages_total' => $pages->count(),
+            'pages_published' => $pages->where('published', true)->count(),
+            'providers' => [
+                'DatabaseStackProvider',
+                'DatabaseEloquentServiceProvider',
+                'PaginationConfiguratorServiceProvider',
+            ],
         ]);
     }
 }
