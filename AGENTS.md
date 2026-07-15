@@ -277,9 +277,9 @@ Profile відрізняється **manifest + routes**, не fork extensions.
 
 | «Хочу…» | Glue робить |
 |---------|---------------|
-| Логування помилок | `withErrorHandling()->withLogging()` → `LoggerExceptionReporter` |
-| HTTP error pages (production) | `withViewErrors($path)` → `ViewHttpErrorRenderer` (або `withJsonErrors()`) |
-| Debug uncaught | `withPrettyPage()` + `debug(true)` |
+| Логування помилок | `withErrorHandling()->reportToLog()` → `LoggerExceptionReporter` |
+| HTTP error pages (production) | `renderErrorPage($path)` → `ViewHttpErrorRenderer` (JSON по Accept) або `renderJson()` |
+| Debug uncaught | `debugExceptionPage()` + `debug(true)` |
 | Route not found (404) | `HandleNotFoundMiddleware` → `ExceptionReporter` + renderer з stack |
 | Шаблонізатор | `ViewServiceProvider(paths:, extensions:)` + `TwigViewServiceProvider(viewsPath:, cacheDir:, debug:)` |
 | Розширення Twig | `extensions: [TwigAppExtension::class, …]` у `ViewServiceProvider` constructor |

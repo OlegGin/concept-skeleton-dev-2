@@ -503,9 +503,9 @@ return ConceptStack::create()
 11. Error handling providers ✅
     - Generic Whoops awake chain у `ErrorHandlingStackProvider`.
     - Contracts + Whoops handlers — у `extension-error-handler-whoops` (тонкий).
-    - Recipes у stack: `LoggerExceptionReporter`, `ViewHttpErrorRenderer`, `JsonHttpErrorRenderer`, `PhpErrorLogReporter`.
-    - UX: `debug()`, `withPrettyPage()`, `withLogging()`, `withViewErrors($path)` / `withJsonErrors()` + escape hatch `reporter()` / `renderer()`.
-    - `Concept\App\Http\Error` recipes видалені; early bootstrap → `PhpErrorLogReporter` + `FallbackFileHandler`.
+    - Recipes у stack: `Reporting\LoggerExceptionReporter`, `Reporting\PhpErrorLogReporter`, `Rendering\ViewHttpErrorRenderer`, `Rendering\JsonHttpErrorRenderer`.
+    - UX: `debug()`, `debugExceptionPage()`, `reportToLog()`, `renderErrorPage($path)` / `renderJson()` + escape hatch `reporter()` / `renderer()` / `debugHttpHandler()`.
+    - Early bootstrap → `PhpErrorLogReporter` + `FallbackFileHandler`.
 
 ## Міграція skeleton
 

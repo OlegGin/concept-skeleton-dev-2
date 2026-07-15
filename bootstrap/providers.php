@@ -159,9 +159,9 @@ return function(string $root): array {
     // Error handling — stack recipes (Whoops stays thin; implementations in stack)
     $stack->withErrorHandling()
         ->debug($debug)
-        ->withPrettyPage()
-        ->withLogging()
-        ->withViewErrors($root . '/resources/views/errors/fallback');
+        ->debugExceptionPage()
+        ->reportToLog()
+        ->renderErrorPage($root . '/resources/views/errors/fallback');
 
     return [
         new FoundationLayerProvider($root, $pathMap),

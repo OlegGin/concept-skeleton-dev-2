@@ -4,7 +4,7 @@ use Concept\App\Http\Error\Handlers\FallbackFileHandler;
 use Concept\Core\App;
 use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsServiceProvider;
 use Concept\Extensions\ErrorHandlerWhoops\Handlers\ReportExceptionHandler;
-use Concept\Stack\Bricks\ErrorHandling\PhpErrorLogReporter;
+use Concept\Stack\Bricks\ErrorHandling\Reporting\PhpErrorLogReporter;
 use League\Container\Container;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 use Whoops\Handler\PlainTextHandler;
