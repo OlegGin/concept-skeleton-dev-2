@@ -1,6 +1,6 @@
 # План впровадження Concept Stack
 
-## Поточний стан (2026-07-14)
+## Поточний стан (2026-07-15)
 
 Реалізовано в `/var/www/concept-stack/src`:
 
@@ -15,6 +15,8 @@
 | `http` | `HttpBuilder` | `HttpOptions` | `HttpStackProvider` | ✅ |
 | `console` | `ConsoleBuilder` | `ConsoleOptions` | `ConsoleStackProvider` | ✅ |
 | `view` | `ViewBuilder` | `ViewOptions` | `ViewStackProvider` | ✅ |
+| `telemetry` | `TelemetryBuilder` | `TelemetryOptions` | `TelemetryStackProvider` | ✅ |
+| `error-handling` | `ErrorHandlingBuilder` | `ErrorHandlingOptions` | `ErrorHandlingStackProvider` | ✅ |
 
 Інфраструктура:
 
@@ -387,8 +389,8 @@ src/
 │   ├── Session/                    ✅ SessionBuilder, SessionOptions, SessionStackProvider (opt-in CSRF)
 │   ├── Database/                   ✅ DatabaseBuilder, DatabaseOptions, DatabaseStackProvider
 │   ├── View/                       ✅ ViewBuilder + nested ViewTwigBuilder / ViewPlatesBuilder (requires http)
-│   ├── Telemetry/                  🔲
-│   └── ErrorHandling/              🔲
+│   ├── Telemetry/                  ✅ TelemetryBuilder, TelemetryOptions, TelemetryStackProvider
+│   └── ErrorHandling/              ✅ ErrorHandlingBuilder, ErrorHandlingOptions, ErrorHandlingStackProvider
 ├── Support/
 │   └── OptionalDependency.php      ✅
 └── Exceptions/
@@ -449,10 +451,13 @@ return ConceptStack::create()
    - Masker передається через `OptionalDependency::factory` лише коли увімкнено.
    - Extension: handlers list замість hardcoded RotatingFile; `LogHandlerRegistry` для extras (Telemetry).
 
-3. `TelemetryLayerProvider` -> `TelemetryStackProvider`
+3. `TelemetryLayerProvider` -> `TelemetryStackProvider` ✅
    - Не читає config.
    - Options: `enabled`, `logs`, `dbQueries`, `eventName`, `subscribers`.
-   - Event names не мають залежати від `Concept\App`.
+   - `logs(true)` → `TelemetryLogHandler` + `LogHandlerRegistry` (requires `logging`).
+   - `dbQueries(true)` → requires `database`; emission via `DatabaseBuilder::withQueryTelemetry()`.
+   - `subscribers` → `EventServiceProvider` when non-empty and enabled.
+   - Event names — explicit strings з app glue (не `Concept\App` у stack).
 
 4. `ValidationLayerProvider` -> `ValidationStackProvider` ✅
    - Options: custom rules, log file/enabled/max files, global except.
@@ -495,10 +500,11 @@ return ConceptStack::create()
    - Nested XOR engines: `withTwig()` / `withPlates()` (закривають ViewRegistry ↔ ViewInterface).
    - Requires `http`. Absolute paths only.
 
-11. Error handling providers
-    - Перенести тільки generic частину.
-    - Renderer/reporter або стають stack-generic, або передаються explicit factories.
-    - Не тягнути `Concept\App\Http\Error`.
+11. Error handling providers ✅
+    - Generic Whoops awake chain у `ErrorHandlingStackProvider`.
+    - Contracts + `ReportExceptionHandler` / `RenderHttpErrorHandler` — у `extension-error-handler-whoops`.
+    - App glue передає `exceptionReporter` / `httpErrorRenderer` / optional `debugHttpHandler` factories.
+    - `Concept\App\Http\Error` renderers (`TwigHttpErrorRenderer`, `AppExceptionReporter`) лишаються в skeleton.
 
 ## Міграція skeleton
 
@@ -552,10 +558,10 @@ Stack від нього не залежить.
 9. ✅ `SessionBuilder` / `SessionStackProvider` (opt-in `withCsrf()`).
 10. ✅ `DatabaseBuilder` / `DatabaseStackProvider` (opt-in query log/masking/telemetry).
 11. ✅ `ViewBuilder` / `ViewStackProvider` + nested `withTwig()` / `withPlates()`.
-12. 🔲 telemetry providers з explicit options.
-13. 🔲 error handling через explicit factories або generic stack renderers.
-14. 🔲 Перевести `bootstrap/providers.php` на stack, залишивши config/path glue в skeleton.
-15. 🔲 Після parity видалити або deprecated-нути старі `src/App/Providers/Layers`.
+12. ✅ telemetry providers з explicit options.
+13. ✅ error handling через explicit factories або generic stack renderers.
+14. ✅ `bootstrap/providers.php` на stack (explicit values; Config/PathManager — optional app glue, поки не в stack wiring).
+15. ✅ Видалені застарілі `src/App/Providers/Layers/*` (лишився лише `FoundationLayerProvider`).
 
 ## Перевірки
 

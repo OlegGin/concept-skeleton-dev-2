@@ -6,7 +6,7 @@ use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 /** @var App $app */
-$app = require_once __DIR__ . '/../bootstrap/app-stack.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
 
 $response = $app->handle();
 

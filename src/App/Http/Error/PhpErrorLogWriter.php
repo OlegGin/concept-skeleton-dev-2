@@ -2,7 +2,7 @@
 
 namespace Concept\App\Http\Error;
 
-use Concept\App\Http\Error\Contracts\ExceptionReporterInterface;
+use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Throwable;
 
 final class PhpErrorLogWriter implements ExceptionReporterInterface

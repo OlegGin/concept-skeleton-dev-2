@@ -562,26 +562,24 @@ config/routes.php          → skeleton config (поки не використо
 - [x] `HandleValidationExceptionMiddleware` — `ValidationException` → 422 JSON або redirect + flash (web)
 - [x] Тест: `POST /test/echo` + `TestEchoRequest` (name, email)
 - [x] **Console extension**: `ConsoleSymfonyServiceProvider`, `route:list`
-- [x] **Session + CSRF**: обидва в `SessionLayerProvider`; middleware chain у `web.php` (api-профіль без Session → без CSRF)
+- [x] **Session + CSRF**: stack `withSession()->withCsrf()`; middleware chain у `web.php`
 - [x] **Validation redirect flow**: `HandleValidationExceptionMiddleware` + flash + форма на `/` з errors/old
 - [x] **Json middleware**: `routes/api.php`, `ParseJsonBodyMiddleware`, `ForceJsonResponseMiddleware`; CSRF/session middleware лише на web group
-- [x] **DataMasker extension**: glue → `dataMaskerFactory` у log-related providers (не `$container->has()` у extension)
+- [x] **DataMasker extension**: stack `withMasking()` + opt-in `LoggingBuilder::withMasking()` / validation / db
 - [x] **Database extension**: `DatabaseEloquentServiceProvider`, `PaginationConfiguratorServiceProvider`, db CLI, `GET /test/db`
-- [x] **Config extension**: `ConfigServiceProvider` + `config/` → glue
-- [x] **Profiles**: `APP_PROFILE` у `bootstrap/app.php`, `minimal` / `api` / `full` у `bootstrap/profiles/`
-- [x] **Layer glue (full profile)**: Foundation, Logging, ErrorHandling, Validation, Database, Http, Console, View — monolith `ApplicationServiceProvider` видалено
-- [x] **`api` profile**: Foundation → Logging → Telemetry → Validation → Database → Http → Console → `JsonErrorHandlingLayerProvider` → Runtime; routes тільки `api.php`
-- [x] **`DataMaskerFactory`**: спільна factory для Validation/DB/Logger glue
+- [x] **Config extension**: `ConfigServiceProvider` + `config/` → Foundation (optional app glue; stack explicit values)
+- [x] **Concept Stack**: `bootstrap/providers.php` → `ConceptStack` + `FoundationLayerProvider`; застарілі `*LayerProvider` (крім Foundation) видалені
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
 
-### 🔲 Наступні кроки (constructor build — порядок роботи)
+### 🔲 Наступні кроки
 
-> **Components** — відкладено до повного проходження всіх extensions (не чіпати зараз).
+> **Components** — відкладено.
+> Config/PathManager → читання значень у glue для stack — пізніше (зараз explicit hardcoded у `providers.php`).
 
-1. **Event / Telemetry** — окремий layer, не в full поки не готові
-2. **Profiles** — `admin` та інші між `api` і `full`
-3. **Boot validation** — dev/CLI smoke після зборки
+1. **Boot validation** — dev/CLI smoke після зборки
+2. Config-driven glue (optional) — PathManager/Config → explicit stack params
+3. Profiles / recipes поверх stack (за потреби)
 
 ## Команди
 

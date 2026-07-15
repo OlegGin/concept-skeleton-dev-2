@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
 use Concept\App\Http\Error\Handlers\FallbackFileHandler;
-use Concept\App\Http\Error\Handlers\ReportExceptionHandler;
 use Concept\App\Http\Error\PhpErrorLogWriter;
+use Concept\Extensions\ErrorHandlerWhoops\Handlers\ReportExceptionHandler;
 use Concept\Core\App;
 use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsServiceProvider;
 use League\Container\Container;

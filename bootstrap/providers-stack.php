@@ -28,6 +28,11 @@ return function(string $root): array {
         ->toRotatingFile($root . '/storage/logs/stack.log')
         ->withMasking();
 
+    $stack->withTelemetry()
+        ->enabled(true)
+        ->logs(true)
+        ->eventName('log.recorded');
+
     $stack->withDatabase()
         ->connection([
             'driver' => 'mysql',
@@ -43,6 +48,7 @@ return function(string $root): array {
         ->migrations([$root . '/database/migrations'])
         ->seeders([PageSeeder::class])
         ->withQueryLogging($root . '/storage/logs/query.log')
+        ->withQueryTelemetry()
         ->withMasking();
 
     $stack->withCasting()

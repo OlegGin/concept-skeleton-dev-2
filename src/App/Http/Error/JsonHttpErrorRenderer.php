@@ -2,7 +2,7 @@
 
 namespace Concept\App\Http\Error;
 
-use Concept\App\Http\Error\Contracts\HttpErrorRendererInterface;
+use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
 use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Protocol\HttpStatusCode;
 use Psr\Http\Message\ResponseInterface;
