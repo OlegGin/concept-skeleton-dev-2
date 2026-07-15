@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
 use Concept\App\Http\Error\Handlers\FallbackFileHandler;
-use Concept\App\Http\Error\PhpErrorLogWriter;
-use Concept\Extensions\ErrorHandlerWhoops\Handlers\ReportExceptionHandler;
 use Concept\Core\App;
 use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsServiceProvider;
+use Concept\Extensions\ErrorHandlerWhoops\Handlers\ReportExceptionHandler;
+use Concept\Stack\Bricks\ErrorHandling\PhpErrorLogReporter;
 use League\Container\Container;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 use Whoops\Handler\PlainTextHandler;
@@ -28,7 +28,7 @@ $earlyRenderHandler = match (true) {
 
 $container->add(Whoops::class, EarlyWhoopsServiceProvider::register(
     $earlyRenderHandler,
-    new ReportExceptionHandler(static fn() => new PhpErrorLogWriter()),
+    new ReportExceptionHandler(static fn() => new PhpErrorLogReporter()),
 ))->setShared(true);
 
 /** @var callable(string): list<ServiceProviderInterface> $providersFactory */

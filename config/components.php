@@ -7,8 +7,8 @@ use Concept\Components\SettingsManager\SettingsManagerComponent;
 
 return [
     'components' => [
-        AclComponent::class => AclComponent::class,
         AuthAdminComponent::class => AuthAdminComponent::class,
+        AclComponent::class => AclComponent::class,
         SettingsManagerComponent::class => SettingsManagerComponent::class,
         HealthComponent::class => HealthComponent::class,
     ],

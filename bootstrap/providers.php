@@ -1,8 +1,5 @@
 <?php declare(strict_types=1);
 
-use Concept\App\Foundation\PathName;
-use Concept\App\Http\Error\AppExceptionReporter;
-use Concept\App\Http\Error\TwigHttpErrorRenderer;
 use Concept\App\Providers\ApplicationComponentsServiceProvider;
 use Concept\App\Providers\ApplicationRuntimeServiceProvider;
 use Concept\App\Providers\Layers\FoundationLayerProvider;
@@ -16,29 +13,18 @@ use Concept\App\Telemetry\TelemetryEvent;
 use Concept\App\Validation\Rules\ExistsRule;
 use Concept\App\Validation\Rules\UniqueRule;
 use Concept\App\View\Twig\TwigAppExtension;
-use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrateCommand;
 use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrationListCommand;
 use Concept\Extensions\DatabaseEloquent\Console\Commands\DbMigrationPathsCommand;
 use Concept\Extensions\DatabaseEloquent\Console\Commands\DbRollbackCommand;
 use Concept\Extensions\DatabaseEloquent\Console\Commands\DbSeedCommand;
 use Concept\Extensions\DatabaseEloquent\Console\Commands\DbSeederListCommand;
-use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
-use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
-use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Console\Commands\RouteListCommand;
-use Concept\Extensions\Http\Requests\RequestFormat;
-use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
-use Concept\Extensions\PathManager\PathManager;
-use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
-use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
 use Concept\Extensions\ViewTwig\Console\Commands\ViewClearCommand;
 use Concept\Stack\ConceptStack;
 use Database\Seeders\PageSeeder;
-use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
-use Whoops\Handler\PrettyPageHandler;
 
 /**
  * @param string $root
@@ -63,9 +49,8 @@ return function(string $root): array {
 
     // Telemetry Layer
     $stack->withTelemetry()
-        ->enabled(false)
-        ->logs(false)
-        ->dbQueries(false)
+        ->enabled(true)
+        ->logs(true)
         ->eventName(TelemetryEvent::LOG_RECORDED)
         ->subscribers([
             ComponentsTelemetrySubscriber::class,
@@ -107,6 +92,7 @@ return function(string $root): array {
         ->migrationsTable('migrations')
         ->seeders([PageSeeder::class])
         ->withQueryLogging($root . '/storage/logs/query.log', 7)
+        ->withEmitQueryEvents()
         ->withMasking();
 
     // Session Layer
@@ -170,28 +156,12 @@ return function(string $root): array {
         ->cacheDir($root . '/storage/cache/views')
         ->debug($debug); // From config/app.php
 
-    // Error handling — app renderers/reporter via explicit factories (no Concept\App inside stack)
+    // Error handling — stack recipes (Whoops stays thin; implementations in stack)
     $stack->withErrorHandling()
         ->debug($debug)
-        ->exceptionReporter(function(DefinitionContainerInterface $container): ExceptionReporterInterface {
-            return new AppExceptionReporter(
-                logger: ContainerDependency::get($container, LoggerInterface::class),
-                container: $container,
-            );
-        })
-        ->httpErrorRenderer(function(DefinitionContainerInterface $container): HttpErrorRendererInterface {
-            $pathManager = ContainerDependency::get($container, PathManager::class);
-
-            return new TwigHttpErrorRenderer(
-                responseFactory: ContainerDependency::get($container, ResponseFactoryInterface::class),
-                viewResponse: ContainerDependency::get($container, ViewResponseFactoryInterface::class),
-                requestFormat: ContainerDependency::get($container, RequestFormat::class),
-                routeNamespaceResolver: ContainerDependency::get($container, ViewRouteNamespaceResolver::class),
-                exceptionReporter: ContainerDependency::get($container, ExceptionReporterInterface::class),
-                fallbackPath: $pathManager->get(PathName::ERRORS_FALLBACK_VIEWS),
-            );
-        })
-        ->debugHttpHandler(fn(): PrettyPageHandler => new PrettyPageHandler());
+        ->withPrettyPage()
+        ->withLogging()
+        ->withViewErrors($root . '/resources/views/errors/fallback');
 
     return [
         new FoundationLayerProvider($root, $pathMap),

@@ -271,16 +271,16 @@ Profile відрізняється **manifest + routes**, не fork extensions.
 - **`$container->get()` у factory closure provider-а** — допустимо для **відомих контрактів** того ж extension або стабільних core/PSR типів (`Router`, `RequestContextInterface`), якщо це wiring всередині provider-а, а не business-logic класу.
 - **Сервіси extension** — залежності через **constructor**, не через `$container->get()` у методах.
 
-**App-specific glue** (приклад: `AppExceptionReporter`, `TwigHttpErrorRenderer`) — у skeleton (`Concept\App\`), не в extension. Extension отримує `ExceptionReporterInterface` / `HttpErrorRendererInterface` через constructor provider-а або closure з glue.
+**App-specific glue** (приклад: early `FallbackFileHandler`) — у skeleton (`Concept\App\`). Stack recipes для reporter/renderer — у `Concept\Stack\Bricks\ErrorHandling\`; Whoops extension отримує лише контракти через stack wiring.
 
 ### Приклади «конструктора» (mental model)
 
 | «Хочу…» | Glue робить |
 |---------|---------------|
-| Логування помилок | `AppExceptionReporter` → Whoops awake: `ExceptionReporterInterface` |
-| HTTP error pages (production) | Whoops awake: `HttpErrorRendererHandler` → skeleton `TwigHttpErrorRenderer` |
-| Debug uncaught | Whoops awake: `ExceptionReporter` + `PrettyPageHandler` (renderer не реєструється в debug) |
-| Route not found (404) | `HandleNotFoundMiddleware` → `ExceptionReporter` + `TwigHttpErrorRenderer` |
+| Логування помилок | `withErrorHandling()->withLogging()` → `LoggerExceptionReporter` |
+| HTTP error pages (production) | `withViewErrors($path)` → `ViewHttpErrorRenderer` (або `withJsonErrors()`) |
+| Debug uncaught | `withPrettyPage()` + `debug(true)` |
+| Route not found (404) | `HandleNotFoundMiddleware` → `ExceptionReporter` + renderer з stack |
 | Шаблонізатор | `ViewServiceProvider(paths:, extensions:)` + `TwigViewServiceProvider(viewsPath:, cacheDir:, debug:)` |
 | Розширення Twig | `extensions: [TwigAppExtension::class, …]` у `ViewServiceProvider` constructor |
 | FormRequest + validation | glue збирає resolver chain + `ValidationServiceProvider` + `FormRequestServiceProvider`; instances/resolvers передає в `HttpKernelServiceProvider` |

@@ -16,7 +16,7 @@
 | `console` | `ConsoleBuilder` | `ConsoleOptions` | `ConsoleStackProvider` | ✅ |
 | `view` | `ViewBuilder` | `ViewOptions` | `ViewStackProvider` | ✅ |
 | `telemetry` | `TelemetryBuilder` | `TelemetryOptions` | `TelemetryStackProvider` | ✅ |
-| `error-handling` | `ErrorHandlingBuilder` | `ErrorHandlingOptions` | `ErrorHandlingStackProvider` | ✅ |
+| `error-handling` | `ErrorHandlingBuilder` | `ErrorHandlingOptions` | `ErrorHandlingStackProvider` | ✅ recipes in stack |
 
 Інфраструктура:
 
@@ -230,7 +230,7 @@ return function(string $root): array {
         ->withTelemetry()
             ->enabled(true)
             ->logs(true)
-            ->dbQueries(true)
+            ->eventName('log.recorded')
             ->end()
         ->withFlashValidation()
             ->rules([])
@@ -453,9 +453,9 @@ return ConceptStack::create()
 
 3. `TelemetryLayerProvider` -> `TelemetryStackProvider` ✅
    - Не читає config.
-   - Options: `enabled`, `logs`, `dbQueries`, `eventName`, `subscribers`.
+   - Options: `enabled`, `logs`, `eventName`, `subscribers`.
    - `logs(true)` → `TelemetryLogHandler` + `LogHandlerRegistry` (requires `logging`).
-   - `dbQueries(true)` → requires `database`; emission via `DatabaseBuilder::withEmitQueryEvents()`.
+   - DB query events — лише `DatabaseBuilder::withEmitQueryEvents()` (requires `telemetry`).
    - `subscribers` → `EventServiceProvider` when non-empty and enabled.
    - Event names — explicit strings з app glue (не `Concept\App` у stack).
 
@@ -502,9 +502,10 @@ return ConceptStack::create()
 
 11. Error handling providers ✅
     - Generic Whoops awake chain у `ErrorHandlingStackProvider`.
-    - Contracts + `ReportExceptionHandler` / `RenderHttpErrorHandler` — у `extension-error-handler-whoops`.
-    - App glue передає `exceptionReporter` / `httpErrorRenderer` / optional `debugHttpHandler` factories.
-    - `Concept\App\Http\Error` renderers (`TwigHttpErrorRenderer`, `AppExceptionReporter`) лишаються в skeleton.
+    - Contracts + Whoops handlers — у `extension-error-handler-whoops` (тонкий).
+    - Recipes у stack: `LoggerExceptionReporter`, `ViewHttpErrorRenderer`, `JsonHttpErrorRenderer`, `PhpErrorLogReporter`.
+    - UX: `debug()`, `withPrettyPage()`, `withLogging()`, `withViewErrors($path)` / `withJsonErrors()` + escape hatch `reporter()` / `renderer()`.
+    - `Concept\App\Http\Error` recipes видалені; early bootstrap → `PhpErrorLogReporter` + `FallbackFileHandler`.
 
 ## Міграція skeleton
 
