@@ -67,7 +67,7 @@ ConceptStack::create()
 | `migrationsTable()` / `seeders()` | migrations table name, seeder classes | — |
 | `withQueryLogging($path, maxFiles?)` | SQL query log (RotatingFile) | — |
 | `withMasking()` | masker для query log | `masking` |
-| `withQueryTelemetry()` | `DatabaseQueryExecuted` events | `telemetry` |
+| `withEmitQueryEvents()` | `DatabaseQueryExecuted` events | `telemetry` |
 
 ```php
 ConceptStack::create()
@@ -455,7 +455,7 @@ return ConceptStack::create()
    - Не читає config.
    - Options: `enabled`, `logs`, `dbQueries`, `eventName`, `subscribers`.
    - `logs(true)` → `TelemetryLogHandler` + `LogHandlerRegistry` (requires `logging`).
-   - `dbQueries(true)` → requires `database`; emission via `DatabaseBuilder::withQueryTelemetry()`.
+   - `dbQueries(true)` → requires `database`; emission via `DatabaseBuilder::withEmitQueryEvents()`.
    - `subscribers` → `EventServiceProvider` when non-empty and enabled.
    - Event names — explicit strings з app glue (не `Concept\App` у stack).
 
@@ -472,7 +472,7 @@ return ConceptStack::create()
 6. `DatabaseLayerProvider` -> `DatabaseStackProvider` ✅
    - Options: connection array, migration paths, migrations table, seeders, query logging, query telemetry.
    - Усі paths передаються вже готовими absolute або application-resolved paths.
-   - Opt-in: `withQueryLogging()`, `withMasking()` (requires masking), `withQueryTelemetry()` (requires telemetry).
+   - Opt-in: `withQueryLogging()`, `withMasking()` (requires masking), `withEmitQueryEvents()` (requires telemetry).
    - Реєструє `PaginationConfiguratorServiceProvider` + `DatabaseEloquentServiceProvider`.
 
 7. `SessionLayerProvider` -> `SessionStackProvider` ✅
