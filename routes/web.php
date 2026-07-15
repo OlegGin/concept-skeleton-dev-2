@@ -12,6 +12,14 @@ use League\Route\RouteGroup;
 use League\Route\Router;
 
 /** @var Router $router */
+$router->lazyMiddlewares([
+    StorePreviousUrlMiddleware::class,
+    HandleValidationExceptionMiddleware::class,
+    HandleCsrfExceptionMiddleware::class,
+    VerifyCsrfTokenMiddleware::class,
+    ShareViewDataMiddleware::class,
+]);
+
 $router->group('', function(RouteGroup $router): void {
     $router->get('/', [IndexController::class, 'index'])->setName('home');
     $router->get('/test/errors', [ErrorTestController::class, 'index'])->setName('test.errors');
@@ -22,10 +30,4 @@ $router->group('', function(RouteGroup $router): void {
     $router->get('/test/user/{id}', [TestController::class, 'user'])->setName('test.user');
     $router->get('/test/db', [TestController::class, 'db'])->setName('test.db');
     $router->post('/test/echo', [TestController::class, 'echo'])->setName('test.echo');
-})->lazyMiddlewares([
-    StorePreviousUrlMiddleware::class,
-    HandleValidationExceptionMiddleware::class,
-    HandleCsrfExceptionMiddleware::class,
-    VerifyCsrfTokenMiddleware::class,
-    ShareViewDataMiddleware::class,
-]);
+});

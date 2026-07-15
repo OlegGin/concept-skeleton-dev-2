@@ -45,6 +45,7 @@ use Whoops\Handler\PrettyPageHandler;
  * @return list<ServiceProviderInterface>
  */
 return function(string $root): array {
+    $debug = true;
     /** @var array<string, string> $pathMap */
     $pathMap = require __DIR__ . '/path-map.php';
 
@@ -127,7 +128,7 @@ return function(string $root): array {
     $stack->withCasting()
         ->transformers([]) // From config/caster.php
         ->cacheDir($root . '/storage/cache/valinor') // From config/caster.php
-        ->debug(false); // From config/app.php
+        ->debug($debug); // From config/app.php
 
     // Http Layer
     $stack->withHttp()
@@ -167,11 +168,11 @@ return function(string $root): array {
         ->withTwig()
         ->viewsPath($root . '/resources/views')
         ->cacheDir($root . '/storage/cache/views')
-        ->debug(false); // From config/app.php
+        ->debug($debug); // From config/app.php
 
     // Error handling — app renderers/reporter via explicit factories (no Concept\App inside stack)
     $stack->withErrorHandling()
-        ->debug(false)
+        ->debug($debug)
         ->exceptionReporter(function(DefinitionContainerInterface $container): ExceptionReporterInterface {
             return new AppExceptionReporter(
                 logger: ContainerDependency::get($container, LoggerInterface::class),
