@@ -194,8 +194,9 @@ return function(string $root): array {
 
     return [
         new FoundationLayerProvider($root, $pathMap),
+        ...$stack->providers(),
+        // After Http/View/Database/Console — Components needs Router + registries at boot
         new ApplicationComponentsServiceProvider(),
         new ApplicationRuntimeServiceProvider(),
-        ...$stack->providers(),
     ];
 };
