@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Error{% endblock %} · CONCEPT.</title>
+    {% include '@dashboard/partials/_head_theme_init.twig' %}
+    {% include '@dashboard/partials/_head_assets.twig' %}
+</head>
+<body class="error-page-body">
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+</body>
+</html>

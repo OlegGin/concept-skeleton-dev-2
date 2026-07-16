@@ -504,7 +504,7 @@ return ConceptStack::create()
     - Generic Whoops awake chain у `ErrorHandlingStackProvider`.
     - Contracts + Whoops handlers — у `extension-error-handler-whoops` (тонкий).
     - Recipes у stack: `Reporting\LoggerExceptionReporter`, `Reporting\PhpErrorLogReporter`, `Rendering\ViewHttpErrorRenderer`, `Rendering\JsonHttpErrorRenderer`.
-    - UX: `debug()`, `debugExceptionPage()`, `reportToLog()`, `renderErrorPage($path)` / `renderJson()` + escape hatch `reporter()` / `renderer()` / `debugHttpHandler()`.
+    - Recipe-методи (`reportToLog`, `renderHtmlErrorPage`, `showDebugExceptionPage`, …) явно записують factory в options; provider без default-гілок.
     - Early bootstrap → `PhpErrorLogReporter` + `FallbackFileHandler`.
 
 ## Міграція skeleton
