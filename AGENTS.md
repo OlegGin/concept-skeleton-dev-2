@@ -575,11 +575,9 @@ config/routes.php          → skeleton config (поки не використо
 ### 🔲 Наступні кроки
 
 > **Components** — відкладено.
-> Config/PathManager → читання значень у glue для stack — пізніше (зараз explicit hardcoded у `providers.php`).
 
 1. **Boot validation** — dev/CLI smoke після зборки
-2. Config-driven glue (optional) — PathManager/Config → explicit stack params
-3. Profiles / recipes поверх stack (за потреби)
+2. Profiles / recipes поверх stack (за потреби)
 
 ## Команди
 

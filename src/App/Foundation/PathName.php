@@ -18,4 +18,5 @@ final class PathName
     public const string STORAGE = 'storage';
     public const string LOGS = 'logs';
     public const string CACHE = 'cache';
+    public const string ERRORS_FALLBACK_VIEWS = 'errors_fallback_views';
 }
