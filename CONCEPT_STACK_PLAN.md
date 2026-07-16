@@ -129,7 +129,7 @@ return $stack->providers();
 |-------|----------|-------------------------|
 | `LoggingBuilder::withMasking()` | `dataMaskerFactory` у `LoggerMonologServiceProvider` | `masking` |
 
-Stack test profile: `bootstrap/providers-stack.php` + `routes/stack.php` + `StackTestController`.
+Stack smoke — через full skeleton (`routes/web.php`, `routes/api.php`), окремий stack profile прибрано.
 
 ### Модель залежностей HTTP (opt-in)
 
@@ -157,7 +157,7 @@ ConceptStack::create()
         ->globalExcept(['password'])
         ->end()
     ->withHttp()
-        ->routes([$root . '/routes/stack.php'])
+        ->routes([$root . '/routes/web.php', $root . '/routes/api.php'])
         ->withFormRequests()
         ->withTypedRouteParameters()
         ->end()
@@ -572,15 +572,6 @@ Stack від нього не залежить.
 cd /var/www/concept-skeleton-dev-2
 vendor/bin/phpstan
 ```
-
-Додаткові smoke checks (stack profile):
-
-- `GET /stack`, `/stack/ping`, `/stack/log`, `/stack/session`, `/stack/db`, `/stack/view`, `/stack/hello/{name}`, `/stack/user/{id}`
-- `POST /stack/echo` (FormRequest + validation)
-- `GET /stack/log` → записи в `storage/logs/stack-*.log` + masking `password` / `*token*`
-- `GET /stack/session` → session started + CSRF token (без Verify middleware — лише wiring)
-- `GET /stack/db` → Eloquent connection + `pages` count
-- `GET /stack/view` → Twig `@stack/smoke`
 
 Додаткові smoke checks (full skeleton):
 

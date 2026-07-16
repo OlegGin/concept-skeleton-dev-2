@@ -20,5 +20,4 @@ return [
     PathName::LANG => 'resources/lang',
     PathName::VALIDATOR_TRANSLATIONS => 'resources/lang/validator',
     PathName::VIEWS => 'resources/views',
-    PathName::ERRORS_FALLBACK_VIEWS => 'resources/views/errors/fallback',
 ];
