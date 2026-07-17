@@ -3,34 +3,32 @@
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\App\Foundation\TypedConfig;
-use Concept\App\Providers\ApplicationComponentsServiceProvider;
-use Concept\App\Providers\ApplicationRuntimeServiceProvider;
-use Concept\App\Providers\Layers\FoundationLayerProvider;
 use Concept\App\Telemetry\TelemetryEvent;
 use Concept\App\View\Twig\TwigAppExtension;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
-use Concept\Extensions\Config\ConfigFactory;
+use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Stack\ConceptStack;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 use League\Event\ListenerSubscriber;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 
 /**
  * Application stack glue: PathManager + Config → explicit ConceptStack params.
  *
- * @param string $root
- * @return list<ServiceProviderInterface>
+ * Requires FoundationLayerProvider registered first (PathManager + ConfigInterface in container).
+ *
+ * @return callable(ContainerInterface): list<ServiceProviderInterface>
  */
-return function(string $root): array {
-    /** @var array<string, string> $pathMap */
-    $pathMap = require __DIR__ . '/path-map.php';
-
-    $pathManager = new PathManager($root, $pathMap);
-    $config = ConfigFactory::create($root, $pathManager->get(PathName::CONFIG));
+return function(ContainerInterface $container): array {
+    /** @var PathManager $pathManager */
+    $pathManager = $container->get(PathManager::class);
+    /** @var ConfigInterface $config */
+    $config = $container->get(ConfigInterface::class);
     $typed = new TypedConfig($config);
 
     $debug = $config->getBool(ConfigKey::APP_DEBUG);
@@ -152,10 +150,5 @@ return function(string $root): array {
         ->reportToLog()
         ->renderHtmlErrorPage($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
 
-    return [
-        new FoundationLayerProvider($root, $pathMap),
-        ...$stack->providers(),
-        new ApplicationComponentsServiceProvider(),
-        new ApplicationRuntimeServiceProvider(),
-    ];
+    return $stack->providers();
 };

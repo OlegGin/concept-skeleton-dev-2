@@ -1,12 +1,16 @@
 <?php declare(strict_types=1);
 
 use Concept\App\Http\Error\Handlers\FallbackFileHandler;
+use Concept\App\Providers\ApplicationComponentsServiceProvider;
+use Concept\App\Providers\ApplicationRuntimeServiceProvider;
+use Concept\App\Providers\Layers\FoundationLayerProvider;
 use Concept\Core\App;
 use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsServiceProvider;
 use Concept\Extensions\ErrorHandlerWhoops\Handlers\ReportExceptionHandler;
 use Concept\Stack\Bricks\ErrorHandling\Reporting\PhpErrorLogReporter;
 use League\Container\Container;
 use League\Container\ServiceProvider\ServiceProviderInterface;
+use Psr\Container\ContainerInterface;
 use Whoops\Handler\PlainTextHandler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run as Whoops;
@@ -31,8 +35,16 @@ $container->add(Whoops::class, EarlyWhoopsServiceProvider::register(
     new ReportExceptionHandler(static fn() => new PhpErrorLogReporter()),
 ))->setShared(true);
 
-/** @var callable(string): list<ServiceProviderInterface> $providersFactory */
+/** @var callable(ContainerInterface): list<ServiceProviderInterface> $providersFactory */
 $providersFactory = require __DIR__ . '/providers.php';
-$app->registerServiceProviders($providersFactory($root));
+
+/** @var array<string, string> $pathMap */
+$pathMap = require __DIR__ . '/path-map.php';
+$app->registerServiceProviders([new FoundationLayerProvider($root, $pathMap)]);
+$app->registerServiceProviders($providersFactory($container));
+$app->registerServiceProviders([
+    new ApplicationComponentsServiceProvider(),
+    new ApplicationRuntimeServiceProvider(),
+]);
 
 return $app;
