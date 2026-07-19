@@ -61,11 +61,15 @@ final class ApplicationStackBootstrap extends AbstractServiceProvider implements
             )
             ->withMasking();
 
+        if ($config->getBool(ConfigKey::EVENTS_ENABLED)) {
+            $stack->withEvents()
+                ->subscribers($typed->classList(ConfigKey::EVENTS_SUBSCRIBERS, ListenerSubscriber::class));
+        }
+
         $stack->withTelemetry()
             ->enabled($config->getBool(ConfigKey::TELEMETRY_ENABLED))
             ->logs($config->getBool(ConfigKey::TELEMETRY_LOGS))
-            ->eventName(TelemetryEvent::LOG_RECORDED)
-            ->subscribers($typed->classList(ConfigKey::EVENTS_SUBSCRIBERS, ListenerSubscriber::class));
+            ->eventName(TelemetryEvent::LOG_RECORDED);
 
         $casterCacheDir = $config->getString(ConfigKey::CASTER_CACHE_DIR, 'valinor');
         $stack->withCasting()

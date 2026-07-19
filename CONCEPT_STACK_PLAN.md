@@ -16,6 +16,7 @@
 | `console` | `ConsoleBuilder` | `ConsoleOptions` | `ConsoleStackProvider` | ✅ |
 | `components` | `ComponentsBuilder` | `ComponentsOptions` | `ComponentsStackProvider` | ✅ explicit DB/Console/HTTP/View integrations |
 | `view` | `ViewBuilder` | `ViewOptions` | `ViewStackProvider` | ✅ |
+| `events` | `EventsBuilder` | `EventsOptions` | `EventsStackProvider` | ✅ |
 | `telemetry` | `TelemetryBuilder` | `TelemetryOptions` | `TelemetryStackProvider` | ✅ |
 | `error-handling` | `ErrorHandlingBuilder` | `ErrorHandlingOptions` | `ErrorHandlingStackProvider` | ✅ recipes in stack |
 
@@ -63,7 +64,7 @@ return $stack->providers();
 
 `LogHandlerRegistry` лишається для cross-extension additive sinks (напр. Telemetry) — handlers з registry додаються **після** explicit list.
 
-### Модель Database (explicit connection + opt-in query log/telemetry)
+### Модель Database (explicit connection + opt-in query log/events)
 
 `database` — окрема capability. Stack не будує connection/paths — передає готові absolute values.
 
@@ -74,7 +75,7 @@ return $stack->providers();
 | `migrationsTable()` / `seeders()` | migrations table name, seeder classes | — |
 | `withQueryLogging($path, maxFiles?)` | SQL query log (RotatingFile) | — |
 | `withMasking()` | masker для query log | `masking` |
-| `withEmitQueryEvents()` | `DatabaseQueryExecuted` events | `telemetry` |
+| `withEmitQueryEvents()` | `DatabaseQueryExecuted` events | `events` |
 
 ```php
 $stack = ConceptStack::create();
@@ -458,10 +459,10 @@ return ConceptStack::create()
 
 3. `TelemetryLayerProvider` -> `TelemetryStackProvider` ✅
    - Не читає config.
-   - Options: `enabled`, `logs`, `eventName`, `subscribers`.
+   - Options: `enabled`, `logs`, `eventName`.
    - `logs(true)` → `TelemetryLogHandler` + `LogHandlerRegistry` (requires `logging`).
-   - DB query events — лише `DatabaseBuilder::withEmitQueryEvents()` (requires `telemetry`).
-   - `subscribers` → `EventServiceProvider` when non-empty and enabled.
+   - DB query events — лише `DatabaseBuilder::withEmitQueryEvents()` (requires `events`).
+   - Event dispatcher/subscribers — окрема capability `withEvents()`.
    - Event names — explicit strings з app glue (не `Concept\App` у stack).
 
 4. `ValidationLayerProvider` -> `ValidationStackProvider` ✅
@@ -475,9 +476,9 @@ return ConceptStack::create()
    - HTTP отримує casting лише через `withTypedRouteParameters()` + `requires casting`.
 
 6. `DatabaseLayerProvider` -> `DatabaseStackProvider` ✅
-   - Options: connection array, migration paths, migrations table, seeders, query logging, query telemetry.
+   - Options: connection array, migration paths, migrations table, seeders, query logging, query events.
    - Усі paths передаються вже готовими absolute або application-resolved paths.
-   - Opt-in: `withQueryLogging()`, `withMasking()` (requires masking), `withEmitQueryEvents()` (requires telemetry).
+   - Opt-in: `withQueryLogging()`, `withMasking()` (requires masking), `withEmitQueryEvents()` (requires events).
    - Реєструє `PaginationConfiguratorServiceProvider` + `DatabaseEloquentServiceProvider`.
 
 7. `SessionLayerProvider` -> `SessionStackProvider` ✅
@@ -545,7 +546,7 @@ $app->registerServiceProviders([
 9. ✅ `SessionBuilder` / `SessionStackProvider` (opt-in `withCsrf()`).
 10. ✅ `DatabaseBuilder` / `DatabaseStackProvider` (opt-in query log/masking/telemetry).
 11. ✅ `ViewBuilder` / `ViewStackProvider` + nested `withTwig()` / `withPlates()`.
-12. ✅ telemetry providers з explicit options.
+12. ✅ events + telemetry providers з explicit options.
 13. ✅ error handling через explicit factories або generic stack renderers.
 14. ✅ `bootstrap/app.php` + `ApplicationStackBootstrap` (Config/Path → stack; middleware в App).
 15. ✅ App glue — `src/App/Bootstrap/*Bootstrap` (не LayerProvider).
