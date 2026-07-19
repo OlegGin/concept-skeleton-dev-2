@@ -537,12 +537,12 @@ config/*.php                   → data-only; glue → stack params
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
 - [x] **Boot smoke** — `php bin/boot-smoke.php` / `composer boot-smoke` (container + Router, без DB)
+- [x] **CI** — GitHub Actions (`.github/workflows/ci.yml`) + `composer ci` (phpstan + boot-smoke)
 
 ### 🔲 Наступні кроки
 
 1. Components без прямого `ConfigInterface` (explicit params з glue)
 2. Profiles / recipes поверх stack (за потреби)
-3. Синхронізація git (skeleton behind origin; stack dirty working tree) — свідомий merge, не авто
 
 ## Команди
 
@@ -552,6 +552,10 @@ cd /var/www/concept-skeleton-dev-2
 composer install --no-interaction   # якщо потрібно (composer-dev.json → composer.json)
 vendor/bin/phpstan
 composer boot-smoke                 # або: php bin/boot-smoke.php
+composer ci                         # phpstan + boot-smoke (локально / GitHub Actions)
+
+# GitHub Actions: потрібен secret CI_PAT (read access до OlegGin/concept-core-2 і php-concept/*),
+# якщо sibling-репозиторії приватні.
 
 # Core (окремий vendor)
 cd /var/www/concept-core-2

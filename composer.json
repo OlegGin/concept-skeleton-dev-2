@@ -59,6 +59,10 @@
         ],
         "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G",
         "boot-smoke": "php bin/boot-smoke.php",
+        "ci": [
+            "@phpstan",
+            "@boot-smoke"
+        ],
         "console": "php bin/console.php"
     }
 }

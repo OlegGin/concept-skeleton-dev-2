@@ -3,6 +3,7 @@
 namespace Concept\App\Bootstrap;
 
 use Concept\App\Foundation\ConfigKey;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
@@ -22,8 +23,7 @@ final class ApplicationRuntimeBootstrap extends AbstractServiceProvider implemen
 
     public function boot(): void
     {
-        /** @var ConfigInterface $config */
-        $config = $this->getContainer()->get(ConfigInterface::class);
+        $config = ContainerDependency::get($this->getContainer(), ConfigInterface::class);
 
         date_default_timezone_set($config->getString(ConfigKey::APP_TIMEZONE, self::DEFAULT_TIMEZONE));
     }

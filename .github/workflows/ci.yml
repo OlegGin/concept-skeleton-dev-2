@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: PHPStan + boot-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      COMPOSER: composer-dev.json
+      # Private sibling repos need a PAT with repo read (secret CI_PAT).
+      # Public checkouts can use the default github.token.
+      CHECKOUT_TOKEN: ${{ secrets.CI_PAT != '' && secrets.CI_PAT || github.token }}
+
+    steps:
+      - name: Checkout skeleton
+        uses: actions/checkout@v4
+        with:
+          path: concept-skeleton-dev-2
+
+      - name: Checkout core
+        uses: actions/checkout@v4
+        with:
+          repository: OlegGin/concept-core-2
+          token: ${{ env.CHECKOUT_TOKEN }}
+          path: concept-core-2
+
+      - name: Checkout stack
+        uses: actions/checkout@v4
+        with:
+          repository: php-concept/concept-stack
+          token: ${{ env.CHECKOUT_TOKEN }}
+          path: concept-stack
+
+      - name: Checkout support
+        uses: actions/checkout@v4
+        with:
+          repository: php-concept/concept-support
+          token: ${{ env.CHECKOUT_TOKEN }}
+          path: concept-extensions/support
+
+      - name: Checkout extensions
+        env:
+          TOKEN: ${{ env.CHECKOUT_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p concept-extensions
+          repos=(
+            extension-casting-valinor
+            extension-components
+            extension-config
+            extension-console-symfony
+            extension-csrf
+            extension-database-eloquent
+            extension-data-masker
+            extension-error-handler-whoops
+            extension-event
+            extension-form-request
+            extension-http
+            extension-json
+            extension-logger-monolog
+            extension-path-manager
+            extension-session-symfony
+            extension-telemetry
+            extension-validation-rakit
+            extension-view
+            extension-view-plates
+            extension-view-twig
+          )
+          for repo in "${repos[@]}"; do
+            git clone --depth 1 \
+              "https://x-access-token:${TOKEN}@github.com/php-concept/${repo}.git" \
+              "concept-extensions/${repo}"
+          done
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        working-directory: concept-skeleton-dev-2
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Prepare runtime
+        working-directory: concept-skeleton-dev-2
+        run: |
+          cp -n .env.example .env || cp .env.example .env
+          mkdir -p storage/logs storage/cache
+
+      - name: CI checks
+        working-directory: concept-skeleton-dev-2
+        run: composer ci
