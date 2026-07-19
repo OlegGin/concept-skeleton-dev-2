@@ -58,6 +58,7 @@
             "cp -R vendor/twbs/bootstrap-icons/font/. public/vendor/bootstrap-icons/"
         ],
         "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G",
+        "boot-smoke": "php bin/boot-smoke.php",
         "console": "php bin/console.php"
     }
 }

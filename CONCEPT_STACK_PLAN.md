@@ -1,6 +1,6 @@
 # План впровадження Concept Stack
 
-## Поточний стан (2026-07-15)
+## Поточний стан (2026-07-19)
 
 Реалізовано в `/var/www/concept-stack/src`:
 
@@ -20,9 +20,17 @@
 
 Інфраструктура:
 
-- `ConceptStack`, `StackBuilder`, `StackCapabilityBuilder` (`end()`)
+- `ConceptStack`, `StackBuilder`, `StackCapabilityBuilder` — `withX()` реєструє одразу, **`end()` немає**
 - `CapabilityRegistry` — явні залежності між capabilities
 - `Support/OptionalDependency` — lazy `Closure(): ?T` для optional cross-extension deps (masker тощо)
+
+Skeleton glue (не stack):
+
+```
+bootstrap/app.php → EarlyErrorHandlingBootstrap → FoundationBootstrap → ApplicationStackBootstrap → Components → Runtime
+```
+
+`ApplicationStackBootstrap` читає Config/Path і викликає `ConceptStack`; middleware лишаються в `Concept\App\Middleware`.
 
 ### Модель Logging (additive handlers)
 
@@ -37,18 +45,16 @@
 | `withMasking()` | `dataMaskerFactory` → requires `masking` |
 
 ```php
-ConceptStack::create()
-    ->withMasking()
-        ->keyPatterns(['/.*password.*/i', '/.*token.*/i'])
-        ->end()
-    ->withLogging()
-        ->level('debug')
-        ->channel('app')
-        ->toRotatingFile($root . '/storage/logs/app.log', maxFiles: 14)
-        ->toStderr()
-        ->withMasking()
-        ->end()
-    ->providers();
+$stack = ConceptStack::create();
+$stack->withMasking()
+    ->keyPatterns(['/.*password.*/i', '/.*token.*/i']);
+$stack->withLogging()
+    ->level('debug')
+    ->channel('app')
+    ->toRotatingFile($root . '/storage/logs/app.log', maxFiles: 14)
+    ->toStderr()
+    ->withMasking();
+return $stack->providers();
 ```
 
 `withLogging()` без жодного `to*()` → `Capability "logging" requires at least one handler (...)`.
@@ -70,28 +76,26 @@ ConceptStack::create()
 | `withEmitQueryEvents()` | `DatabaseQueryExecuted` events | `telemetry` |
 
 ```php
-ConceptStack::create()
-    ->withMasking()
-        ->keyPatterns(['/.*password.*/i'])
-        ->end()
-    ->withDatabase()
-        ->connection([
-            'driver' => 'mysql',
-            'host' => 'db',
-            'port' => 3306,
-            'database' => 'app',
-            'username' => 'root',
-            'password' => 'secret',
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-        ])
-        ->migrations([$root . '/database/migrations'])
-        ->seeders([PageSeeder::class])
-        ->withQueryLogging($root . '/storage/logs/query.log')
-        ->withMasking()
-        ->end()
-    ->providers();
+$stack = ConceptStack::create();
+$stack->withMasking()
+    ->keyPatterns(['/.*password.*/i']);
+$stack->withDatabase()
+    ->connection([
+        'driver' => 'mysql',
+        'host' => 'db',
+        'port' => 3306,
+        'database' => 'app',
+        'username' => 'root',
+        'password' => 'secret',
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix' => '',
+    ])
+    ->migrations([$root . '/database/migrations'])
+    ->seeders([PageSeeder::class])
+    ->withQueryLogging($root . '/storage/logs/query.log')
+    ->withMasking();
+return $stack->providers();
 ```
 
 DB console commands (`DbMigrateCommand`, …) реєструються явно в `withConsole()->commands([...])`, не автоматично stack-ом.
@@ -103,8 +107,8 @@ DB console commands (`DbMigrateCommand`, …) реєструються явно 
 | Метод | Що задає |
 |-------|----------|
 | `paths` / `extensions` / `routeNamespace` | View registries |
-| `withTwig()->viewsPath()->cacheDir()->debug()->end()` | Twig engine |
-| `withPlates()->viewsPath()->end()` | Plates engine |
+| `withTwig()->viewsPath()->cacheDir()->debug()` | Twig engine |
+| `withPlates()->viewsPath()` | Plates engine |
 
 Requires `http`. Без engine → missing option `withTwig()/withPlates()`.
 
@@ -509,42 +513,24 @@ return ConceptStack::create()
 
 ## Міграція skeleton
 
-Профілі прибрано. Єдиний entry point — `bootstrap/providers.php`.
+Профілі прибрано. Єдиний entry point — `bootstrap/app.php` (один `registerServiceProviders`).
 
-Складний skeleton (поточний) може виглядати так:
+Складний skeleton (поточний):
 
 ```php
-return function(string $root): array {
-    $pathMap = require __DIR__ . '/path-map.php';
-
-    return [
-        new FoundationBootstrap($root, $pathMap), // app glue, не stack
-        ...ConceptStack::create()
-            ->withLogging()
-                ->level('debug')
-                ->channel('app')
-                ->toRotatingFile($root . '/storage/logs/app.log')
-                ->end()
-            ->withValidation()
-                ->logFile($root . '/storage/logs/validation.log')
-                ->end()
-            ->withHttp()
-                ->routes([$root . '/routes/web.php', $root . '/routes/api.php'])
-                ->end()
-            ->withConsole()
-                ->name('Concept Skeleton')
-                ->version('1.0.0')
-                ->commands([...])
-                ->end()
-            ->providers(),
-        new ApplicationComponentsBootstrap(),
-        new ApplicationRuntimeBootstrap(),
-    ];
-};
+$app->registerServiceProviders([
+    new EarlyErrorHandlingBootstrap(
+        debug: ($_ENV['APP_DEBUG'] ?? 'false') === 'true',
+        fallbackFilePath: $root . '/resources/views/errors/fallback/500.php',
+    ),
+    new FoundationBootstrap($root, $pathMap),
+    new ApplicationStackBootstrap(), // Config/Path → ConceptStack у boot()
+    new ApplicationComponentsBootstrap(),
+    new ApplicationRuntimeBootstrap(),
+]);
 ```
 
-`FoundationBootstrap` лишається в skeleton як optional app feature.
-Stack від нього не залежить.
+`FoundationBootstrap` — optional app feature. Stack від нього не залежить (лише від explicit values у brick options).
 
 ## Порядок робіт
 
@@ -561,8 +547,8 @@ Stack від нього не залежить.
 11. ✅ `ViewBuilder` / `ViewStackProvider` + nested `withTwig()` / `withPlates()`.
 12. ✅ telemetry providers з explicit options.
 13. ✅ error handling через explicit factories або generic stack renderers.
-14. ✅ `bootstrap/providers.php` на stack (explicit values; Config/PathManager — optional app glue, поки не в stack wiring).
-15. ✅ Видалені застарілі `src/App/Providers/Layers/*`; app glue — `src/App/Bootstrap/*Bootstrap`.
+14. ✅ `bootstrap/app.php` + `ApplicationStackBootstrap` (Config/Path → stack; middleware в App).
+15. ✅ App glue — `src/App/Bootstrap/*Bootstrap` (не LayerProvider).
 
 ## Перевірки
 
@@ -571,6 +557,7 @@ Stack від нього не залежить.
 ```bash
 cd /var/www/concept-skeleton-dev-2
 vendor/bin/phpstan
+composer boot-smoke
 ```
 
 Додаткові smoke checks (full skeleton):
