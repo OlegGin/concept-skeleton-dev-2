@@ -279,7 +279,7 @@ return function(string $root): array {
 
 `Config` і `PathManager` — це **фіча застосунку для складних проєктів**, а не частина stack.
 `path-map` — app-level convenience для таких проєктів. Skeleton може тримати `bootstrap/path-map.php`
-і використовувати його у `FoundationLayerProvider`, але stack про це не знає.
+і використовувати його у `FoundationBootstrap`, але stack про це не знає.
 
 Stack працює тільки з explicit values: absolute paths, connection arrays, command lists, flags.
 
@@ -297,7 +297,7 @@ Stack працює тільки з explicit values: absolute paths, connection a
 - `ConfigInterface` і `ConfigServiceProvider`;
 - `PathManager` і `PathManagerServiceProvider`;
 - `path-map`, `ConfigKey`, `PathName`;
-- `FoundationLayerProvider` і будь-який foundation/bootstrap glue;
+- `FoundationBootstrap` і будь-який foundation/bootstrap glue;
 - побудова absolute paths з project root;
 - route-level middleware lists;
 - controllers, app middleware, runtime і components;
@@ -311,7 +311,7 @@ Stack працює тільки з explicit values: absolute paths, connection a
 $pathMap = require __DIR__ . '/path-map.php';
 
 return [
-    new FoundationLayerProvider($root, $pathMap),
+    new FoundationBootstrap($root, $pathMap),
     ...ConceptStack::create()
         ->withLogging()
             ->level($resolvedLogLevel)
@@ -321,7 +321,7 @@ return [
 ];
 ```
 
-Простий застосунок може взагалі не мати `FoundationLayerProvider`, config і path-map:
+Простий застосунок може взагалі не мати `FoundationBootstrap`, config і path-map:
 
 ```php
 return ConceptStack::create()
@@ -432,13 +432,13 @@ return ConceptStack::create()
     ->withHttp()
         ->routes([$root . '/routes/web.php'])
         ->end()
-    ->addProvider(new ApplicationRuntimeServiceProvider())
+    ->addProvider(new ApplicationRuntimeBootstrap())
     ->providers();
 ```
 
 ## Перенесення поточних layers
 
-1. `FoundationLayerProvider`
+1. `FoundationBootstrap`
    - Не переносити в stack.
    - Config/PathManager лишаються окремою можливістю застосунку, якщо вона потрібна.
 
@@ -518,7 +518,7 @@ return function(string $root): array {
     $pathMap = require __DIR__ . '/path-map.php';
 
     return [
-        new FoundationLayerProvider($root, $pathMap), // app glue, не stack
+        new FoundationBootstrap($root, $pathMap), // app glue, не stack
         ...ConceptStack::create()
             ->withLogging()
                 ->level('debug')
@@ -537,13 +537,13 @@ return function(string $root): array {
                 ->commands([...])
                 ->end()
             ->providers(),
-        new ApplicationComponentsServiceProvider(),
-        new ApplicationRuntimeServiceProvider(),
+        new ApplicationComponentsBootstrap(),
+        new ApplicationRuntimeBootstrap(),
     ];
 };
 ```
 
-`FoundationLayerProvider` лишається в skeleton як optional app feature.
+`FoundationBootstrap` лишається в skeleton як optional app feature.
 Stack від нього не залежить.
 
 ## Порядок робіт
@@ -562,7 +562,7 @@ Stack від нього не залежить.
 12. ✅ telemetry providers з explicit options.
 13. ✅ error handling через explicit factories або generic stack renderers.
 14. ✅ `bootstrap/providers.php` на stack (explicit values; Config/PathManager — optional app glue, поки не в stack wiring).
-15. ✅ Видалені застарілі `src/App/Providers/Layers/*` (лишився лише `FoundationLayerProvider`).
+15. ✅ Видалені застарілі `src/App/Providers/Layers/*`; app glue — `src/App/Bootstrap/*Bootstrap`.
 
 ## Перевірки
 

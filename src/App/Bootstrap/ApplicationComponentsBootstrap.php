@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\App\Providers;
+namespace Concept\App\Bootstrap;
 
 use Concept\App\Foundation\ConfigKey;
 use Concept\Core\Container\ContainerDependency;
@@ -18,7 +18,7 @@ use League\Container\ServiceProvider\BootableServiceProviderInterface;
 use League\Route\Router;
 use Symfony\Component\Console\Application as ConsoleApplication;
 
-final class ApplicationComponentsServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
+final class ApplicationComponentsBootstrap extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
     public function provides(string $id): bool
     {

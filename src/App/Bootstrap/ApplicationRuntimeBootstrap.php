@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Concept\App\Providers;
+namespace Concept\App\Bootstrap;
 
 use Concept\App\Foundation\ConfigKey;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 
-final class ApplicationRuntimeServiceProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
+final class ApplicationRuntimeBootstrap extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
     private const string DEFAULT_TIMEZONE = 'UTC';
 

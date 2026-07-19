@@ -99,7 +99,7 @@ Composer skeleton підключає core через path repository:
 bootstrap/app.php                    → APP_PROFILE, завантаження profile providers
 bootstrap/profiles/{name}/providers.php
 bootstrap/shared/path-map.php        → pathMap для full profile
-FoundationLayerProvider              → PathManager + Config
+FoundationBootstrap              → PathManager + Config
 LoggingLayerProvider                 → DataMasker + LoggerMonolog (`DataMaskerFactory::fromContainer`)
 ErrorHandlingLayerProvider           → Whoops + reporter; отримує HttpErrorRenderer factory
 TwigErrorHandlingLayerProvider       → ErrorHandling + TwigHttpErrorRenderer (full/web)
@@ -109,8 +109,8 @@ DatabaseLayerProvider                → DatabaseEloquent + PaginationConfigurat
 HttpLayerProvider                    → Casting, Session, CSRF, HttpKernel, Http extension
 ConsoleLayerProvider                 → ConsoleSymfony
 ViewLayerProvider                    → View + Twig
-ApplicationRuntimeServiceProvider    → post-config runtime (timezone, …)
-ApplicationComponentsServiceProvider → feature components (manifest modules)
+ApplicationRuntimeBootstrap    → post-config runtime (timezone, …)
+ApplicationComponentsBootstrap → feature components (manifest modules)
 ```
 
 **Glue** = конструктор. **Extension ServiceProvider** = блок конструктора з явними параметрами. **Component** = plug-in module (routes, views, migrations, …) поверх уже зібраного стеку.
@@ -140,7 +140,7 @@ Core              → dispatch + routing contract
 | Список `new *LayerProvider(...)` (instances) | Читання config |
 | Порядок layer-ів (за потреби) | `new *ServiceProvider(...)` extension напряму |
 | `$root`, `path-map.php` для Foundation | Business logic, middleware lists |
-| `ApplicationRuntimeServiceProvider` | Умови «якщо prod — …» |
+| `ApplicationRuntimeBootstrap` | Умови «якщо prod — …» |
 
 `App::registerServiceProviders()` приймає `ServiceProviderInterface` або `callable(): ServiceProviderInterface` (factory без container arg).
 
@@ -531,7 +531,7 @@ core-2/src/
 ```
 bootstrap/app.php          → APP_PROFILE, register profile providers
 bootstrap/profiles/full/providers.php
-src/App/Providers/Layers/  → Foundation, Logging, ErrorHandling, Validation, Database, Http, Console, View
+src/App/Bootstrap/         → EarlyErrorHandling, Foundation, ApplicationStack, ApplicationComponents, ApplicationRuntime
 routes/web.php             → GET / → IndexController::index
 src/App/Controllers/IndexController.php
 src/App/Providers/TestServiceProvider.php
@@ -568,7 +568,7 @@ config/routes.php          → skeleton config (поки не використо
 - [x] **DataMasker extension**: stack `withMasking()` + opt-in `LoggingBuilder::withMasking()` / validation / db
 - [x] **Database extension**: `DatabaseEloquentServiceProvider`, `PaginationConfiguratorServiceProvider`, db CLI, `GET /test/db`
 - [x] **Config extension**: `ConfigServiceProvider` + `config/` → Foundation (optional app glue; stack explicit values)
-- [x] **Concept Stack**: `bootstrap/providers.php` → `ConceptStack` + `FoundationLayerProvider`; застарілі `*LayerProvider` (крім Foundation) видалені
+- [x] **Concept Stack**: `bootstrap/app.php` → Bootstrap steps + `ConceptStack`; app glue у `src/App/Bootstrap/`
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
 
@@ -600,6 +600,7 @@ readlink -f /var/www/concept-skeleton-dev-2/vendor/php-concept/core-2
 - PHP 8.4, `declare(strict_types=1);`
 - Namespace core: `Concept\Core\`
 - Namespace skeleton app: `Concept\App\`
+- **App Bootstrap vs ServiceProvider** — `Concept\App\Bootstrap\*Bootstrap`: кроки зборки (`provides: false`, side effects / реєстрація інших SP). `*ServiceProvider` — extension/core: надають контракти. Обидва йдуть через `App::registerServiceProviders()`.
 - Namespace extensions: `Concept\Extensions\{ExtensionName}\`
 - **Нові extensions** — composer-пакети в `src/Extensions/{Name}/` (див. «Структура extension»)
 - PHPStan level 9

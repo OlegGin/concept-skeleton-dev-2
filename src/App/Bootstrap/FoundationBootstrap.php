@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\App\Providers\Layers;
+namespace Concept\App\Bootstrap;
 
 use Concept\App\Foundation\PathName;
 use Concept\Core\Container\ContainerDependency;
@@ -10,7 +10,7 @@ use Concept\Extensions\PathManager\PathManagerServiceProvider;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 
-final class FoundationLayerProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
+final class FoundationBootstrap extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
     /**
      * @param string $root
