@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use Concept\App\Bootstrap\ApplicationComponentsBootstrap;
 use Concept\App\Bootstrap\ApplicationRuntimeBootstrap;
 use Concept\App\Bootstrap\ApplicationStackBootstrap;
 use Concept\App\Bootstrap\EarlyErrorHandlingBootstrap;
@@ -20,7 +19,6 @@ $app->registerServiceProviders([
     ),
     new FoundationBootstrap($root, $pathMap),
     new ApplicationStackBootstrap(),
-    new ApplicationComponentsBootstrap(),
     new ApplicationRuntimeBootstrap(),
 ]);
 

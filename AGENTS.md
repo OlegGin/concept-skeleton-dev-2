@@ -97,8 +97,7 @@ Composer skeleton підключає core через path repository:
 ```
 EarlyErrorHandlingBootstrap     → Whoops (до решти; APP_DEBUG з $_ENV)
 FoundationBootstrap             → PathManager + Config у container
-ApplicationStackBootstrap       → Config/Path → ConceptStack → addServiceProvider each
-ApplicationComponentsBootstrap  → Components extension + app components
+ApplicationStackBootstrap       → Config/Path → ConceptStack (включно з Components brick)
 ApplicationRuntimeBootstrap     → timezone тощо
 ```
 
@@ -177,7 +176,7 @@ Reusable middleware (`VerifyCsrfTokenMiddleware`) — у extension; app-specific
 |--|-----------|-----------|
 | Що | Generic library (Http, Validation, CSRF) | Feature module (ACL, Admin) |
 | Config | Ні — лише constructor params | Ideal: explicit params; зараз частина ще читає Config (борг) |
-| Glue | `ApplicationStackBootstrap` / stack brick | `ApplicationComponentsBootstrap` |
+| Glue | `ApplicationStackBootstrap` / stack brick | Components brick (`withComponents`) |
 | Приклад | `ValidationServiceProvider` | ACL + middleware у routes |
 
 #### Decision tree
@@ -278,7 +277,7 @@ Skeleton підключає їх через path repositories у `composer-dev.j
 
 **Ціна lazy:** помилки конфігурації — fail late (на першому використанні). Компенсація: `composer boot-smoke` / `php bin/boot-smoke.php` після змін glue.
 
-**Шари glue (для читабельності):** Early Whoops → Foundation (Config/Path) → ApplicationStack (ConceptStack) → Components → Runtime.
+**Шари glue (для читабельності):** Early Whoops → Foundation (Config/Path) → ApplicationStack (ConceptStack + Components brick) → Runtime.
 
 ### Legacy coupling — що шукати при нarощенні
 
@@ -534,7 +533,7 @@ config/*.php                   → data-only; glue → stack params
 - [x] **DataMasker extension**: stack `withMasking()` + opt-in `LoggingBuilder::withMasking()` / validation / db
 - [x] **Database extension**: `DatabaseEloquentServiceProvider`, `PaginationConfiguratorServiceProvider`, db CLI, `GET /test/db`
 - [x] **Config extension**: `ConfigServiceProvider` + `config/` → Foundation (optional app glue; stack explicit values)
-- [x] **Concept Stack** + `src/App/Bootstrap/*` (Early → Foundation → Stack → Components → Runtime)
+- [x] **Concept Stack** + `src/App/Bootstrap/*` (Early → Foundation → Stack з Components brick → Runtime)
 - [x] Skeleton bootstrap працює з core через symlink
 - [x] `IndexController::index()` — повертає `Response`, не `int` від `write()`
 - [x] **Boot smoke** — `php bin/boot-smoke.php` / `composer boot-smoke` (container + Router, без DB)

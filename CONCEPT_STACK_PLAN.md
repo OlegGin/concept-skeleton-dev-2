@@ -14,6 +14,7 @@
 | `session` | `SessionBuilder` | `SessionOptions` | `SessionStackProvider` | ✅ |
 | `http` | `HttpBuilder` | `HttpOptions` | `HttpStackProvider` | ✅ |
 | `console` | `ConsoleBuilder` | `ConsoleOptions` | `ConsoleStackProvider` | ✅ |
+| `components` | `ComponentsBuilder` | `ComponentsOptions` | `ComponentsStackProvider` | ✅ explicit DB/Console/HTTP/View integrations |
 | `view` | `ViewBuilder` | `ViewOptions` | `ViewStackProvider` | ✅ |
 | `telemetry` | `TelemetryBuilder` | `TelemetryOptions` | `TelemetryStackProvider` | ✅ |
 | `error-handling` | `ErrorHandlingBuilder` | `ErrorHandlingOptions` | `ErrorHandlingStackProvider` | ✅ recipes in stack |
@@ -27,7 +28,7 @@
 Skeleton glue (не stack):
 
 ```
-bootstrap/app.php → EarlyErrorHandlingBootstrap → FoundationBootstrap → ApplicationStackBootstrap → Components → Runtime
+bootstrap/app.php → EarlyErrorHandlingBootstrap → FoundationBootstrap → ApplicationStackBootstrap → Runtime
 ```
 
 `ApplicationStackBootstrap` читає Config/Path і викликає `ConceptStack`; middleware лишаються в `Concept\App\Middleware`.
@@ -524,8 +525,7 @@ $app->registerServiceProviders([
         fallbackFilePath: $root . '/resources/views/errors/fallback/500.php',
     ),
     new FoundationBootstrap($root, $pathMap),
-    new ApplicationStackBootstrap(), // Config/Path → ConceptStack у boot()
-    new ApplicationComponentsBootstrap(),
+    new ApplicationStackBootstrap(), // Config/Path → ConceptStack + Components brick
     new ApplicationRuntimeBootstrap(),
 ]);
 ```
@@ -549,6 +549,7 @@ $app->registerServiceProviders([
 13. ✅ error handling через explicit factories або generic stack renderers.
 14. ✅ `bootstrap/app.php` + `ApplicationStackBootstrap` (Config/Path → stack; middleware в App).
 15. ✅ App glue — `src/App/Bootstrap/*Bootstrap` (не LayerProvider).
+16. ✅ Components brick + stable topological ordering (`requires` dependencies boot before consumers).
 
 ## Перевірки
 
@@ -575,4 +576,4 @@ composer boot-smoke
 - Якщо stack почне залежати від `Concept\App`, він стане перенесеним skeleton layer, а не reusable package.
 - Якщо `withFlashValidation()` сховає middleware chain, routes втратять явність web/api surface.
 - Error handling зараз найбільш app-specific частина, тому його краще переносити після базових capabilities.
-- Components мають eager registrars, тому їх не варто переносити разом з першим stack pass.
+- Components registrars eager; тому stack топологічно впорядковує capability providers за `requires`.

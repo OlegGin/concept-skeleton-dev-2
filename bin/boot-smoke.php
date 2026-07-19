@@ -22,11 +22,11 @@ function smoke_ok(string $label): void
     fwrite(STDOUT, "[OK]   {$label}\n");
 }
 
-function smoke_fail(string $label, string $detail): void
+function smoke_fail(string $label, string $detail): bool
 {
-    global $failed;
-    $failed = true;
     fwrite(STDERR, "[FAIL] {$label} — {$detail}\n");
+
+    return true;
 }
 
 try {
@@ -34,7 +34,7 @@ try {
     $app = require $root . '/bootstrap/app.php';
     smoke_ok('bootstrap/app.php');
 } catch (Throwable $e) {
-    smoke_fail('bootstrap/app.php', $e->getMessage());
+    $failed = smoke_fail('bootstrap/app.php', $e->getMessage());
     exit(1);
 }
 
@@ -50,13 +50,13 @@ $required = [
 foreach ($required as $id => $label) {
     try {
         if (!$container->has($id)) {
-            smoke_fail($label, "container has no {$id}");
+            $failed = smoke_fail($label, "container has no {$id}");
             continue;
         }
         $container->get($id);
         smoke_ok($label);
     } catch (Throwable $e) {
-        smoke_fail($label, $e->getMessage());
+        $failed = smoke_fail($label, $e->getMessage());
     }
 }
 
@@ -66,7 +66,7 @@ try {
     $named = $router->getNamedRoute('home');
     smoke_ok('route home (' . $named->getPath() . ')');
 } catch (Throwable $e) {
-    smoke_fail('route home', $e->getMessage());
+    $failed = smoke_fail('route home', $e->getMessage());
 }
 
 if ($failed) {

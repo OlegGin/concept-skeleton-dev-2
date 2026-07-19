@@ -9,6 +9,7 @@ use Concept\App\Telemetry\TelemetryEvent;
 use Concept\App\View\Twig\TwigAppExtension;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
+use Concept\Extensions\Components\Contracts\ComponentInterface;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
 use Concept\Extensions\PathManager\PathManager;
@@ -160,6 +161,16 @@ final class ApplicationStackBootstrap extends AbstractServiceProvider implements
             ->showDebugExceptionPage()
             ->reportToLog()
             ->renderHtmlErrorPage($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
+
+        $components = $stack->withComponents()
+            ->classes($typed->classList(ConfigKey::COMPONENTS, ComponentInterface::class))
+            ->withDatabase()
+            ->withConsole()
+            ->withHttp();
+
+        if (PHP_SAPI !== 'cli') {
+            $components->withView();
+        }
 
         foreach ($stack->providers() as $provider) {
             $container->addServiceProvider($provider);
