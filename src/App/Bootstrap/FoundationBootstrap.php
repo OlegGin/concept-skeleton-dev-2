@@ -7,13 +7,11 @@ use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\ConfigServiceProvider;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\PathManager\PathManagerServiceProvider;
-use League\Container\ServiceProvider\AbstractServiceProvider;
-use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use League\Container\Container;
 
-final class FoundationBootstrap extends AbstractServiceProvider implements BootableServiceProviderInterface
+final class FoundationBootstrap
 {
     /**
-     * @param string $root
      * @param array<string, string> $pathMap
      */
     public function __construct(
@@ -21,19 +19,8 @@ final class FoundationBootstrap extends AbstractServiceProvider implements Boota
         private readonly array $pathMap,
     ) {}
 
-    public function provides(string $id): bool
+    public function boot(Container $container): void
     {
-        return false;
-    }
-
-    public function register(): void
-    {
-    }
-
-    public function boot(): void
-    {
-        $container = $this->getContainer();
-
         $container->addServiceProvider(new PathManagerServiceProvider(
             root: $this->root,
             pathMap: $this->pathMap,

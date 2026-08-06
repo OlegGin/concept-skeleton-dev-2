@@ -85,9 +85,9 @@ Composer skeleton підключає core через path repository:
 
 | Артефакт | Роль |
 |----------|------|
-| **`bootstrap/app.php`** | Entry: `App::create()` + один `registerServiceProviders([...])` |
+| **`bootstrap/app.php`** | Entry: `App::create()` + явні `*Bootstrap::boot($container)` |
 | **`bootstrap/path-map.php`** | PathManager map keys → relative dirs |
-| **`src/App/Bootstrap/*Bootstrap`** | Кроки зборки (`provides: false`): early Whoops, Foundation, Stack recipe, Components, Runtime |
+| **`src/App/Bootstrap/*Bootstrap`** | Кроки зборки (звичайні класи, не SP): early Whoops, Foundation, Stack recipe, Runtime |
 | **`ConceptStack`** (`php-concept/stack`) | Fluent builders → list of extension `*ServiceProvider` |
 | **`config/*.php`** | Data-only values; glue читає й передає в stack |
 | **`routes/*.php`** | HTTP surface + middleware lists |
@@ -121,11 +121,11 @@ Core                           → dispatch + routing contract
 
 | Дозволено | Заборонено |
 |-----------|------------|
-| Список `new *Bootstrap(...)` (порядок) | Читання повного config / збірка stack recipe |
+| Порядок `*Bootstrap->boot($container)` | Читання повного config / збірка stack recipe |
 | `$root`, `path-map.php`, early `$_ENV['APP_DEBUG']` | Business logic, middleware lists |
-| Один виклик `registerServiceProviders([...])` | Умови «якщо prod — …» у entry |
+| `$app->getContainer()` для glue steps | Умови «якщо prod — …» у entry |
 
-`App::registerServiceProviders()` приймає `ServiceProviderInterface` або `callable(): ServiceProviderInterface`.
+`App::registerServiceProviders()` — для справжніх providers (мінімальні apps / ad-hoc). Glue steps його не використовують.
 
 #### `config/*.php`
 
@@ -174,10 +174,19 @@ Reusable middleware (`VerifyCsrfTokenMiddleware`) — у extension; app-specific
 
 | | Extension | Component |
 |--|-----------|-----------|
-| Що | Generic library (Http, Validation, CSRF) | Feature module (ACL, Admin) |
-| Config | Ні — лише constructor params | Ideal: explicit params; зараз частина ще читає Config (борг) |
-| Glue | `ApplicationStackBootstrap` / stack brick | Components brick (`withComponents`) |
-| Приклад | `ValidationServiceProvider` | ACL + middleware у routes |
+| Що | Generic library (Http, Validation, CSRF) | Заготовка фічі в додатку (ACL, Admin, Settings) |
+| Stand-alone | Так — окремий пакет, контракти | Ні обовʼязку: частина фіч природно залежить одна від одної |
+| Змінювати код | Рідко (API / params); behavior через glue | **Так — очікувано.** Це стартовий код продукту, не «чорна скринька» |
+| Config | Ні — лише constructor params з glue | Допустимо як app-код; або explicit params з glue — без догми «plugin без змін» |
+| Glue | `ApplicationStackBootstrap` / stack brick | Components brick (`withComponents`) + `src/Components/` |
+| Приклад | `ValidationServiceProvider` | ACL + AuthAdmin (можуть бути тісно звʼязані) |
+
+**Модель Components (узгоджено):**
+
+- Component — **заготовка реалізації фічі**, яку **дозволено й очікується змінювати** під продукт.
+- Не всі Components можуть / повинні бути stand-alone. Тісний звʼязок між фічами (напр. ACL ↔ AuthAdmin) — нормально, якщо він явний у коді.
+- **Анти-ціль:** штучна незалежність + hooks/events/overrides «щоб не чіпати основний код». Такі костилі рано чи пізно впираються в обмеження; кращої реалізації цього підходу не бачили.
+- Extension лишається бібліотекою без app-знань; Component живе в skeleton / app tree і є частиною продукту.
 
 #### Decision tree
 
@@ -199,11 +208,8 @@ Reusable middleware (`VerifyCsrfTokenMiddleware`) — у extension; app-specific
 | Stack читає `ConfigInterface` | Glue читає config → explicit stack params |
 | Extension читає `ConfigInterface` | Constructor params з glue |
 | `ConfigFactory` + окремий early config instance | Один Config у container через Foundation |
-| Два `registerServiceProviders` «бо Foundation перший» | Один список: Early → Foundation → Stack → … |
-
-#### Profiles (майбутнє, за потреби)
-
-Новий продукт = інший список Bootstrap / інший stack recipe, не fork extensions. Зараз — один full entry у `bootstrap/app.php`.
+| Два конфліктні bootstrap entry / fake SP як Bootstrap | Явні `*Bootstrap::boot()`: Early → Foundation → Stack → Runtime |
+| Component як «не чіпай» plugin + костилі extension points | Редагувати / тісно звʼязати Components у `src/Components/` під фічу |
 
 ### Проєкти extensions / stack
 
@@ -214,7 +220,7 @@ Reusable middleware (`VerifyCsrfTokenMiddleware`) — у extension; app-specific
 
 Skeleton підключає їх через path repositories у `composer-dev.json` (symlink).
 
-**Glue** = конструктор. **Extension ServiceProvider** = блок з явними параметрами. **Component** = plug-in module поверх стеку.
+**Glue** = конструктор. **Extension ServiceProvider** = блок з явними параметрами. **Component** = змінювана заготовка фічі в app tree (не sealed plugin).
 
 #### Чеклист PR (glue review)
 
@@ -247,9 +253,9 @@ Skeleton підключає їх через path repositories у `composer-dev.j
 
 | «Хочу…» | Glue робить |
 |---------|---------------|
-| Логування помилок | `withErrorHandling()->reportToLog()` → `LoggerExceptionReporter` |
-| HTTP error pages (production) | `renderHtmlErrorPage($path)` → `ViewHttpErrorRenderer` (JSON по Accept) або `renderJson()` |
-| Debug uncaught | `showDebugExceptionPage()` + `debug(true)` |
+| Логування помилок | `withErrorHandling()->reportToLogs()` → `LoggerExceptionReporter` |
+| HTTP error pages (production) | `renderView($path)` → `ViewHttpErrorRenderer` (JSON по Accept) або `renderJson()` |
+| Debug uncaught | `debug(true, new PrettyPageHandler())` |
 | Route not found (404) | `HandleNotFoundMiddleware` → `ExceptionReporter` + renderer з stack |
 | Шаблонізатор | `ViewServiceProvider(paths:, extensions:)` + `TwigViewServiceProvider(viewsPath:, cacheDir:, debug:)` |
 | Розширення Twig | `extensions: [TwigAppExtension::class, …]` у `ViewServiceProvider` constructor |
@@ -273,7 +279,7 @@ Skeleton підключає їх через path repositories у `composer-dev.j
 - `boot()` одразу робить `$container->get()` (напр. `ComponentsServiceProvider` → `Router`, `ViewRegistry`)
 - glue між блоками робить eager `get()` (напр. append у registry після попереднього provider)
 - runtime-порядок у масивах: resolver chain, middleware/interceptors
-- **early bootstrap** окремо: `EarlyErrorHandlingBootstrap` першим у `registerServiceProviders` (до Foundation/stack)
+- **early bootstrap** окремо: `EarlyErrorHandlingBootstrap` першим у `bootstrap/app.php` (до Foundation/stack)
 
 **Ціна lazy:** помилки конфігурації — fail late (на першому використанні). Компенсація: `composer boot-smoke` / `php bin/boot-smoke.php` після змін glue.
 
@@ -288,9 +294,9 @@ Skeleton підключає їх через path repositories у `composer-dev.j
 - Resolvers з Closure factories (`FormRequestArgumentResolver`, `TypedRouteParameterArgumentResolver`) — glue **передає** їх у `HttpKernelServiceProvider`, не core
 - Hardcoded assumptions «ViewRegistry вже є», «Router вже зареєстрований» — документувати в boot order
 
-### Профілі збірки
+### Збірка (без окремого шару profiles)
 
-Зараз один full entry (`bootstrap/app.php`). Окремі recipes (`api` / `admin`) — за потреби, інший Bootstrap/stack list, не fork extensions.
+Окремий abstraction «profiles» не потрібен. **`ApplicationStackBootstrap` — і є profile/recipe** цього додатку: Config/Path → ConceptStack (+ Components brick). Інший продукт = інший `*StackBootstrap` або інший список у `bootstrap/app.php`, не fork extensions.
 
 ### Що виноситься в Extensions (`/var/www/concept-extensions/extension-*`)
 
@@ -500,9 +506,9 @@ core-2/src/
 ## Skeleton — поточні файли
 
 ```
-bootstrap/app.php              → App + registerServiceProviders([Bootstrap…])
+bootstrap/app.php              → App + явні *Bootstrap::boot($container)
 bootstrap/path-map.php         → PathManager map
-src/App/Bootstrap/             → Early, Foundation, Stack, Components, Runtime
+src/App/Bootstrap/             → Early, Foundation, Stack, Runtime (plain classes)
 src/App/Middleware/            → app HTTP middleware (залишаються в додатку)
 routes/web.php, api.php, …     → HTTP surface
 config/*.php                   → data-only; glue → stack params
@@ -541,8 +547,8 @@ config/*.php                   → data-only; glue → stack params
 
 ### 🔲 Наступні кроки
 
-1. Components без прямого `ConfigInterface` (explicit params з glue)
-2. Profiles / recipes поверх stack (за потреби)
+1. Тримаємо модель Components як заготовки фіч (редагувати / звʼязувати явно); не будувати plugin-костилі «без змін коду»
+2. Extensions — без `ConfigInterface` (glue → constructor params); у Components Config — app-рішення, не пріоритетний борг
 
 ## Команди
 
@@ -570,7 +576,7 @@ readlink -f /var/www/concept-skeleton-dev-2/vendor/php-concept/core-2
 - PHP 8.4, `declare(strict_types=1);`
 - Namespace core: `Concept\Core\`
 - Namespace skeleton app: `Concept\App\`
-- **App Bootstrap vs ServiceProvider** — `Concept\App\Bootstrap\*Bootstrap`: кроки зборки (`provides: false`, side effects / реєстрація інших SP). `*ServiceProvider` — extension/core: надають контракти. Обидва йдуть через `App::registerServiceProviders()`.
+- **App Bootstrap vs ServiceProvider** — `Concept\App\Bootstrap\*Bootstrap`: кроки зборки (`boot(Container)`), не SP. `*ServiceProvider` — extension/core: надають контракти. `App::registerServiceProviders()` лише для справжніх SP.
 - Namespace extensions: `Concept\Extensions\{ExtensionName}\`
 - **Нові extensions** — composer-пакети в `/var/www/concept-extensions/extension-{name}/`
 - PHPStan level 9
@@ -616,7 +622,7 @@ Extensions (FormRequest, ResponseFactory): отримують `$request` **яв�
 **Правило:** необроблений `Throwable` → Whoops. Route 404 (League quirk) → `HandleNotFoundMiddleware`. Domain exceptions (Validation, CSrf) → свої middleware.
 
 ```
-EarlyErrorHandlingBootstrap (перший у registerServiceProviders)
+EarlyErrorHandlingBootstrap (перший у bootstrap/app.php)
   → fatals під час подальшого boot
 
 HTTP request:
@@ -655,4 +661,4 @@ Resolvers передаються з skeleton у `HttpKernelServiceProvider` як
 
 ---
 
-*Останнє оновлення: 2026-07-19 — Bootstrap + ConceptStack, без LayerProvider/profiles; boot-smoke.*
+*Останнє оновлення: 2026-08-04 — `*Bootstrap` = plain `boot(Container)` (не fake SP); entry викликає кроки явно.*

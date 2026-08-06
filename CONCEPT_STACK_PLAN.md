@@ -135,7 +135,7 @@ return $stack->providers();
 |-------|----------|-------------------------|
 | `LoggingBuilder::withMasking()` | `dataMaskerFactory` у `LoggerMonologServiceProvider` | `masking` |
 
-Stack smoke — через full skeleton (`routes/web.php`, `routes/api.php`), окремий stack profile прибрано.
+Stack smoke — через full skeleton (`routes/web.php`, `routes/api.php`). Окремий шар profiles не потрібен: recipe = `ApplicationStackBootstrap`.
 
 ### Модель залежностей HTTP (opt-in)
 
@@ -510,12 +510,12 @@ return ConceptStack::create()
     - Generic Whoops awake chain у `ErrorHandlingStackProvider`.
     - Contracts + Whoops handlers — у `extension-error-handler-whoops` (тонкий).
     - Recipes у stack: `Reporting\LoggerExceptionReporter`, `Reporting\PhpErrorLogReporter`, `Rendering\ViewHttpErrorRenderer`, `Rendering\JsonHttpErrorRenderer`.
-    - Recipe-методи (`reportToLog`, `renderHtmlErrorPage`, `showDebugExceptionPage`, …) явно записують factory в options; provider без default-гілок.
+    - Recipe-методи (`reportToLogs`, `renderView`, `debug(..., handler)`, …) явно записують factory в options; provider без default-гілок.
     - Early bootstrap → `PhpErrorLogReporter` + `FallbackFileHandler`.
 
 ## Міграція skeleton
 
-Профілі прибрано. Єдиний entry point — `bootstrap/app.php` (один `registerServiceProviders`).
+Окремий шар profiles не потрібен: `ApplicationStackBootstrap` — recipe/profile додатку. Єдиний entry point — `bootstrap/app.php` (один `registerServiceProviders`).
 
 Складний skeleton (поточний):
 

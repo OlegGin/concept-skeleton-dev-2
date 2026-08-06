@@ -15,30 +15,20 @@ use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Stack\ConceptStack;
-use League\Container\ServiceProvider\AbstractServiceProvider;
-use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use League\Container\Container;
 use League\Event\ListenerSubscriber;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
+use Whoops\Handler\PrettyPageHandler;
 
 /**
  * Builds ConceptStack from PathManager + Config and registers its providers.
- * Requires FoundationBootstrap registered first.
+ * Requires FoundationBootstrap booted first.
  */
-final class ApplicationStackBootstrap extends AbstractServiceProvider implements BootableServiceProviderInterface
+final class ApplicationStackBootstrap
 {
-    public function provides(string $id): bool
+    public function boot(Container $container): void
     {
-        return false;
-    }
-
-    public function register(): void
-    {
-    }
-
-    public function boot(): void
-    {
-        $container = $this->getContainer();
         $pathManager = ContainerDependency::get($container, PathManager::class);
         $config = ContainerDependency::get($container, ConfigInterface::class);
         $typed = new TypedConfig($config);
@@ -161,10 +151,9 @@ final class ApplicationStackBootstrap extends AbstractServiceProvider implements
             ->commands($typed->classList(ConfigKey::COMMANDS, Command::class));
 
         $stack->withErrorHandling()
-            ->debug($debug)
-            ->showDebugExceptionPage()
-            ->reportToLog()
-            ->renderHtmlErrorPage($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
+            ->debug($debug, new PrettyPageHandler())
+            ->reportToLogs()
+            ->renderView($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
 
         $components = $stack->withComponents()
             ->classes($typed->classList(ConfigKey::COMPONENTS, ComponentInterface::class))
