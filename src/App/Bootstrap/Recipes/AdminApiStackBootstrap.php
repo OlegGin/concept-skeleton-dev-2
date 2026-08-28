@@ -35,31 +35,31 @@ final class AdminApiStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->withMasking()
-            ->patterns($typed->stringMap(ConfigKey::MASKING_PATTERNS))
-            ->keyPatterns($typed->stringList(ConfigKey::MASKING_KEY_PATTERNS))
-            ->rules($typed->classList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
+        $stack->addMasking()
+            ->setPatterns($typed->stringMap(ConfigKey::MASKING_PATTERNS))
+            ->setKeyPatterns($typed->stringList(ConfigKey::MASKING_KEY_PATTERNS))
+            ->setRules($typed->classList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
 
-        $stack->withLogging()
-            ->level($config->getString(ConfigKey::LOG_LEVEL, 'ERROR'))
-            ->channel($config->getString(ConfigKey::LOG_NAME, 'admin'))
+        $stack->addLogging()
+            ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'ERROR'))
+            ->setChannel($config->getString(ConfigKey::LOG_NAME, 'admin'))
             ->toRotatingFile(
                 $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::LOG_FILE, 'app.log')),
                 $config->getInt(ConfigKey::LOG_MAX_FILES, 7),
             )
             ->withMasking();
 
-        $stack->withCasting()
-            ->cacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR, 'valinor')))
-            ->debug($debug);
+        $stack->addCasting()
+            ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR, 'valinor')))
+            ->setDebug($debug);
 
-        $stack->withValidation()
-            ->customRules($typed->classMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
-            ->globalExcept($typed->stringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT))
+        $stack->addValidation()
+            ->setRules($typed->classMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
+            ->setGlobalExcept($typed->stringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT))
             ->withMasking();
 
-        $stack->withDatabase()
-            ->connection([
+        $stack->addDatabase()
+            ->setConnection([
                 'driver' => $config->getString(ConfigKey::DB_DRIVER),
                 'host' => $config->getString(ConfigKey::DB_HOST),
                 'port' => $config->getInt(ConfigKey::DB_PORT, 3306),
@@ -70,46 +70,46 @@ final class AdminApiStackBootstrap
                 'collation' => $config->getString(ConfigKey::DB_COLLATION, 'utf8mb4_unicode_ci'),
                 'prefix' => $config->getString(ConfigKey::DB_PREFIX),
             ])
-            ->migrations($pathManager->rootList($typed->stringList(ConfigKey::MIGRATIONS_PATHS)))
-            ->migrationsTable($config->getString(ConfigKey::MIGRATIONS_TABLE, 'migrations'))
+            ->setMigrations($pathManager->rootList($typed->stringList(ConfigKey::MIGRATIONS_PATHS)))
+            ->setMigrationsTable($config->getString(ConfigKey::MIGRATIONS_TABLE, 'migrations'))
             ->withMasking();
 
-        $stack->withSession()
-            ->options([
+        $stack->addSession()
+            ->setOptions([
                 'cookie_lifetime' => $config->getInt(ConfigKey::SESSION_COOKIE_LIFETIME),
                 'cookie_path' => $config->getString(ConfigKey::SESSION_COOKIE_PATH, '/'),
                 'cookie_secure' => $config->getBool(ConfigKey::SESSION_COOKIE_SECURE),
                 'cookie_httponly' => $config->getBool(ConfigKey::SESSION_COOKIE_HTTPONLY, true),
                 'cookie_samesite' => $config->getString(ConfigKey::SESSION_COOKIE_SAMESITE, 'Lax'),
             ])
-            ->handler(new NativeFileSessionHandler())
+            ->setHandler(new NativeFileSessionHandler())
             ->withCsrf();
 
         // routes.list typically: ['routes/web.php', 'routes/api.php'] — middleware differs per file
-        $stack->withHttp()
-            ->routes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
-            ->interceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
+        $stack->addHttp()
+            ->setRoutes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
+            ->setInterceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
             ->withFormRequests()
             ->withTypedRouteParameters();
 
-        $stack->withView()
-            ->paths($pathManager->rootMap($typed->stringMap(ConfigKey::VIEW_PATHS)))
-            ->extensions([TwigAppExtension::class])
-            ->routeNamespace($typed->stringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
+        $stack->addView()
+            ->setPaths($pathManager->rootMap($typed->stringMap(ConfigKey::VIEW_PATHS)))
+            ->setExtensions([TwigAppExtension::class])
+            ->setRouteNamespaces($typed->stringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
             ->withTwig()
-            ->viewsPath($pathManager->get(PathName::VIEWS))
-            ->cacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
-            ->debug($debug);
+            ->setViewsPath($pathManager->get(PathName::VIEWS))
+            ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
+            ->setDebug($debug);
 
-        $stack->withConsole()
-            ->name($config->getString(ConfigKey::APP_NAME, 'Admin'))
-            ->version($config->getString(ConfigKey::APP_VERSION, '1.0.0'))
-            ->commands($typed->classList(ConfigKey::COMMANDS, Command::class));
+        $stack->addConsole()
+            ->setName($config->getString(ConfigKey::APP_NAME, 'Admin'))
+            ->setVersion($config->getString(ConfigKey::APP_VERSION, '1.0.0'))
+            ->setCommands($typed->classList(ConfigKey::COMMANDS, Command::class));
 
-        $stack->withErrorHandling()
-            ->debug($debug, new PrettyPageHandler())
-            ->reportToLogs()
-            ->renderView($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
+        $stack->addErrorHandling()
+            ->setDebug($debug, new PrettyPageHandler())
+            ->setLogReporting()
+            ->withViewRenderer($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
 
         foreach ($stack->providers() as $provider) {
             $container->addServiceProvider($provider);

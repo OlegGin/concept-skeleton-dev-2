@@ -32,51 +32,51 @@ final class FormSiteStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->withLogging()
-            ->level($config->getString(ConfigKey::LOG_LEVEL, 'ERROR'))
-            ->channel($config->getString(ConfigKey::LOG_NAME, 'web'))
+        $stack->addLogging()
+            ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'ERROR'))
+            ->setChannel($config->getString(ConfigKey::LOG_NAME, 'web'))
             ->toRotatingFile(
                 $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::LOG_FILE, 'app.log')),
                 $config->getInt(ConfigKey::LOG_MAX_FILES, 7),
             );
 
-        $stack->withCasting()
-            ->cacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR, 'valinor')))
-            ->debug($debug);
+        $stack->addCasting()
+            ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR, 'valinor')))
+            ->setDebug($debug);
 
-        $stack->withValidation()
-            ->customRules($typed->classMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
-            ->globalExcept($typed->stringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT));
+        $stack->addValidation()
+            ->setRules($typed->classMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
+            ->setGlobalExcept($typed->stringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT));
 
-        $stack->withSession()
-            ->options([
+        $stack->addSession()
+            ->setOptions([
                 'cookie_lifetime' => $config->getInt(ConfigKey::SESSION_COOKIE_LIFETIME),
                 'cookie_path' => $config->getString(ConfigKey::SESSION_COOKIE_PATH, '/'),
                 'cookie_secure' => $config->getBool(ConfigKey::SESSION_COOKIE_SECURE),
                 'cookie_httponly' => $config->getBool(ConfigKey::SESSION_COOKIE_HTTPONLY, true),
                 'cookie_samesite' => $config->getString(ConfigKey::SESSION_COOKIE_SAMESITE, 'Lax'),
             ])
-            ->handler(new NativeFileSessionHandler())
+            ->setHandler(new NativeFileSessionHandler())
             ->withCsrf();
 
-        $stack->withHttp()
-            ->routes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
-            ->interceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
+        $stack->addHttp()
+            ->setRoutes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
+            ->setInterceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
             ->withFormRequests();
 
-        $stack->withView()
-            ->paths($pathManager->rootMap($typed->stringMap(ConfigKey::VIEW_PATHS)))
-            ->extensions([TwigAppExtension::class])
-            ->routeNamespace($typed->stringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
+        $stack->addView()
+            ->setPaths($pathManager->rootMap($typed->stringMap(ConfigKey::VIEW_PATHS)))
+            ->setExtensions([TwigAppExtension::class])
+            ->setRouteNamespaces($typed->stringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
             ->withTwig()
-            ->viewsPath($pathManager->get(PathName::VIEWS))
-            ->cacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
-            ->debug($debug);
+            ->setViewsPath($pathManager->get(PathName::VIEWS))
+            ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
+            ->setDebug($debug);
 
-        $stack->withErrorHandling()
-            ->debug($debug, new PrettyPageHandler())
-            ->reportToLogs()
-            ->renderView($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
+        $stack->addErrorHandling()
+            ->setDebug($debug, new PrettyPageHandler())
+            ->setLogReporting()
+            ->withViewRenderer($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
 
         foreach ($stack->providers() as $provider) {
             $container->addServiceProvider($provider);

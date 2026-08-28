@@ -22,7 +22,7 @@
 
 Інфраструктура:
 
-- `ConceptStack`, `StackBuilder`, `StackCapabilityBuilder` — `withX()` реєструє одразу, **`end()` немає**
+- `ConceptStack`, `StackBuilder` — `addX()` реєструє capability; `setX()` / `withX()` на brick. **`end()` немає**
 - `CapabilityRegistry` — явні залежності між capabilities
 - `Support/OptionalDependency` — lazy `Closure(): ?T` для optional cross-extension deps (masker тощо)
 
@@ -42,25 +42,25 @@ bootstrap/app.php → EarlyErrorHandlingBootstrap → FoundationBootstrap → Ap
 |-------|----------|
 | `toRotatingFile($path, maxFiles, level?)` | `RotatingFileHandler` |
 | `toStderr(level?)` | `StreamHandler('php://stderr')` |
-| `toHandler($handler)` | будь-який готовий `HandlerInterface` |
-| `level()` / `channel()` | default level для helpers / Monolog channel name |
+| `withHandler($handler)` | будь-який готовий `HandlerInterface` |
+| `setLevel()` / `setChannel()` | default level для helpers / Monolog channel name |
 | `withMasking()` | `dataMaskerFactory` → requires `masking` |
 
 ```php
 $stack = ConceptStack::create();
-$stack->withMasking()
-    ->keyPatterns(['/.*password.*/i', '/.*token.*/i']);
-$stack->withLogging()
-    ->level('debug')
-    ->channel('app')
+$stack->addMasking()
+    ->setKeyPatterns(['/.*password.*/i', '/.*token.*/i']);
+$stack->addLogging()
+    ->setLevel('debug')
+    ->setChannel('app')
     ->toRotatingFile($root . '/storage/logs/app.log', maxFiles: 14)
     ->toStderr()
     ->withMasking();
 return $stack->providers();
 ```
 
-`withLogging()` без жодного `to*()` → `Capability "logging" requires at least one handler (...)`.
-`withLogging()->withMasking()` без `withMasking()` → `Capability "logging" requires "masking" to be enabled.`
+`addLogging()` без жодного `to*()` → `Capability "logging" requires at least one handler (...)`.
+`addLogging()->withMasking()` без `addMasking()` → `Capability "logging" requires "masking" to be enabled.`
 
 `LogHandlerRegistry` лишається для cross-extension additive sinks (напр. Telemetry) — handlers з registry додаються **після** explicit list.
 
@@ -70,19 +70,19 @@ return $stack->providers();
 
 | Метод | Що додає | Залежність |
 |-------|----------|------------|
-| `connection([...])` | Illuminate connection array | обов'язково |
-| `migrations([...])` | absolute migration paths | — |
-| `migrationsTable()` / `seeders()` | migrations table name, seeder classes | — |
+| `setConnection([...])` | Illuminate connection array | обов'язково |
+| `setMigrations([...])` | absolute migration paths | — |
+| `setMigrationsTable()` / `setSeeders()` | migrations table name, seeder classes | — |
 | `withQueryLogging($path, maxFiles?)` | SQL query log (RotatingFile) | — |
 | `withMasking()` | masker для query log | `masking` |
 | `withEmitQueryEvents()` | `DatabaseQueryExecuted` events | `events` |
 
 ```php
 $stack = ConceptStack::create();
-$stack->withMasking()
-    ->keyPatterns(['/.*password.*/i']);
-$stack->withDatabase()
-    ->connection([
+$stack->addMasking()
+    ->setKeyPatterns(['/.*password.*/i']);
+$stack->addDatabase()
+    ->setConnection([
         'driver' => 'mysql',
         'host' => 'db',
         'port' => 3306,
@@ -93,42 +93,42 @@ $stack->withDatabase()
         'collation' => 'utf8mb4_unicode_ci',
         'prefix' => '',
     ])
-    ->migrations([$root . '/database/migrations'])
-    ->seeders([PageSeeder::class])
+    ->setMigrations([$root . '/database/migrations'])
+    ->setSeeders([PageSeeder::class])
     ->withQueryLogging($root . '/storage/logs/query.log')
     ->withMasking();
 return $stack->providers();
 ```
 
-DB console commands (`DbMigrateCommand`, …) реєструються явно в `withConsole()->commands([...])`, не автоматично stack-ом.
+DB console commands (`DbMigrateCommand`, …) реєструються явно в `addConsole()->setCommands([...])`, не автоматично stack-ом.
 
 ### Модель View (nested Twig / Plates)
 
-`view` — одна capability. Engines — nested XOR під `withView()` (як CSRF під session): закривають перехресну залежність ViewRegistry ↔ ViewInterface всередині одного brick.
+`view` — одна capability. Engines — nested XOR під `addView()` (як CSRF під session): закривають перехресну залежність ViewRegistry ↔ ViewInterface всередині одного brick.
 
 | Метод | Що задає |
 |-------|----------|
-| `paths` / `extensions` / `routeNamespace` | View registries |
-| `withTwig()->viewsPath()->cacheDir()->debug()` | Twig engine |
-| `withPlates()->viewsPath()` | Plates engine |
+| `setPaths` / `setExtensions` / `setRouteNamespaces` | View registries |
+| `withTwig()->setViewsPath()->setCacheDir()->setDebug()` | Twig engine |
+| `withPlates()->setViewsPath()` | Plates engine |
 
 Requires `http`. Без engine → missing option `withTwig()/withPlates()`.
 
 ```php
 $stack = ConceptStack::create();
-$stack->withHttp()->routes([$root . '/routes/web.php']);
-$stack->withView()
-    ->paths(['frontend' => $root . '/resources/views/frontend'])
+$stack->addHttp()->setRoutes([$root . '/routes/web.php']);
+$stack->addView()
+    ->setPaths(['frontend' => $root . '/resources/views/frontend'])
     ->withTwig()
-    ->viewsPath($root . '/resources/views')
-    ->cacheDir($root . '/storage/cache/views')
-    ->debug(true);
+    ->setViewsPath($root . '/resources/views')
+    ->setCacheDir($root . '/storage/cache/views')
+    ->setDebug(true);
 return $stack->providers();
 ```
 
 ### Модель залежностей Logging (opt-in masking)
 
-`masking` — **окрема capability** (`withMasking()`), що реєструє `DataMaskerServiceProvider`.
+`masking` — **окрема capability** (`addMasking()`), що реєструє `DataMaskerServiceProvider`.
 `logging` сам по собі пише лог без маскування. Маскування вмикається явно:
 
 | Метод | Що додає | Залежність (`requires`) |
@@ -139,7 +139,7 @@ Stack smoke — через full skeleton (`routes/web.php`, `routes/api.php`). �
 
 ### Модель залежностей HTTP (opt-in)
 
-`withHttp()` сам по собі дає тільки базовий HTTP:
+`addHttp()` сам по собі дає тільки базовий HTTP:
 
 - `ServerRequestArgumentResolver`
 - `RouteParameterArgumentResolver`
@@ -154,53 +154,54 @@ Opt-in розширення HTTP:
 Приклад:
 
 ```php
-ConceptStack::create()
-    ->withCasting()
-        ->cacheDir($root . '/storage/cache/casting')
-        ->debug(true)
-        ->end()
-    ->withValidation()
-        ->globalExcept(['password'])
-        ->end()
-    ->withHttp()
-        ->routes([$root . '/routes/web.php', $root . '/routes/api.php'])
-        ->withFormRequests()
-        ->withTypedRouteParameters()
-        ->end()
-    ->providers();
+$stack = ConceptStack::create();
+
+$stack->addCasting()
+    ->setCacheDir($root . '/storage/cache/casting')
+    ->setDebug(true);
+
+$stack->addValidation()
+    ->setGlobalExcept(['password']);
+
+$stack->addHttp()
+    ->setRoutes([$root . '/routes/web.php', $root . '/routes/api.php'])
+    ->withFormRequests()
+    ->withTypedRouteParameters();
+
+return $stack->providers();
 ```
 
-Якщо `withFormRequests()` без `withValidation()` — `CapabilityRegistry` кидає:
+Якщо `withFormRequests()` без `addValidation()` — `CapabilityRegistry` кидає:
 
 `Capability "http" requires "validation" to be enabled.`
 
 Casting і validation — **окремі capabilities**. Stack не реєструє їх автоматично.
 
-**Порядок реєстрації:** залежності (`casting`, `validation`) мають бути викликані **перед** `withHttp()->end()`, бо provider boot order = registration order.
 
 ### Модель Session (opt-in CSRF)
 
-`session` — окрема capability (`withSession()`). CSRF **не** окремий top-level brick: це opt-in на session, бо CSRF не має власних options і без session безглуздий.
+`session` — окрема capability (`addSession()`). CSRF **не** окремий top-level brick: це opt-in на session, бо CSRF не має власних options і без session безглуздий.
 
 | Метод | Що додає | Залежність |
 |-------|----------|------------|
 | `SessionBuilder::withCsrf()` | `CsrfServiceProvider` (sessionFactory → `SessionInterface`) | частина session |
 
 ```php
-ConceptStack::create()
-    ->withSession()
-        ->options([
-            'cookie_httponly' => true,
-            'cookie_samesite' => 'Lax',
-            'use_strict_mode' => true,
-        ])
-        ->handler($handler) // optional; default NativeFileSessionHandler()
-        ->withCsrf()        // opt-in CSRF token manager
-        ->end()
-    ->providers();
+$stack = ConceptStack::create();
+
+$stack->addSession()
+    ->setOptions([
+        'cookie_httponly' => true,
+        'cookie_samesite' => 'Lax',
+        'use_strict_mode' => true,
+    ])
+    ->setHandler($handler) // optional; default NativeFileSessionHandler()
+    ->withCsrf();        // opt-in CSRF token manager
+
+return $stack->providers();
 ```
 
-`withSession()` без `withCsrf()` — лише session/flash. Middleware (`VerifyCsrfTokenMiddleware`, `HandleCsrfExceptionMiddleware`) лишаються в routes — stack їх не реєструє.
+`addSession()` без `withCsrf()` — лише session/flash. Middleware (`VerifyCsrfTokenMiddleware`, `HandleCsrfExceptionMiddleware`) лишаються в routes — stack їх не реєструє.
 
 ## Ціль
 
@@ -215,11 +216,11 @@ Stack не має знати про `ConfigInterface`, `PathManager`, `ConfigKey
 
 ```php
 return function(): array {
-    return ConceptStack::create()
-        ->withHttp()
-            ->routes([__DIR__ . '/../../routes/api.php'])
-            ->end()
-        ->providers();
+    $stack = ConceptStack::create();
+    $stack->addHttp()
+        ->setRoutes([__DIR__ . '/../../routes/api.php']);
+
+    return $stack->providers();
 };
 ```
 
@@ -227,40 +228,41 @@ return function(): array {
 
 ```php
 return function(string $root): array {
-    return ConceptStack::create()
-        ->withLogging()
-            ->level('debug')
-            ->channel('app')
-            ->toRotatingFile($root . '/storage/logs/app.log', maxFiles: 14)
-            ->end()
-        ->withTelemetry()
-            ->enabled(true)
-            ->logs(true)
-            ->eventName('log.recorded')
-            ->end()
-        ->withFlashValidation()
-            ->rules([])
-            ->logFile($root . '/storage/logs/validation.log')
-            ->globalExcept(['password'])
-            ->end()
-        ->withHttp()
-            ->routes([$root . '/routes/web.php', $root . '/routes/api.php'])
-            ->end()
-        ->withConsole()
-            ->name('Concept Skeleton')
-            ->version('1.0.0')
-            ->commands([
-                DbMigrateCommand::class,
-                DbMigrationListCommand::class,
-                DbMigrationPathsCommand::class,
-                DbRollbackCommand::class,
-                DbSeedCommand::class,
-                DbSeederListCommand::class,
-                RouteListCommand::class,
-                ViewClearCommand::class,
-            ])
-            ->end()
-        ->providers();
+    $stack = ConceptStack::create();
+
+    $stack->addLogging()
+        ->setLevel('debug')
+        ->setChannel('app')
+        ->toRotatingFile($root . '/storage/logs/app.log', maxFiles: 14);
+
+    $stack->addTelemetry()
+        ->setEnabled(true)
+        ->setLogs(true)
+        ->setEventName('log.recorded');
+
+    $stack->addValidation()
+        ->setRules([])
+        ->withLogging($root . '/storage/logs/validation.log')
+        ->setGlobalExcept(['password']);
+
+    $stack->addHttp()
+        ->setRoutes([$root . '/routes/web.php', $root . '/routes/api.php']);
+
+    $stack->addConsole()
+        ->setName('Concept Skeleton')
+        ->setVersion('1.0.0')
+        ->setCommands([
+            DbMigrateCommand::class,
+            DbMigrationListCommand::class,
+            DbMigrationPathsCommand::class,
+            DbRollbackCommand::class,
+            DbSeedCommand::class,
+            DbSeederListCommand::class,
+            RouteListCommand::class,
+            ViewClearCommand::class,
+        ]);
+
+    return $stack->providers();
 };
 ```
 
@@ -273,13 +275,13 @@ return function(string $root): array {
 ```text
 Простий застосунок:
   ConceptStack::create()
-    ->withHttp()->routes([...])->end()
+    ->addHttp()->setRoutes([...])
     ->providers()
 
 Складний застосунок (опційно):
   app glue: Config + PathManager + path-map
   ConceptStack::create()
-    ->withLogging()->toRotatingFile(...)->end()
+    ->addLogging()->toRotatingFile(...)
     ->providers()
 ```
 
@@ -316,61 +318,61 @@ Stack працює тільки з explicit values: absolute paths, connection a
 // app glue (складний застосунок) — не частина stack
 $pathMap = require __DIR__ . '/path-map.php';
 
+$stack = ConceptStack::create();
+$stack->addLogging()
+    ->setLevel($resolvedLogLevel)
+    ->toRotatingFile($resolvedLogPath);
+
 return [
     new FoundationBootstrap($root, $pathMap),
-    ...ConceptStack::create()
-        ->withLogging()
-            ->level($resolvedLogLevel)
-            ->toRotatingFile($resolvedLogPath)
-            ->end()
-        ->providers(),
+    ...$stack->providers(),
 ];
 ```
 
 Простий застосунок може взагалі не мати `FoundationBootstrap`, config і path-map:
 
 ```php
-return ConceptStack::create()
-    ->withHttp()
-        ->routes([$root . '/routes/api.php'])
-        ->end()
-    ->providers();
+$stack = ConceptStack::create();
+$stack->addHttp()
+    ->setRoutes([$root . '/routes/api.php']);
+
+return $stack->providers();
 ```
 
 Тобто config/path — optional app infrastructure, stack їх не вимагає і не читає.
 
 ## Builder UX
 
-`withX()` **одразу** реєструє capability і повертає свій builder. Options mutable далі. `end()` немає.
+`addX()` на `StackBuilder` реєструє capability і повертає brick builder. `setX()` / `withX()` — на brick. **`end()` немає**.
 
 ```php
 $stack = ConceptStack::create();
 
-$stack->withMasking()
-    ->keyPatterns(['/.*password.*/i']);
+$stack->addMasking()
+    ->setKeyPatterns(['/.*password.*/i']);
 
-$stack->withLogging()
+$stack->addLogging()
     ->toRotatingFile($root . '/storage/logs/app.log')
     ->withMasking();
 
-$stack->withHttp()
-    ->routes([$root . '/routes/web.php']);
+$stack->addHttp()
+    ->setRoutes([$root . '/routes/web.php']);
 
 return $stack->providers(); // валідація options + CapabilityRegistry requires
 ```
 
-Кожна гілка — окремий `withX()` від `$stack`. Довгу «ковбасу» з поверненням на parent не будуємо.
+Кожна гілка — окремий `$stack->addX()`. Довгу «ковбасу» з поверненням на parent не будуємо.
 Opt-in на builder (напр. `LoggingBuilder::withMasking()`, `HttpBuilder::withFormRequests()`) лише
 додає `requires` у реєстр і мутує options.
 
 Nested engines:
 
 ```php
-$stack->withView()
-    ->paths(['frontend' => $root . '/resources/views/frontend'])
+$stack->addView()
+    ->setPaths(['frontend' => $root . '/resources/views/frontend'])
     ->withTwig()
-    ->viewsPath($root . '/resources/views')
-    ->debug(true);
+    ->setViewsPath($root . '/resources/views')
+    ->setDebug(true);
 ```
 
 Callback-style не робимо основним UX.
@@ -384,7 +386,7 @@ src/
 │   ├── Capability.php
 │   └── CapabilityRegistry.php
 ├── Builder/
-│   └── StackBuilder.php            ✅ (root fluent API; withX registers immediately)
+│   └── StackBuilder.php            ✅ (root fluent API; addX registers immediately)
 ├── Bricks/                         ✅ один brick = capability (Builder + Options + StackProvider поруч)
 │   ├── Masking/                    ✅ MaskingBuilder, MaskingOptions, MaskingStackProvider
 │   ├── Logging/                    ✅ LoggingBuilder, LoggingOptions, LoggingStackProvider
@@ -434,12 +436,12 @@ public function addProvider(ServiceProviderInterface $provider): self;
 Це дозволяє застосунку змішувати stack capabilities зі своїми providers:
 
 ```php
-return ConceptStack::create()
-    ->withHttp()
-        ->routes([$root . '/routes/web.php'])
-        ->end()
-    ->addProvider(new ApplicationRuntimeBootstrap())
-    ->providers();
+$stack = ConceptStack::create();
+$stack->addHttp()
+    ->setRoutes([$root . '/routes/web.php']);
+$stack->addProvider(new ApplicationRuntimeBootstrap());
+
+return $stack->providers();
 ```
 
 ## Перенесення поточних layers
@@ -451,8 +453,8 @@ return ConceptStack::create()
 2. `LoggingLayerProvider` -> `LoggingStackProvider` + `MaskingStackProvider` ✅
    - Не читає config.
    - **Розділено на дві capabilities:**
-     - `masking` (`withMasking()`): patterns, keyPatterns, rules → `DataMaskerServiceProvider`.
-     - `logging` (`withLogging()`): channel + additive handlers (`toRotatingFile` / `toStderr` / `toHandler`) → `LoggerMonologServiceProvider`.
+     - `masking` (`addMasking()`): patterns, keyPatterns, rules → `DataMaskerServiceProvider`.
+     - `logging` (`addLogging()`): channel + additive handlers (`toRotatingFile` / `toStderr` / `withHandler`) → `LoggerMonologServiceProvider`.
    - Маскування логів — opt-in через `LoggingBuilder::withMasking()` + `requires masking`.
    - Masker передається через `OptionalDependency::factory` лише коли увімкнено.
    - Extension: handlers list замість hardcoded RotatingFile; `LogHandlerRegistry` для extras (Telemetry).
@@ -462,7 +464,7 @@ return ConceptStack::create()
    - Options: `enabled`, `logs`, `eventName`.
    - `logs(true)` → `TelemetryLogHandler` + `LogHandlerRegistry` (requires `logging`).
    - DB query events — лише `DatabaseBuilder::withEmitQueryEvents()` (requires `events`).
-   - Event dispatcher/subscribers — окрема capability `withEvents()`.
+   - Event dispatcher/subscribers — окрема capability `addEvents()`.
    - Event names — explicit strings з app glue (не `Concept\App` у stack).
 
 4. `ValidationLayerProvider` -> `ValidationStackProvider` ✅
@@ -471,7 +473,7 @@ return ConceptStack::create()
    - Caster/logger/masker — lazy optional factories через container (без hard dependency на casting/logging).
 
 5. `Casting` (нова окрема capability, не частина HTTP) ✅
-   - `CastingBuilder`: `cacheDir()`, `transformers()`, `debug()`.
+   - `CastingBuilder`: `setCacheDir()`, `setTransformers()`, `setDebug()`.
    - `CastingStackProvider` реєструє `CastingServiceProvider`.
    - HTTP отримує casting лише через `withTypedRouteParameters()` + `requires casting`.
 
@@ -499,7 +501,7 @@ return ConceptStack::create()
 
 9. `ConsoleLayerProvider` -> `ConsoleStackProvider` ✅
    - Options: app name, app version, command classes.
-   - Основний UX через `ConsoleBuilder` і `end()`.
+   - Основний UX через `ConsoleBuilder`.
 
 10. `ViewLayerProvider` -> `ViewStackProvider` ✅
    - Options: paths, routeNamespace, extensions.
@@ -535,7 +537,7 @@ $app->registerServiceProviders([
 
 ## Порядок робіт
 
-1. ✅ `ConceptStack`, `StackBuilder` — `withX()` реєструє одразу, без `end()`.
+1. ✅ `ConceptStack`, `StackBuilder` — `addX()` реєструє capability, без `end()`.
 2. ✅ `Options/*Options.php` — частково (`Casting`, `Validation`, `Http`, `Console`).
 3. ✅ `ConsoleBuilder` як еталон nested builder UX.
 4. ✅ `ConsoleStackProvider`.
@@ -575,6 +577,6 @@ composer boot-smoke
 - Якщо stack почне читати `ConfigInterface`, він стане залежним від конкретної моделі застосунку.
 - Якщо stack почне використовувати `PathManager`, прості застосунки отримають непотрібну обов'язкову інфраструктуру.
 - Якщо stack почне залежати від `Concept\App`, він стане перенесеним skeleton layer, а не reusable package.
-- Якщо `withFlashValidation()` сховає middleware chain, routes втратять явність web/api surface.
+- Якщо validation brick сховає middleware chain, routes втратять явність web/api surface.
 - Error handling зараз найбільш app-specific частина, тому його краще переносити після базових capabilities.
 - Components registrars eager; тому stack топологічно впорядковує capability providers за `requires`.

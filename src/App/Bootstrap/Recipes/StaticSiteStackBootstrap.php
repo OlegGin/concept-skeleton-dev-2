@@ -30,31 +30,31 @@ final class StaticSiteStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->withLogging()
-            ->level($config->getString(ConfigKey::LOG_LEVEL, 'ERROR'))
-            ->channel($config->getString(ConfigKey::LOG_NAME, 'web'))
+        $stack->addLogging()
+            ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'ERROR'))
+            ->setChannel($config->getString(ConfigKey::LOG_NAME, 'web'))
             ->toRotatingFile(
                 $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::LOG_FILE, 'app.log')),
                 $config->getInt(ConfigKey::LOG_MAX_FILES, 7),
             );
 
-        $stack->withHttp()
-            ->routes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
-            ->interceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class));
+        $stack->addHttp()
+            ->setRoutes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
+            ->setInterceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class));
 
-        $stack->withView()
-            ->paths($pathManager->rootMap($typed->stringMap(ConfigKey::VIEW_PATHS)))
-            ->extensions([TwigAppExtension::class])
-            ->routeNamespace($typed->stringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
+        $stack->addView()
+            ->setPaths($pathManager->rootMap($typed->stringMap(ConfigKey::VIEW_PATHS)))
+            ->setExtensions([TwigAppExtension::class])
+            ->setRouteNamespaces($typed->stringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
             ->withTwig()
-            ->viewsPath($pathManager->get(PathName::VIEWS))
-            ->cacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
-            ->debug($debug);
+            ->setViewsPath($pathManager->get(PathName::VIEWS))
+            ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
+            ->setDebug($debug);
 
-        $stack->withErrorHandling()
-            ->debug($debug, new PrettyPageHandler())
-            ->reportToLogs()
-            ->renderView($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
+        $stack->addErrorHandling()
+            ->setDebug($debug, new PrettyPageHandler())
+            ->setLogReporting()
+            ->withViewRenderer($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
 
         foreach ($stack->providers() as $provider) {
             $container->addServiceProvider($provider);

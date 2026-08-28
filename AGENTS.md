@@ -101,7 +101,7 @@ ApplicationStackBootstrap       → Config/Path → ConceptStack (включно
 ApplicationRuntimeBootstrap     → timezone тощо
 ```
 
-`withX()` на stack **одразу** реєструє capability; `end()` немає. Окремі гілки від `$stack`.
+`addX()` на `StackBuilder` реєструє capability; `setX()` / `withX()` — на brick. **`end()` немає.** Окремі гілки від `$stack`.
 
 ### Три рівні (зверху вниз)
 
@@ -178,7 +178,7 @@ Reusable middleware (`VerifyCsrfTokenMiddleware`) — у extension; app-specific
 | Stand-alone | Так — окремий пакет, контракти | Ні обовʼязку: частина фіч природно залежить одна від одної |
 | Змінювати код | Рідко (API / params); behavior через glue | **Так — очікувано.** Це стартовий код продукту, не «чорна скринька» |
 | Config | Ні — лише constructor params з glue | Допустимо як app-код; або explicit params з glue — без догми «plugin без змін» |
-| Glue | `ApplicationStackBootstrap` / stack brick | Components brick (`withComponents`) + `src/Components/` |
+| Glue | `ApplicationStackBootstrap` / stack brick | Components brick (`addComponents`) + `src/Components/` |
 | Приклад | `ValidationServiceProvider` | ACL + AuthAdmin (можуть бути тісно звʼязані) |
 
 **Модель Components (узгоджено):**
@@ -533,10 +533,10 @@ config/*.php                   → data-only; glue → stack params
 - [x] `HandleValidationExceptionMiddleware` — `ValidationException` → 422 JSON або redirect + flash (web)
 - [x] Тест: `POST /test/echo` + `TestEchoRequest` (name, email)
 - [x] **Console extension**: `ConsoleSymfonyServiceProvider`, `route:list`
-- [x] **Session + CSRF**: stack `withSession()->withCsrf()`; middleware chain у `web.php`
+- [x] **Session + CSRF**: stack `addSession()->withCsrf()`; middleware chain у `web.php`
 - [x] **Validation redirect flow**: `HandleValidationExceptionMiddleware` + flash + форма на `/` з errors/old
 - [x] **Json middleware**: `routes/api.php`, `ParseJsonBodyMiddleware`, `ForceJsonResponseMiddleware`; CSRF/session middleware лише на web group
-- [x] **DataMasker extension**: stack `withMasking()` + opt-in `LoggingBuilder::withMasking()` / validation / db
+- [x] **DataMasker extension**: stack `addMasking()` + opt-in `LoggingBuilder::withMasking()` / validation / db
 - [x] **Database extension**: `DatabaseEloquentServiceProvider`, `PaginationConfiguratorServiceProvider`, db CLI, `GET /test/db`
 - [x] **Config extension**: `ConfigServiceProvider` + `config/` → Foundation (optional app glue; stack explicit values)
 - [x] **Concept Stack** + `src/App/Bootstrap/*` (Early → Foundation → Stack з Components brick → Runtime)

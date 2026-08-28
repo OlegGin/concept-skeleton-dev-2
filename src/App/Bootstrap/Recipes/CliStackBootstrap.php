@@ -27,16 +27,16 @@ final class CliStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->withLogging()
-            ->level($config->getString(ConfigKey::LOG_LEVEL, 'INFO'))
-            ->channel($config->getString(ConfigKey::LOG_NAME, 'cli'))
+        $stack->addLogging()
+            ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'INFO'))
+            ->setChannel($config->getString(ConfigKey::LOG_NAME, 'cli'))
             ->toRotatingFile(
                 $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::LOG_FILE, 'cli.log')),
                 $config->getInt(ConfigKey::LOG_MAX_FILES, 7),
             );
 
-        $stack->withDatabase()
-            ->connection([
+        $stack->addDatabase()
+            ->setConnection([
                 'driver' => $config->getString(ConfigKey::DB_DRIVER),
                 'host' => $config->getString(ConfigKey::DB_HOST),
                 'port' => $config->getInt(ConfigKey::DB_PORT, 3306),
@@ -47,13 +47,13 @@ final class CliStackBootstrap
                 'collation' => $config->getString(ConfigKey::DB_COLLATION, 'utf8mb4_unicode_ci'),
                 'prefix' => $config->getString(ConfigKey::DB_PREFIX),
             ])
-            ->migrations($pathManager->rootList($typed->stringList(ConfigKey::MIGRATIONS_PATHS)))
-            ->migrationsTable($config->getString(ConfigKey::MIGRATIONS_TABLE, 'migrations'));
+            ->setMigrations($pathManager->rootList($typed->stringList(ConfigKey::MIGRATIONS_PATHS)))
+            ->setMigrationsTable($config->getString(ConfigKey::MIGRATIONS_TABLE, 'migrations'));
 
-        $stack->withConsole()
-            ->name($config->getString(ConfigKey::APP_NAME, 'CLI'))
-            ->version($config->getString(ConfigKey::APP_VERSION, '1.0.0'))
-            ->commands($typed->classList(ConfigKey::COMMANDS, Command::class));
+        $stack->addConsole()
+            ->setName($config->getString(ConfigKey::APP_NAME, 'CLI'))
+            ->setVersion($config->getString(ConfigKey::APP_VERSION, '1.0.0'))
+            ->setCommands($typed->classList(ConfigKey::COMMANDS, Command::class));
 
         // Uncaught errors: EarlyErrorHandlingBootstrap (no HTTP renderer brick).
 

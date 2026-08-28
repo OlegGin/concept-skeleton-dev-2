@@ -31,44 +31,45 @@ final class BffStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->withMasking()
-            ->patterns($typed->stringMap(ConfigKey::MASKING_PATTERNS))
-            ->keyPatterns($typed->stringList(ConfigKey::MASKING_KEY_PATTERNS))
-            ->rules($typed->classList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
+        $stack->addMasking()
+            ->setPatterns($typed->stringMap(ConfigKey::MASKING_PATTERNS))
+            ->setKeyPatterns($typed->stringList(ConfigKey::MASKING_KEY_PATTERNS))
+            ->setRules($typed->classList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
 
-        $stack->withLogging()
-            ->level($config->getString(ConfigKey::LOG_LEVEL, 'INFO'))
-            ->channel($config->getString(ConfigKey::LOG_NAME, 'bff'))
+        $stack->addLogging()
+            ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'INFO'))
+            ->setChannel($config->getString(ConfigKey::LOG_NAME, 'bff'))
             ->toRotatingFile(
                 $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::LOG_FILE, 'bff.log')),
                 $config->getInt(ConfigKey::LOG_MAX_FILES, 14),
             )
             ->withMasking();
 
-        $stack->withCasting()
-            ->cacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR, 'valinor')))
-            ->debug($debug);
+        $stack->addCasting()
+            ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR, 'valinor')))
+            ->setDebug($debug);
 
-        $stack->withValidation()
-            ->customRules($typed->classMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
-            ->globalExcept($typed->stringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT))
-            ->logEnabled($config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED))
-            ->logFilePath($pathManager->get(
+        $validation = $stack->addValidation()
+            ->setRules($typed->classMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
+            ->setGlobalExcept($typed->stringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT));
+        if ($config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED)) {
+            $validation->withLogging($pathManager->get(
                 PathName::LOGS,
                 $config->getString(ConfigKey::VALIDATOR_LOG_FILE, 'validation.log'),
-            ))
-            ->withMasking();
+            ));
+        }
+        $validation->withMasking();
 
-        $stack->withHttp()
-            ->routes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
-            ->interceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
+        $stack->addHttp()
+            ->setRoutes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
+            ->setInterceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
             ->withFormRequests()
             ->withTypedRouteParameters();
 
-        $stack->withErrorHandling()
-            ->debug($debug)
-            ->reportToLogs()
-            ->renderJson();
+        $stack->addErrorHandling()
+            ->setDebug($debug)
+            ->setLogReporting()
+            ->withJsonRenderer();
 
         foreach ($stack->providers() as $provider) {
             $container->addServiceProvider($provider);

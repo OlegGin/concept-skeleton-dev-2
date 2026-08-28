@@ -31,14 +31,14 @@ final class WorkerStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->withMasking()
-            ->patterns($typed->stringMap(ConfigKey::MASKING_PATTERNS))
-            ->keyPatterns($typed->stringList(ConfigKey::MASKING_KEY_PATTERNS))
-            ->rules($typed->classList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
+        $stack->addMasking()
+            ->setPatterns($typed->stringMap(ConfigKey::MASKING_PATTERNS))
+            ->setKeyPatterns($typed->stringList(ConfigKey::MASKING_KEY_PATTERNS))
+            ->setRules($typed->classList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
 
-        $stack->withLogging()
-            ->level($config->getString(ConfigKey::LOG_LEVEL, 'INFO'))
-            ->channel($config->getString(ConfigKey::LOG_NAME, 'worker'))
+        $stack->addLogging()
+            ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'INFO'))
+            ->setChannel($config->getString(ConfigKey::LOG_NAME, 'worker'))
             ->toRotatingFile(
                 $pathManager->get(PathName::LOGS, $config->getString(ConfigKey::LOG_FILE, 'worker.log')),
                 $config->getInt(ConfigKey::LOG_MAX_FILES, 14),
@@ -46,17 +46,17 @@ final class WorkerStackBootstrap
             ->withMasking();
 
         if ($config->getBool(ConfigKey::EVENTS_ENABLED)) {
-            $stack->withEvents()
-                ->subscribers($typed->classList(ConfigKey::EVENTS_SUBSCRIBERS, ListenerSubscriber::class));
+            $stack->addEvents()
+                ->setSubscribers($typed->classList(ConfigKey::EVENTS_SUBSCRIBERS, ListenerSubscriber::class));
         }
 
-        $stack->withTelemetry()
-            ->enabled($config->getBool(ConfigKey::TELEMETRY_ENABLED))
-            ->logs($config->getBool(ConfigKey::TELEMETRY_LOGS))
-            ->eventName(TelemetryEvent::LOG_RECORDED);
+        $stack->addTelemetry()
+            ->setEnabled($config->getBool(ConfigKey::TELEMETRY_ENABLED))
+            ->setLogs($config->getBool(ConfigKey::TELEMETRY_LOGS))
+            ->setEventName(TelemetryEvent::LOG_RECORDED);
 
-        $database = $stack->withDatabase()
-            ->connection([
+        $database = $stack->addDatabase()
+            ->setConnection([
                 'driver' => $config->getString(ConfigKey::DB_DRIVER),
                 'host' => $config->getString(ConfigKey::DB_HOST),
                 'port' => $config->getInt(ConfigKey::DB_PORT, 3306),

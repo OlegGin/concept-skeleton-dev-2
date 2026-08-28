@@ -2,22 +2,20 @@
 
 namespace Concept\App\Controllers;
 
-use Concept\App\Http\Exception\HttpErrorException;
-use Concept\Extensions\Config\Contracts\ConfigInterface;
-use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
+use Concept\Extensions\Http\Response\ResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class IndexController
 {
     public function __construct(
-//        private readonly ConfigInterface $config,
-        private readonly ViewResponseFactoryInterface $responseFactory,
+        private readonly ResponseFactory $responseFactory,
     ) {}
 
     public function index(): ResponseInterface
     {
-//        var_dump($this->config->all()); die();
+        $response = $this->responseFactory->createResponse();
+        $response->getBody()->write('Hello, world!');
 
-        return $this->responseFactory->create('@frontend/index');
+        return $response;
     }
 }
