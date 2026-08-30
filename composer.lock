@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d2083059129fa625e8cbc43d6028d749",
+    "content-hash": "74d4b62b482fab0746b13ea54c2e4615",
     "packages": [
         {
             "name": "brick/math",
@@ -1603,6 +1603,65 @@
             "time": "2026-03-19T18:52:39+00:00"
         },
         {
+            "name": "league/event",
+            "version": "3.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/event.git",
+                "reference": "ec38ff7ea10cad7d99a79ac937fbcffb9334c210"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/event/zipball/ec38ff7ea10cad7d99a79ac937fbcffb9334c210",
+                "reference": "ec38ff7ea10cad7d99a79ac937fbcffb9334c210",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.0",
+                "psr/event-dispatcher": "^1.0"
+            },
+            "provide": {
+                "psr/event-dispatcher-implementation": "1.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.16",
+                "phpstan/phpstan": "^0.12.45",
+                "phpunit/phpunit": "^8.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Event\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Frank de Jonge",
+                    "email": "info@frenky.net"
+                }
+            ],
+            "description": "Event package",
+            "keywords": [
+                "emitter",
+                "event",
+                "listener"
+            ],
+            "support": {
+                "issues": "https://github.com/thephpleague/event/issues",
+                "source": "https://github.com/thephpleague/event/tree/3.0.3"
+            },
+            "time": "2024-09-04T16:06:53+00:00"
+        },
+        {
             "name": "league/plates",
             "version": "v3.6.0",
             "source": {
@@ -2058,18 +2117,25 @@
         },
         {
             "name": "php-concept/core-2",
-            "version": "dev-main",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/concept-core-2.git",
+                "reference": "f0a41fac86eaa72b96eef2607aa5e1d59582fda3"
+            },
             "dist": {
-                "type": "path",
-                "url": "/var/www/concept-core-2",
-                "reference": "c2bd45d3aa408dd8d7cd2b570b9a1de5771d7e1b"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/concept-core-2/zipball/f0a41fac86eaa72b96eef2607aa5e1d59582fda3",
+                "reference": "f0a41fac86eaa72b96eef2607aa5e1d59582fda3",
+                "shasum": ""
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
                 "laminas/laminas-httphandlerrunner": "^2.13",
                 "league/container": "^5.1",
                 "league/route": "^6.2",
-                "php": "^8.4"
+                "php": "^8.4",
+                "psr/event-dispatcher": "^1.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "^2.1"
@@ -2080,38 +2146,39 @@
                     "Concept\\Core\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "phpstan": [
-                    "vendor/bin/phpstan analyze --memory-limit=2G"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept Framework Core Engine",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/concept-core-2/issues",
+                "source": "https://github.com/php-concept/concept-core-2/tree/v1.0.2"
+            },
+            "time": "2026-07-10T05:27:14+00:00"
         },
         {
             "name": "php-concept/extension-casting-valinor",
-            "version": "dev-main",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-casting-valinor.git",
+                "reference": "5af8e5c4f5269b653be2a87d7d4c4cd930476351"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/CastingValinor",
-                "reference": "92b499cfa40545df077767c4d24790a7780acbfd"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-casting-valinor/zipball/5af8e5c4f5269b653be2a87d7d4c4cd930476351",
+                "reference": "5af8e5c4f5269b653be2a87d7d4c4cd930476351",
+                "shasum": ""
             },
             "require": {
                 "cuyz/valinor": "^2.0",
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev"
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "php-concept/support": "^1.0",
+                "psr/event-dispatcher": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -2119,31 +2186,41 @@
                     "Concept\\Extensions\\CastingValinor\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept Casting extension — Valinor caster and typed route parameter resolving",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-casting-valinor/issues",
+                "source": "https://github.com/php-concept/extension-casting-valinor/tree/v1.0.2"
+            },
+            "time": "2026-07-13T13:06:11+00:00"
         },
         {
             "name": "php-concept/extension-components",
-            "version": "dev-main",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-components.git",
+                "reference": "47c2918cd876d8e28f1a8853b3c8bd92f8bac19a"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/Components",
-                "reference": "bb6d154d0b2047bad8986d710b2570be2d1b1ac5"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-components/zipball/47c2918cd876d8e28f1a8853b3c8bd92f8bac19a",
+                "reference": "47c2918cd876d8e28f1a8853b3c8bd92f8bac19a",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
                 "league/route": "^6.2",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev",
-                "php-concept/extension-config": "@dev",
-                "php-concept/extension-database-eloquent": "@dev",
-                "php-concept/extension-view": "@dev",
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-config": "^1.0",
+                "php-concept/extension-database-eloquent": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "php-concept/extension-view": "^1.0",
+                "psr/event-dispatcher": "^1.0",
                 "symfony/console": "^7.2",
                 "symfony/filesystem": "^7.2"
             },
@@ -2153,27 +2230,37 @@
                     "Concept\\Extensions\\Components\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept Components extension — plugin manifest registry and boot wiring",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-components/issues",
+                "source": "https://github.com/php-concept/extension-components/tree/v1.0.1"
+            },
+            "time": "2026-06-30T12:15:01+00:00"
         },
         {
             "name": "php-concept/extension-config",
-            "version": "dev-main",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-config.git",
+                "reference": "e96066662a4e159318f8391e90d7133b423f880d"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/Config",
-                "reference": "4f04830be4f3d52b71fc14a1b6b3e856f45a8e29"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-config/zipball/e96066662a4e159318f8391e90d7133b423f880d",
+                "reference": "e96066662a4e159318f8391e90d7133b423f880d",
+                "shasum": ""
             },
             "require": {
                 "hassankhan/config": "^3.2",
                 "league/container": "^5.1",
                 "php": "^8.4",
+                "php-concept/extension-event": "^1.0",
+                "psr/event-dispatcher": "^1.0",
                 "vlucas/phpdotenv": "^5.6"
             },
             "type": "library",
@@ -2182,28 +2269,36 @@
                     "Concept\\Extensions\\Config\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "Concept Config extension — PHP config files, .env merge, PathManager",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "description": "Concept Config extension — PHP config files and .env merge",
+            "support": {
+                "issues": "https://github.com/php-concept/extension-config/issues",
+                "source": "https://github.com/php-concept/extension-config/tree/v1.0.1"
+            },
+            "time": "2026-06-30T12:17:42+00:00"
         },
         {
             "name": "php-concept/extension-console-symfony",
-            "version": "dev-main",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-console-symfony.git",
+                "reference": "0d9bf1c1bd1bf6e805e6c29dce2b21902da51166"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/ConsoleSymfony",
-                "reference": "d673f0b2f8d07b1be3fc78604616d38e9cd86d68"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-console-symfony/zipball/0d9bf1c1bd1bf6e805e6c29dce2b21902da51166",
+                "reference": "0d9bf1c1bd1bf6e805e6c29dce2b21902da51166",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/extension-database-eloquent": "@dev",
-                "php-concept/extension-http": "@dev",
+                "php-concept/extension-event": "^1.0",
+                "psr/event-dispatcher": "^1.0",
                 "symfony/console": "^7.2|^8.0"
             },
             "type": "library",
@@ -2212,29 +2307,40 @@
                     "Concept\\Extensions\\ConsoleSymfony\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "Concept Console extension — Symfony Console application and commands",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "description": "Concept Console extension — Symfony Console application shell",
+            "support": {
+                "issues": "https://github.com/php-concept/extension-console-symfony/issues",
+                "source": "https://github.com/php-concept/extension-console-symfony/tree/v1.0.0"
+            },
+            "time": "2026-06-30T07:11:38+00:00"
         },
         {
             "name": "php-concept/extension-csrf",
-            "version": "dev-main",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-csrf.git",
+                "reference": "d81eaea1f666f8e6563afaa804c0686c254bcb17"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/Csrf",
-                "reference": "14ad2abdc3bf24051e65f34b36d727bc5f96405b"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-csrf/zipball/d81eaea1f666f8e6563afaa804c0686c254bcb17",
+                "reference": "d81eaea1f666f8e6563afaa804c0686c254bcb17",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev",
-                "php-concept/extension-http": "@dev",
-                "php-concept/extension-session-symfony": "@dev",
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "php-concept/extension-http": "^1.0",
+                "php-concept/extension-session-symfony": "^1.0",
+                "php-concept/support": "^1.0",
+                "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0",
                 "psr/http-server-middleware": "^1.0"
             },
@@ -2244,26 +2350,36 @@
                     "Concept\\Extensions\\Csrf\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept CSRF extension — token manager and verification middleware",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-csrf/issues",
+                "source": "https://github.com/php-concept/extension-csrf/tree/v1.0.1"
+            },
+            "time": "2026-07-10T06:40:08+00:00"
         },
         {
             "name": "php-concept/extension-data-masker",
-            "version": "dev-main",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-data-masker.git",
+                "reference": "d33ea138e9393a25540fd0b8e6d8401e2aee9f19"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/DataMasker",
-                "reference": "3f858a1e4ed9b0443f2bca189a1a3837a1d880c2"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-data-masker/zipball/d33ea138e9393a25540fd0b8e6d8401e2aee9f19",
+                "reference": "d33ea138e9393a25540fd0b8e6d8401e2aee9f19",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
-                "php": "^8.4"
+                "php": "^8.4",
+                "php-concept/extension-event": "^1.0",
+                "psr/event-dispatcher": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -2271,22 +2387,30 @@
                     "Concept\\Extensions\\DataMasker\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept DataMasker extension — redact sensitive values in logs and debug output",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-data-masker/issues",
+                "source": "https://github.com/php-concept/extension-data-masker/tree/v1.0.0"
+            },
+            "time": "2026-06-30T07:11:53+00:00"
         },
         {
             "name": "php-concept/extension-database-eloquent",
-            "version": "dev-main",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-database-eloquent.git",
+                "reference": "a59425b6e20c18cb69c4310b1aa8e192904ae35f"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/DatabaseEloquent",
-                "reference": "7f0d270a78594bf225b9a68f8dc0f85d9d44f581"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-database-eloquent/zipball/a59425b6e20c18cb69c4310b1aa8e192904ae35f",
+                "reference": "a59425b6e20c18cb69c4310b1aa8e192904ae35f",
+                "shasum": ""
             },
             "require": {
                 "illuminate/container": "^13.1",
@@ -2297,7 +2421,11 @@
                 "league/container": "^5.1",
                 "monolog/monolog": "^3",
                 "php": "^8.4",
-                "php-concept/extension-data-masker": "@dev",
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-data-masker": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "php-concept/support": "^1.0",
+                "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0",
                 "symfony/console": "^7.2|^8.0"
             },
@@ -2307,32 +2435,39 @@
                     "Concept\\Extensions\\DatabaseEloquent\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept Database extension — Illuminate Eloquent via Capsule",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-database-eloquent/issues",
+                "source": "https://github.com/php-concept/extension-database-eloquent/tree/v1.0.2"
+            },
+            "time": "2026-08-06T04:37:38+00:00"
         },
         {
             "name": "php-concept/extension-error-handler-whoops",
-            "version": "dev-main",
+            "version": "v1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-error-handler-whoops.git",
+                "reference": "4cf4a8331e96eeb4cad2905cd90956bdb465d8d5"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/ErrorHandlerWhoops",
-                "reference": "3f6049bbcf4023bce259221b74daf930a592ae3e"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-error-handler-whoops/zipball/4cf4a8331e96eeb4cad2905cd90956bdb465d8d5",
+                "reference": "4cf4a8331e96eeb4cad2905cd90956bdb465d8d5",
+                "shasum": ""
             },
             "require": {
                 "filp/whoops": "^2.18",
-                "laminas/laminas-httphandlerrunner": "^2.13",
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/extension-http": "@dev",
-                "php-concept/extension-logger-monolog": "@dev",
-                "php-concept/extension-view": "@dev",
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-event": "^1.0",
                 "psr/container": "^2.0",
+                "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0"
             },
             "type": "library",
@@ -2341,30 +2476,78 @@
                     "Concept\\Extensions\\ErrorHandlerWhoops\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept Error Handler extension — Whoops integration",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-error-handler-whoops/issues",
+                "source": "https://github.com/php-concept/extension-error-handler-whoops/tree/v1.0.6"
+            },
+            "time": "2026-08-04T12:55:14+00:00"
+        },
+        {
+            "name": "php-concept/extension-event",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-event.git",
+                "reference": "015d53b468e88133c0bc616c57c942ddb949a09b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-event/zipball/015d53b468e88133c0bc616c57c942ddb949a09b",
+                "reference": "015d53b468e88133c0bc616c57c942ddb949a09b",
+                "shasum": ""
+            },
+            "require": {
+                "league/container": "^5.1",
+                "league/event": "^3.0",
+                "php": "^8.4",
+                "php-concept/core-2": "^1.0",
+                "psr/event-dispatcher": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\Event\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept Event extension — League Event dispatcher wiring",
+            "support": {
+                "issues": "https://github.com/php-concept/extension-event/issues",
+                "source": "https://github.com/php-concept/extension-event/tree/v1.0.0"
+            },
+            "time": "2026-06-30T07:12:02+00:00"
         },
         {
             "name": "php-concept/extension-form-request",
-            "version": "dev-main",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-form-request.git",
+                "reference": "3eee6e23830b59990d88f5e352256e72d358c1e2"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/FormRequest",
-                "reference": "a10a8cb37b248cc54d0ff38f3d05e2e505c43aa8"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-form-request/zipball/3eee6e23830b59990d88f5e352256e72d358c1e2",
+                "reference": "3eee6e23830b59990d88f5e352256e72d358c1e2",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev",
-                "php-concept/extension-casting-valinor": "@dev",
-                "php-concept/extension-csrf": "@dev",
-                "php-concept/extension-validation-rakit": "@dev",
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-casting-valinor": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "php-concept/extension-validation-rakit": "^1.0",
+                "php-concept/support": "^1.0",
+                "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0"
             },
             "type": "library",
@@ -2373,29 +2556,40 @@
                     "Concept\\Extensions\\FormRequest\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept FormRequest extension — form request factory and argument resolver",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-form-request/issues",
+                "source": "https://github.com/php-concept/extension-form-request/tree/v1.0.1"
+            },
+            "time": "2026-07-10T06:42:42+00:00"
         },
         {
             "name": "php-concept/extension-http",
-            "version": "dev-main",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-http.git",
+                "reference": "d6e6005565c8cdca7de34ccd8e6ca47409848286"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/Http",
-                "reference": "5b831b53e60b13daf6c25995f18593eac873401d"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-http/zipball/d6e6005565c8cdca7de34ccd8e6ca47409848286",
+                "reference": "d6e6005565c8cdca7de34ccd8e6ca47409848286",
+                "shasum": ""
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
                 "league/container": "^5.1",
                 "league/route": "^6.2",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev"
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "psr/event-dispatcher": "^1.0",
+                "symfony/console": "^7.2|^8.0"
             },
             "type": "library",
             "autoload": {
@@ -2403,27 +2597,35 @@
                     "Concept\\Extensions\\Http\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept HTTP extension — responses, URLs, route introspection",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-http/issues",
+                "source": "https://github.com/php-concept/extension-http/tree/v1.0.1"
+            },
+            "time": "2026-08-07T14:56:26+00:00"
         },
         {
             "name": "php-concept/extension-json",
-            "version": "dev-main",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-json.git",
+                "reference": "4098e94e26c18f6de17d1be008c7483f63c6db99"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/Json",
-                "reference": "8ab667ba91b9575b5082360e99e6abe258055a47"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-json/zipball/4098e94e26c18f6de17d1be008c7483f63c6db99",
+                "reference": "4098e94e26c18f6de17d1be008c7483f63c6db99",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/extension-http": "@dev",
+                "php-concept/extension-http": "^1.0",
                 "psr/http-message": "^2.0",
                 "psr/http-server-middleware": "^1.0"
             },
@@ -2433,28 +2635,39 @@
                     "Concept\\Extensions\\Json\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept JSON extension — parse JSON body and force JSON responses",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-json/issues",
+                "source": "https://github.com/php-concept/extension-json/tree/v1.0.0"
+            },
+            "time": "2026-06-30T07:12:17+00:00"
         },
         {
             "name": "php-concept/extension-logger-monolog",
-            "version": "dev-main",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-logger-monolog.git",
+                "reference": "500e8c4dd7273bd51504f4d818d2620fea0973a3"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/LoggerMonolog",
-                "reference": "73a935c3be586dc255174f5ff4f893eaa8a3820a"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-logger-monolog/zipball/500e8c4dd7273bd51504f4d818d2620fea0973a3",
+                "reference": "500e8c4dd7273bd51504f4d818d2620fea0973a3",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
                 "monolog/monolog": "^3",
                 "php": "^8.4",
-                "php-concept/extension-data-masker": "@dev",
+                "php-concept/extension-data-masker": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "php-concept/support": "^1.0",
+                "psr/event-dispatcher": "^1.0",
                 "psr/log": "^3"
             },
             "type": "library",
@@ -2463,27 +2676,74 @@
                     "Concept\\Extensions\\LoggerMonolog\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "Concept Logger extension — Monolog rotating file logging with optional data masking",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "description": "Concept Logger extension — Monolog with explicit handlers and optional data masking",
+            "support": {
+                "issues": "https://github.com/php-concept/extension-logger-monolog/issues",
+                "source": "https://github.com/php-concept/extension-logger-monolog/tree/v1.0.3"
+            },
+            "time": "2026-08-06T04:42:20+00:00"
         },
         {
-            "name": "php-concept/extension-session-symfony",
-            "version": "dev-main",
+            "name": "php-concept/extension-path-manager",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-path-manager.git",
+                "reference": "dc0978dd1f6fa18fd90167e853f021e3620d2e2f"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/SessionSymfony",
-                "reference": "2a8aeb3e29779655728cf76817aa623fc142d54c"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-path-manager/zipball/dc0978dd1f6fa18fd90167e853f021e3620d2e2f",
+                "reference": "dc0978dd1f6fa18fd90167e853f021e3620d2e2f",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev",
+                "php-concept/extension-event": "^1.0",
+                "psr/event-dispatcher": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\PathManager\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept PathManager extension — project root and named path map resolution",
+            "support": {
+                "issues": "https://github.com/php-concept/extension-path-manager/issues",
+                "source": "https://github.com/php-concept/extension-path-manager/tree/v1.0.1"
+            },
+            "time": "2026-07-06T06:32:20+00:00"
+        },
+        {
+            "name": "php-concept/extension-session-symfony",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-session-symfony.git",
+                "reference": "31d05217e822521c10c982a0bb36c3faa0c1fafc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-session-symfony/zipball/31d05217e822521c10c982a0bb36c3faa0c1fafc",
+                "reference": "31d05217e822521c10c982a0bb36c3faa0c1fafc",
+                "shasum": ""
+            },
+            "require": {
+                "league/container": "^5.1",
+                "php": "^8.4",
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "psr/event-dispatcher": "^1.0",
                 "symfony/http-foundation": "^7.2"
             },
             "type": "library",
@@ -2492,29 +2752,77 @@
                     "Concept\\Extensions\\SessionSymfony\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept Session extension — session and flash bag",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-session-symfony/issues",
+                "source": "https://github.com/php-concept/extension-session-symfony/tree/v1.0.0"
+            },
+            "time": "2026-06-30T07:12:31+00:00"
         },
         {
-            "name": "php-concept/extension-validation-rakit",
-            "version": "dev-main",
+            "name": "php-concept/extension-telemetry",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-telemetry.git",
+                "reference": "30a4f0e2993bb7c9e5e5770032c0622d73eaaceb"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/ValidationRakit",
-                "reference": "cd203f644ad5226ac8d9336efda24a748ec6d5aa"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-telemetry/zipball/30a4f0e2993bb7c9e5e5770032c0622d73eaaceb",
+                "reference": "30a4f0e2993bb7c9e5e5770032c0622d73eaaceb",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
+                "monolog/monolog": "^3",
+                "php": "^8.4",
+                "php-concept/core-2": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Extensions\\Telemetry\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept Telemetry extension — in-request collector",
+            "support": {
+                "issues": "https://github.com/php-concept/extension-telemetry/issues",
+                "source": "https://github.com/php-concept/extension-telemetry/tree/v1.0.0"
+            },
+            "time": "2026-06-30T07:12:37+00:00"
+        },
+        {
+            "name": "php-concept/extension-validation-rakit",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-validation-rakit.git",
+                "reference": "bd45e5192350c788fb75ed399bfb246969403f16"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-validation-rakit/zipball/bd45e5192350c788fb75ed399bfb246969403f16",
+                "reference": "bd45e5192350c788fb75ed399bfb246969403f16",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "league/container": "^5.1",
                 "magewirephp/validation": "^1.0",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev",
-                "php-concept/extension-http": "@dev"
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "php-concept/support": "^1.0",
+                "psr/event-dispatcher": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -2522,28 +2830,39 @@
                     "Concept\\Extensions\\ValidationRakit\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept Validation extension — magewirephp/validation and validation exceptions",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-validation-rakit/issues",
+                "source": "https://github.com/php-concept/extension-validation-rakit/tree/v1.0.2"
+            },
+            "time": "2026-08-06T04:43:27+00:00"
         },
         {
             "name": "php-concept/extension-view",
-            "version": "dev-main",
+            "version": "v1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-view.git",
+                "reference": "5ba9bae0f67188b930bbd5c46d219b975b8fcbc5"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/View",
-                "reference": "6a6216836f445991f9b8a04beb3ed72c29643873"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-view/zipball/5ba9bae0f67188b930bbd5c46d219b975b8fcbc5",
+                "reference": "5ba9bae0f67188b930bbd5c46d219b975b8fcbc5",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev",
-                "php-concept/extension-http": "@dev",
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "php-concept/extension-http": "^1.0",
+                "php-concept/support": "^1.0",
+                "psr/event-dispatcher": "^1.0",
                 "psr/http-message": "^2.0"
             },
             "type": "library",
@@ -2552,29 +2871,39 @@
                     "Concept\\Extensions\\View\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept View extension — view contracts, response factory, registries",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-view/issues",
+                "source": "https://github.com/php-concept/extension-view/tree/v1.0.4"
+            },
+            "time": "2026-08-07T14:56:26+00:00"
         },
         {
             "name": "php-concept/extension-view-plates",
-            "version": "dev-main",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-view-plates.git",
+                "reference": "754dd65b56cbbf543cb45089bf3eb95a350e81ad"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/ViewPlates",
-                "reference": "dc6abfaf56d436dbd962e0e2e8d002e7654cf5ad"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-view-plates/zipball/754dd65b56cbbf543cb45089bf3eb95a350e81ad",
+                "reference": "754dd65b56cbbf543cb45089bf3eb95a350e81ad",
+                "shasum": ""
             },
             "require": {
                 "league/container": "^5.1",
                 "league/plates": "^3.6",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev",
-                "php-concept/extension-view": "@dev"
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "php-concept/extension-view": "^1.0",
+                "psr/event-dispatcher": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -2582,30 +2911,39 @@
                     "Concept\\Extensions\\ViewPlates\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept View Plates engine — PlatesView implementation",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-view-plates/issues",
+                "source": "https://github.com/php-concept/extension-view-plates/tree/v1.0.2"
+            },
+            "time": "2026-07-02T10:04:39+00:00"
         },
         {
             "name": "php-concept/extension-view-twig",
-            "version": "dev-main",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/extension-view-twig.git",
+                "reference": "46ca746181b0dfb5f359daf42b2efd2ed16eee3d"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/ViewTwig",
-                "reference": "b579fda4bd01c3a589c69854941929f62da73cba"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/extension-view-twig/zipball/46ca746181b0dfb5f359daf42b2efd2ed16eee3d",
+                "reference": "46ca746181b0dfb5f359daf42b2efd2ed16eee3d",
+                "shasum": ""
             },
             "require": {
-                "illuminate/filesystem": "^13.1",
                 "league/container": "^5.1",
                 "php": "^8.4",
-                "php-concept/core-2": "@dev",
-                "php-concept/extension-view": "@dev",
+                "php-concept/core-2": "^1.0",
+                "php-concept/extension-event": "^1.0",
+                "php-concept/extension-view": "^1.0",
                 "symfony/console": "^7.2|^8.0",
+                "symfony/filesystem": "^7.2|^8.0",
                 "twig/twig": "^3.0"
             },
             "type": "library",
@@ -2614,45 +2952,53 @@
                     "Concept\\Extensions\\ViewTwig\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Concept View Twig engine — TwigView implementation",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/php-concept/extension-view-twig/issues",
+                "source": "https://github.com/php-concept/extension-view-twig/tree/v1.0.3"
+            },
+            "time": "2026-08-06T04:45:24+00:00"
         },
         {
-            "name": "php-concept/extension-web",
-            "version": "dev-main",
+            "name": "php-concept/support",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-concept/concept-support.git",
+                "reference": "34535db4bf2d032357181343705ef7cef60f61be"
+            },
             "dist": {
-                "type": "path",
-                "url": "src/Extensions/Web",
-                "reference": "76f5591d9f1237107600e392eb177353e2a4f139"
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-concept/concept-support/zipball/34535db4bf2d032357181343705ef7cef60f61be",
+                "reference": "34535db4bf2d032357181343705ef7cef60f61be",
+                "shasum": ""
             },
             "require": {
-                "league/container": "^5.1",
-                "php": "^8.4",
-                "php-concept/extension-http": "@dev",
-                "php-concept/extension-session-symfony": "@dev",
-                "psr/http-message": "^2.0",
-                "psr/http-server-middleware": "^1.0"
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Concept\\Extensions\\Web\\": "src/"
+                    "Concept\\Support\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "Concept Web extension — safe back URL and web navigation middleware",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "description": "Concept Support — dependency-free runtime contract and factory helpers",
+            "support": {
+                "issues": "https://github.com/php-concept/concept-support/issues",
+                "source": "https://github.com/php-concept/concept-support/tree/v1.0.1"
+            },
+            "time": "2026-07-13T19:46:29+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -2728,6 +3074,55 @@
                 }
             ],
             "time": "2025-12-27T19:41:33+00:00"
+        },
+        {
+            "name": "psr/cache",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/cache.git",
+                "reference": "aa5030cfa5405eccfdcb1083ce040c2cb8d253bf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/cache/zipball/aa5030cfa5405eccfdcb1083ce040c2cb8d253bf",
+                "reference": "aa5030cfa5405eccfdcb1083ce040c2cb8d253bf",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Cache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for caching libraries",
+            "keywords": [
+                "cache",
+                "psr",
+                "psr-6"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/cache/tree/3.0.0"
+            },
+            "time": "2021-02-03T23:26:27+00:00"
         },
         {
             "name": "psr/clock",
@@ -3201,6 +3596,189 @@
                 "source": "https://github.com/php-fig/simple-cache/tree/3.0.0"
             },
             "time": "2021-10-29T13:26:27+00:00"
+        },
+        {
+            "name": "symfony/cache",
+            "version": "v7.4.17",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/cache.git",
+                "reference": "f6028442dd1dfa4f88e9c7360d753948d165e938"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/f6028442dd1dfa4f88e9c7360d753948d165e938",
+                "reference": "f6028442dd1dfa4f88e9c7360d753948d165e938",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "psr/cache": "^2.0|^3.0",
+                "psr/log": "^1.1|^2|^3",
+                "symfony/cache-contracts": "^3.6",
+                "symfony/deprecation-contracts": "^2.5|^3",
+                "symfony/service-contracts": "^2.5|^3",
+                "symfony/var-exporter": "^6.4|^7.0|^8.0"
+            },
+            "conflict": {
+                "doctrine/dbal": "<3.6",
+                "ext-relay": "<0.12.1",
+                "symfony/dependency-injection": "<6.4",
+                "symfony/http-kernel": "<6.4",
+                "symfony/var-dumper": "<6.4"
+            },
+            "provide": {
+                "psr/cache-implementation": "2.0|3.0",
+                "psr/simple-cache-implementation": "1.0|2.0|3.0",
+                "symfony/cache-implementation": "1.1|2.0|3.0"
+            },
+            "require-dev": {
+                "cache/integration-tests": "^1.0.3",
+                "doctrine/dbal": "^3.6|^4",
+                "predis/predis": "^1.1|^2.0",
+                "psr/simple-cache": "^1.0|^2.0|^3.0",
+                "symfony/clock": "^6.4|^7.0|^8.0",
+                "symfony/config": "^6.4|^7.0|^8.0",
+                "symfony/dependency-injection": "^6.4|^7.0|^8.0",
+                "symfony/filesystem": "^6.4|^7.0|^8.0",
+                "symfony/http-kernel": "^6.4|^7.0|^8.0",
+                "symfony/messenger": "^6.4|^7.0|^8.0",
+                "symfony/var-dumper": "^6.4|^7.0|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Cache\\": ""
+                },
+                "classmap": [
+                    "Traits/ValueWrapper.php"
+                ],
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides extended PSR-6, PSR-16 (and tags) implementations",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "caching",
+                "psr6"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/cache/tree/v7.4.17"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-08-19T08:28:05+00:00"
+        },
+        {
+            "name": "symfony/cache-contracts",
+            "version": "v3.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/cache-contracts.git",
+                "reference": "9789738bc19af1106dc54d6afba9a0b467516cf2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/cache-contracts/zipball/9789738bc19af1106dc54d6afba9a0b467516cf2",
+                "reference": "9789738bc19af1106dc54d6afba9a0b467516cf2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "psr/cache": "^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
+                "branch-alias": {
+                    "dev-main": "3.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Contracts\\Cache\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Generic abstractions related to caching",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "abstractions",
+                "contracts",
+                "decoupling",
+                "interfaces",
+                "interoperability",
+                "standards"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/cache-contracts/tree/v3.7.1"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-06-05T06:23:12+00:00"
         },
         {
             "name": "symfony/clock",
@@ -3750,6 +4328,93 @@
                 }
             ],
             "time": "2026-04-10T16:19:22+00:00"
+        },
+        {
+            "name": "symfony/polyfill-deepclone",
+            "version": "v1.42.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-deepclone.git",
+                "reference": "70ba0627efc68e97ea392843458a2dd9d6dbd156"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-deepclone/zipball/70ba0627efc68e97ea392843458a2dd9d6dbd156",
+                "reference": "70ba0627efc68e97ea392843458a2dd9d6dbd156",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "provide": {
+                "ext-deepclone": "*"
+            },
+            "suggest": {
+                "ext-deepclone": "For best performance"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\DeepClone\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for the deepclone extension",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "deepclone",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-deepclone/tree/v1.42.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-08-07T06:33:24+00:00"
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
@@ -4680,6 +5345,89 @@
             "time": "2026-01-05T13:30:16+00:00"
         },
         {
+            "name": "symfony/var-exporter",
+            "version": "v8.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/var-exporter.git",
+                "reference": "b8f7dd85493e8372c7c81a1547caaaf86b9c16d1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/b8f7dd85493e8372c7c81a1547caaaf86b9c16d1",
+                "reference": "b8f7dd85493e8372c7c81a1547caaaf86b9c16d1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "symfony/deprecation-contracts": "^2.5|^3",
+                "symfony/polyfill-deepclone": "^1.40"
+            },
+            "require-dev": {
+                "symfony/property-access": "^7.4|^8.0",
+                "symfony/serializer": "^7.4|^8.0",
+                "symfony/var-dumper": "^7.4|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\VarExporter\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides tools to export, instantiate, hydrate, clone and lazy-load PHP objects",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "clone",
+                "construct",
+                "deep-clone",
+                "export",
+                "hydrate",
+                "instantiate",
+                "lazy-loading",
+                "proxy",
+                "serialize"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/var-exporter/tree/v8.1.5"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-08-13T16:11:28+00:00"
+        },
+        {
             "name": "twbs/bootstrap",
             "version": "v5.3.8",
             "source": {
@@ -5264,27 +6012,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "php-concept/core-2": 20,
-        "php-concept/extension-http": 20,
-        "php-concept/extension-casting-valinor": 20,
-        "php-concept/extension-form-request": 20,
-        "php-concept/extension-validation-rakit": 20,
-        "php-concept/extension-view": 20,
-        "php-concept/extension-view-twig": 20,
-        "php-concept/extension-view-plates": 20,
-        "php-concept/extension-session-symfony": 20,
-        "php-concept/extension-csrf": 20,
-        "php-concept/extension-json": 20,
-        "php-concept/extension-web": 20,
-        "php-concept/extension-data-masker": 20,
-        "php-concept/extension-logger-monolog": 20,
-        "php-concept/extension-database-eloquent": 20,
-        "php-concept/extension-console-symfony": 20,
-        "php-concept/extension-error-handler-whoops": 20,
-        "php-concept/extension-config": 20,
-        "php-concept/extension-components": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

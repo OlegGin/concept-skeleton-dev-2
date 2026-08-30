@@ -195,7 +195,7 @@ $stack->addSession()
         'cookie_samesite' => 'Lax',
         'use_strict_mode' => true,
     ])
-    ->setHandler($handler) // optional; default NativeFileSessionHandler()
+    ->setHandlerFactory(fn() => $handler) // optional; default NativeFileSessionHandler()
     ->withCsrf();        // opt-in CSRF token manager
 
 return $stack->providers();

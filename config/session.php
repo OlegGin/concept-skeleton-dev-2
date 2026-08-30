@@ -2,7 +2,7 @@
 
 return [
     'session' => [
-        'driver' => 'file',
+        'driver' => 'pdo',
 
         'cookie' => [
             'lifetime' => 0,
@@ -19,7 +19,11 @@ return [
         ],
 
         'file' => [
-            'path' => null,
+            'path' => 'storage/sessions',
+        ],
+
+        'pdo' => [
+            'table' => 'sessions',
         ],
     ],
 ];

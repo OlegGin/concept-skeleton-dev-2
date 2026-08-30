@@ -4,7 +4,6 @@ namespace Concept\App\Bootstrap\Recipes;
 
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
-use Concept\App\Foundation\TypedConfig;
 use Concept\App\View\Twig\TwigAppExtension;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
@@ -25,7 +24,6 @@ final class StaticSiteStackBootstrap
     {
         $pathManager = ContainerDependency::get($container, PathManager::class);
         $config = ContainerDependency::get($container, ConfigInterface::class);
-        $typed = new TypedConfig($config);
         $debug = $config->getBool(ConfigKey::APP_DEBUG);
 
         $stack = ConceptStack::create();
@@ -39,13 +37,13 @@ final class StaticSiteStackBootstrap
             );
 
         $stack->addHttp()
-            ->setRoutes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
-            ->setInterceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class));
+            ->setRoutes($pathManager->rootList($config->getStringList(ConfigKey::ROUTES_LIST)))
+            ->setInterceptors($config->getClassList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class));
 
         $stack->addView()
-            ->setPaths($pathManager->rootMap($typed->stringMap(ConfigKey::VIEW_PATHS)))
+            ->setPaths($pathManager->rootMap($config->getStringMap(ConfigKey::VIEW_PATHS)))
             ->setExtensions([TwigAppExtension::class])
-            ->setRouteNamespaces($typed->stringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
+            ->setRouteNamespaces($config->getStringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
             ->withTwig()
             ->setViewsPath($pathManager->get(PathName::VIEWS))
             ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))

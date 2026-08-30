@@ -69,7 +69,11 @@ final class ConfigKey
     public const string SESSION_OPTIONS_USE_ONLY_COOKIES = 'session.options.use_only_cookies';
     public const string SESSION_OPTIONS_USE_STRICT_MODE = 'session.options.use_strict_mode';
 
+    public const string SESSION_DRIVER = 'session.driver';
+
     public const string SESSION_FILE_PATH = 'session.file.path';
+
+    public const string SESSION_PDO_TABLE = 'session.pdo.table';
 
     public const string PAGINATION_PER_PAGE = 'pagination.per_page';
 

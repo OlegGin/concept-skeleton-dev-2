@@ -2,9 +2,9 @@
 
 namespace Concept\App\Bootstrap\Recipes;
 
+use Concept\App\Foundation\AppConfig;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
-use Concept\App\Foundation\TypedConfig;
 use Concept\App\Telemetry\TelemetryEvent;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
@@ -27,14 +27,14 @@ final class WorkerStackBootstrap
     {
         $pathManager = ContainerDependency::get($container, PathManager::class);
         $config = ContainerDependency::get($container, ConfigInterface::class);
-        $typed = new TypedConfig($config);
+        $app = new AppConfig($config);
 
         $stack = ConceptStack::create();
 
         $stack->addMasking()
-            ->setPatterns($typed->stringMap(ConfigKey::MASKING_PATTERNS))
-            ->setKeyPatterns($typed->stringList(ConfigKey::MASKING_KEY_PATTERNS))
-            ->setRules($typed->classList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
+            ->setPatterns($config->getStringMap(ConfigKey::MASKING_PATTERNS))
+            ->setKeyPatterns($config->getStringList(ConfigKey::MASKING_KEY_PATTERNS))
+            ->setRules($config->getClassList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
 
         $stack->addLogging()
             ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'INFO'))
@@ -47,7 +47,7 @@ final class WorkerStackBootstrap
 
         if ($config->getBool(ConfigKey::EVENTS_ENABLED)) {
             $stack->addEvents()
-                ->setSubscribers($typed->classList(ConfigKey::EVENTS_SUBSCRIBERS, ListenerSubscriber::class));
+                ->setSubscribers($config->getClassList(ConfigKey::EVENTS_SUBSCRIBERS, ListenerSubscriber::class));
         }
 
         $stack->addTelemetry()
@@ -56,17 +56,7 @@ final class WorkerStackBootstrap
             ->setEventName(TelemetryEvent::LOG_RECORDED);
 
         $database = $stack->addDatabase()
-            ->setConnection([
-                'driver' => $config->getString(ConfigKey::DB_DRIVER),
-                'host' => $config->getString(ConfigKey::DB_HOST),
-                'port' => $config->getInt(ConfigKey::DB_PORT, 3306),
-                'database' => $config->getString(ConfigKey::DB_DATABASE),
-                'username' => $config->getString(ConfigKey::DB_USERNAME),
-                'password' => $config->getString(ConfigKey::DB_PASSWORD),
-                'charset' => $config->getString(ConfigKey::DB_CHARSET, 'utf8mb4'),
-                'collation' => $config->getString(ConfigKey::DB_COLLATION, 'utf8mb4_unicode_ci'),
-                'prefix' => $config->getString(ConfigKey::DB_PREFIX),
-            ])
+            ->setConnection($app->dbConnection())
             ->withMasking();
 
         if ($config->getBool(ConfigKey::TELEMETRY_DB_QUERIES)) {

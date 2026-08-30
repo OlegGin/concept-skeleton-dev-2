@@ -4,7 +4,6 @@ namespace Concept\App\Bootstrap\Recipes;
 
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
-use Concept\App\Foundation\TypedConfig;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
@@ -26,15 +25,14 @@ final class BffStackBootstrap
     {
         $pathManager = ContainerDependency::get($container, PathManager::class);
         $config = ContainerDependency::get($container, ConfigInterface::class);
-        $typed = new TypedConfig($config);
         $debug = $config->getBool(ConfigKey::APP_DEBUG);
 
         $stack = ConceptStack::create();
 
         $stack->addMasking()
-            ->setPatterns($typed->stringMap(ConfigKey::MASKING_PATTERNS))
-            ->setKeyPatterns($typed->stringList(ConfigKey::MASKING_KEY_PATTERNS))
-            ->setRules($typed->classList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
+            ->setPatterns($config->getStringMap(ConfigKey::MASKING_PATTERNS))
+            ->setKeyPatterns($config->getStringList(ConfigKey::MASKING_KEY_PATTERNS))
+            ->setRules($config->getClassList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
 
         $stack->addLogging()
             ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'INFO'))
@@ -50,8 +48,8 @@ final class BffStackBootstrap
             ->setDebug($debug);
 
         $validation = $stack->addValidation()
-            ->setRules($typed->classMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
-            ->setGlobalExcept($typed->stringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT));
+            ->setRules($config->getClassMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
+            ->setGlobalExcept($config->getStringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT));
         if ($config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED)) {
             $validation->withLogging($pathManager->get(
                 PathName::LOGS,
@@ -61,8 +59,8 @@ final class BffStackBootstrap
         $validation->withMasking();
 
         $stack->addHttp()
-            ->setRoutes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
-            ->setInterceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
+            ->setRoutes($pathManager->rootList($config->getStringList(ConfigKey::ROUTES_LIST)))
+            ->setInterceptors($config->getClassList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
             ->withFormRequests()
             ->withTypedRouteParameters();
 

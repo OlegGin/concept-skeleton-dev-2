@@ -2,9 +2,9 @@
 
 namespace Concept\App\Bootstrap\Recipes;
 
+use Concept\App\Foundation\AppConfig;
 use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
-use Concept\App\Foundation\TypedConfig;
 use Concept\App\View\Twig\TwigAppExtension;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
@@ -27,7 +27,7 @@ final class FormSiteStackBootstrap
     {
         $pathManager = ContainerDependency::get($container, PathManager::class);
         $config = ContainerDependency::get($container, ConfigInterface::class);
-        $typed = new TypedConfig($config);
+        $app = new AppConfig($config);
         $debug = $config->getBool(ConfigKey::APP_DEBUG);
 
         $stack = ConceptStack::create();
@@ -45,29 +45,23 @@ final class FormSiteStackBootstrap
             ->setDebug($debug);
 
         $stack->addValidation()
-            ->setRules($typed->classMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
-            ->setGlobalExcept($typed->stringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT));
+            ->setRules($config->getClassMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
+            ->setGlobalExcept($config->getStringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT));
 
         $stack->addSession()
-            ->setOptions([
-                'cookie_lifetime' => $config->getInt(ConfigKey::SESSION_COOKIE_LIFETIME),
-                'cookie_path' => $config->getString(ConfigKey::SESSION_COOKIE_PATH, '/'),
-                'cookie_secure' => $config->getBool(ConfigKey::SESSION_COOKIE_SECURE),
-                'cookie_httponly' => $config->getBool(ConfigKey::SESSION_COOKIE_HTTPONLY, true),
-                'cookie_samesite' => $config->getString(ConfigKey::SESSION_COOKIE_SAMESITE, 'Lax'),
-            ])
-            ->setHandler(new NativeFileSessionHandler())
+            ->setOptions($app->sessionCookieOptions())
+            ->setHandlerFactory(fn(): NativeFileSessionHandler => new NativeFileSessionHandler())
             ->withCsrf();
 
         $stack->addHttp()
-            ->setRoutes($pathManager->rootList($typed->stringList(ConfigKey::ROUTES_LIST)))
-            ->setInterceptors($typed->classList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
+            ->setRoutes($pathManager->rootList($config->getStringList(ConfigKey::ROUTES_LIST)))
+            ->setInterceptors($config->getClassList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
             ->withFormRequests();
 
         $stack->addView()
-            ->setPaths($pathManager->rootMap($typed->stringMap(ConfigKey::VIEW_PATHS)))
+            ->setPaths($pathManager->rootMap($config->getStringMap(ConfigKey::VIEW_PATHS)))
             ->setExtensions([TwigAppExtension::class])
-            ->setRouteNamespaces($typed->stringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
+            ->setRouteNamespaces($config->getStringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
             ->withTwig()
             ->setViewsPath($pathManager->get(PathName::VIEWS))
             ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
