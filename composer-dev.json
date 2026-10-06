@@ -246,7 +246,8 @@
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",
-        "php-debugbar/php-debugbar": "^3.7"
+        "php-debugbar/php-debugbar": "^3.7",
+        "phpunit/phpunit": "^11"
     },
     "require": {
         "php-concept/core-2": "^1.0",
@@ -293,6 +294,7 @@
         ],
         "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G",
         "boot-smoke": "php bin/boot-smoke.php",
+        "test-extensions": "scripts/extensions/test-all.sh",
         "ci": [
             "@phpstan",
             "@boot-smoke"
