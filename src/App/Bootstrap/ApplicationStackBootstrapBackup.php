@@ -45,14 +45,13 @@ final class ApplicationStackBootstrapBackup
             ->setKeyPatterns($config->getStringList(ConfigKey::MASKING_KEY_PATTERNS))
             ->setRules($config->getClassList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
 
-        $cache = new Psr16Cache(new FilesystemAdapter(
-            namespace: 'app',
-            defaultLifetime: 3600,
-            directory: $pathManager->get(PathName::CACHE, 'app'),
-        ));
-
-        CacheBrick::add($stack)
-            ->setCache($cache);
+        $stack->addCustom(
+            (new CacheBrick())->setCache(new Psr16Cache(new FilesystemAdapter(
+                namespace: 'app',
+                defaultLifetime: 3600,
+                directory: $pathManager->get(PathName::CACHE, 'app'),
+            ))),
+        );
 
         $appLogFileName = $config->getString(ConfigKey::LOG_FILE, 'app.log');
         $stack->addLogging()

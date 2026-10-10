@@ -7,6 +7,8 @@ use Concept\App\Foundation\ConfigKey;
 use Concept\App\Foundation\PathName;
 use Concept\App\Telemetry\TelemetryEvent;
 use Concept\App\View\Twig\TwigAppExtension;
+use Concept\Bricks\Cache\CacheBrick;
+use Concept\Bricks\CacheProbe\CacheProbeBrick;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Extensions\Components\Contracts\ComponentInterface;
@@ -18,6 +20,8 @@ use Concept\Stack\ConceptStack;
 use Illuminate\Database\Capsule\Manager as CapsuleManager;
 use League\Container\Container;
 use League\Event\ListenerSubscriber;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
@@ -42,6 +46,17 @@ final class ApplicationStackBootstrap
             ->setPatterns($config->getStringMap(ConfigKey::MASKING_PATTERNS))
             ->setKeyPatterns($config->getStringList(ConfigKey::MASKING_KEY_PATTERNS))
             ->setRules($config->getClassList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
+
+        $stack->addCustom(
+            (new CacheBrick())->setCache(new Psr16Cache(new FilesystemAdapter(
+                namespace: 'app',
+                defaultLifetime: 3600,
+                directory: $pathManager->get(PathName::CACHE),
+            ))),
+        );
+
+        // Intentionally before addLogging(): requires() still pulls logging first at providers().
+        $stack->addCustom(new CacheProbeBrick());
 
         $appLogFileName = $config->getString(ConfigKey::LOG_FILE, 'app.log');
         $stack->addLogging()

@@ -7,9 +7,11 @@
  */
 
 use Concept\Core\App;
+use Concept\Extensions\CacheProbe\CacheProbe;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\PathManager\PathManager;
 use League\Route\Router;
+use Psr\SimpleCache\CacheInterface;
 use Whoops\Run as Whoops;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
@@ -44,6 +46,7 @@ $required = [
     Whoops::class => 'early Whoops',
     PathManager::class => 'PathManager',
     ConfigInterface::class => 'ConfigInterface',
+    CacheInterface::class => 'CacheInterface',
     Router::class => 'Router',
 ];
 
@@ -67,6 +70,19 @@ try {
     smoke_ok('route home (' . $named->getPath() . ')');
 } catch (Throwable $e) {
     $failed = smoke_fail('route home', $e->getMessage());
+}
+
+try {
+    /** @var CacheProbe $probe */
+    $probe = $container->get(CacheProbe::class);
+    $value = $probe->ping();
+    if ($value !== 'ok') {
+        $failed = smoke_fail('CacheProbe', "expected ok, got {$value}");
+    } else {
+        smoke_ok('CacheProbe (requires cache + logging)');
+    }
+} catch (Throwable $e) {
+    $failed = smoke_fail('CacheProbe', $e->getMessage());
 }
 
 if ($failed) {
