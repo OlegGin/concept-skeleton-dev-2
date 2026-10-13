@@ -10,6 +10,7 @@ services:
       - .:/var/www/html
       - ../concept-core-2:/var/www/concept-core-2
       - ../concept-stack:/var/www/concept-stack
+      - ../concept-bricks:/var/www/concept-bricks
       - ../concept-extensions:/var/www/concept-extensions
       - ./docker/apache/vhost.conf:/etc/apache2/sites-available/000-default.conf
       - ./docker/php/error-reporting.ini:/usr/local/etc/php/conf.d/error-reporting.ini

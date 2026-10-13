@@ -1,34 +1,79 @@
 {
     "name": "php-concept/skeleton",
-    "require": {
-        "php-concept/core-2": "^1.0",
-        "twbs/bootstrap": "^5.3",
-        "twbs/bootstrap-icons": "^1.13",
-        "php-concept/extension-http": "^1.0",
-        "php-concept/extension-casting-valinor": "^1.0",
-        "php-concept/extension-form-request": "^1.0",
-        "php-concept/extension-validation-rakit": "^1.0",
-        "php-concept/extension-view": "^1.0",
-        "php-concept/extension-view-twig": "^1.0",
-        "php-concept/extension-view-plates": "^1.0",
-        "php-concept/extension-session-symfony": "^1.0",
-        "php-concept/extension-csrf": "^1.0",
-        "php-concept/extension-json": "^1.0",
-        "php-concept/extension-data-masker": "^1.0",
-        "php-concept/extension-logger-monolog": "^1.0",
-        "php-concept/extension-database-eloquent": "^1.0",
-        "php-concept/extension-console-symfony": "^1.0",
-        "php-concept/extension-error-handler-whoops": "^1.0",
-        "php-concept/extension-config": "^1.0",
-        "php-concept/extension-path-manager": "^1.0",
-        "php-concept/extension-components": "^1.0",
-        "php-concept/extension-event": "^1.0",
-        "php-concept/extension-telemetry": "^1.0",
-        "php-concept/support": "^1.0",
-        "symfony/cache": "^7.2",
-        "laminas/laminas-permissions-acl": "^2.18",
-        "vlucas/phpdotenv": "^5.6"
-    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../concept-core-2",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/core-2": "1.0.0"
+                }
+            }
+        },
+        {
+            "type": "path",
+            "url": "../concept-stack",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/stack": "2.0.0"
+                }
+            }
+        },
+        {
+            "type": "path",
+            "url": "../concept-extensions/packages/*",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-casting-valinor": "1.0.0",
+                    "php-concept/extension-components": "1.0.0",
+                    "php-concept/extension-config": "1.0.0",
+                    "php-concept/extension-console-symfony": "1.0.0",
+                    "php-concept/extension-csrf": "1.0.0",
+                    "php-concept/extension-data-masker": "1.0.0",
+                    "php-concept/extension-database-eloquent": "1.0.0",
+                    "php-concept/extension-error-handler-whoops": "1.0.0",
+                    "php-concept/extension-event": "1.0.0",
+                    "php-concept/extension-form-request": "1.0.0",
+                    "php-concept/extension-http": "1.0.0",
+                    "php-concept/extension-json": "1.0.0",
+                    "php-concept/extension-logger-monolog": "1.0.0",
+                    "php-concept/extension-path-manager": "1.0.0",
+                    "php-concept/extension-session-symfony": "1.0.0",
+                    "php-concept/extension-support": "1.0.0",
+                    "php-concept/extension-telemetry": "1.0.0",
+                    "php-concept/extension-validation-rakit": "1.0.0",
+                    "php-concept/extension-view": "1.0.0",
+                    "php-concept/extension-view-plates": "1.0.0",
+                    "php-concept/extension-view-twig": "1.0.0"
+                }
+            }
+        },
+        {
+            "type": "path",
+            "url": "../concept-bricks/packages/*",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/brick-casting-valinor": "1.0.0",
+                    "php-concept/brick-components": "1.0.0",
+                    "php-concept/brick-console-symfony": "1.0.0",
+                    "php-concept/brick-database-eloquent": "1.0.0",
+                    "php-concept/brick-data-masker": "1.0.0",
+                    "php-concept/brick-error-handler-whoops": "1.0.0",
+                    "php-concept/brick-event": "1.0.0",
+                    "php-concept/brick-http": "1.0.0",
+                    "php-concept/brick-logger-monolog": "1.0.0",
+                    "php-concept/brick-session-symfony": "1.0.0",
+                    "php-concept/brick-telemetry": "1.0.0",
+                    "php-concept/brick-validation-rakit": "1.0.0",
+                    "php-concept/brick-view": "1.0.0"
+                }
+            }
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Concept\\": "src/",
@@ -45,6 +90,49 @@
         "php-debugbar/php-debugbar": "^3.7",
         "phpunit/phpunit": "^11"
     },
+    "require": {
+        "php-concept/core-2": "^1.0",
+        "php-concept/stack": "^2.0",
+        "php-concept/brick-casting-valinor": "^1.0",
+        "php-concept/brick-components": "^1.0",
+        "php-concept/brick-console-symfony": "^1.0",
+        "php-concept/brick-database-eloquent": "^1.0",
+        "php-concept/brick-data-masker": "^1.0",
+        "php-concept/brick-error-handler-whoops": "^1.0",
+        "php-concept/brick-event": "^1.0",
+        "php-concept/brick-http": "^1.0",
+        "php-concept/brick-logger-monolog": "^1.0",
+        "php-concept/brick-session-symfony": "^1.0",
+        "php-concept/brick-telemetry": "^1.0",
+        "php-concept/brick-validation-rakit": "^1.0",
+        "php-concept/brick-view": "^1.0",
+        "laminas/laminas-permissions-acl": "^2.18",
+        "php-concept/extension-casting-valinor": "^1.0",
+        "php-concept/extension-components": "^1.0",
+        "php-concept/extension-config": "^1.0",
+        "php-concept/extension-console-symfony": "^1.0",
+        "php-concept/extension-csrf": "^1.0",
+        "php-concept/extension-data-masker": "^1.0",
+        "php-concept/extension-database-eloquent": "^1.0",
+        "php-concept/extension-error-handler-whoops": "^1.0",
+        "php-concept/extension-event": "^1.0",
+        "php-concept/extension-form-request": "^1.0",
+        "php-concept/extension-http": "^1.0",
+        "php-concept/extension-json": "^1.0",
+        "php-concept/extension-logger-monolog": "^1.0",
+        "php-concept/extension-path-manager": "^1.0",
+        "php-concept/extension-session-symfony": "^1.0",
+        "php-concept/extension-telemetry": "^1.0",
+        "php-concept/extension-validation-rakit": "^1.0",
+        "php-concept/extension-view": "^1.0",
+        "php-concept/extension-view-plates": "^1.0",
+        "php-concept/extension-view-twig": "^1.0",
+        "php-concept/extension-support": "^1.0",
+        "symfony/cache": "^7.2|^8.0",
+        "twbs/bootstrap": "^5.3",
+        "twbs/bootstrap-icons": "^1.13",
+        "vlucas/phpdotenv": "^5.6"
+    },
     "scripts": {
         "post-install-cmd": [
             "@publish-assets"
@@ -55,7 +143,6 @@
         "publish-assets": [
             "mkdir -p public/vendor/bootstrap",
             "cp -R vendor/twbs/bootstrap/dist/. public/vendor/bootstrap/",
-
             "mkdir -p public/vendor/bootstrap-icons",
             "cp -R vendor/twbs/bootstrap-icons/font/. public/vendor/bootstrap-icons/"
         ],

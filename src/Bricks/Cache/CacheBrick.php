@@ -11,13 +11,13 @@ use Psr\SimpleCache\CacheInterface;
 /**
  * App-level cache brick (skeleton). Not part of php-concept/stack.
  *
- *   $stack->addCustom(
+ *   $stack->add(
  *       (new CacheBrick())->setCache(new Psr16Cache(new FilesystemAdapter(...)))
  *   );
  */
 final class CacheBrick implements BrickInterface
 {
-    private const string NAME = 'cache';
+    public const string NAME = 'cache';
 
     private ?CacheInterface $cache = null;
 
@@ -46,18 +46,10 @@ final class CacheBrick implements BrickInterface
      */
     public function providers(): array
     {
-        $this->assertValid();
-
-        /** @var CacheInterface $cache */
-        $cache = $this->cache;
-
-        return [new CacheServiceProvider($cache)];
-    }
-
-    public function assertValid(): void
-    {
         if ($this->cache === null) {
             throw InvalidCapabilityOptionsException::missingOption(self::NAME, 'setCache()');
         }
+
+        return [new CacheServiceProvider($this->cache)];
     }
 }

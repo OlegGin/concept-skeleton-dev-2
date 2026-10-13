@@ -8,6 +8,9 @@ use Concept\App\Foundation\PathName;
 use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\PathManager\PathManager;
+use Concept\Stack\Bricks\Console\ConsoleBrick;
+use Concept\Stack\Bricks\Database\DatabaseBrick;
+use Concept\Stack\Bricks\Logging\LoggingBrick;
 use Concept\Stack\ConceptStack;
 use League\Container\Container;
 use Symfony\Component\Console\Command\Command;
@@ -27,7 +30,7 @@ final class CliStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->addLogging()
+        $stack->add(new LoggingBrick())->builder()
             ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'INFO'))
             ->setChannel($config->getString(ConfigKey::LOG_NAME, 'cli'))
             ->toRotatingFile(
@@ -35,12 +38,12 @@ final class CliStackBootstrap
                 $config->getInt(ConfigKey::LOG_MAX_FILES, 7),
             );
 
-        $stack->addDatabase()
+        $stack->add(new DatabaseBrick())->builder()
             ->setConnection($app->dbConnection())
             ->setMigrations($pathManager->rootList($config->getStringList(ConfigKey::MIGRATIONS_PATHS)))
             ->setMigrationsTable($config->getString(ConfigKey::MIGRATIONS_TABLE, 'migrations'));
 
-        $stack->addConsole()
+        $stack->add(new ConsoleBrick())->builder()
             ->setName($config->getString(ConfigKey::APP_NAME, 'CLI'))
             ->setVersion($config->getString(ConfigKey::APP_VERSION, '1.0.0'))
             ->setCommands($config->getClassList(ConfigKey::COMMANDS, Command::class));

@@ -15,6 +15,19 @@ use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
+use Concept\Stack\Bricks\Casting\CastingBrick;
+use Concept\Stack\Bricks\Components\ComponentsBrick;
+use Concept\Stack\Bricks\Console\ConsoleBrick;
+use Concept\Stack\Bricks\Database\DatabaseBrick;
+use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingBrick;
+use Concept\Stack\Bricks\Events\EventBrick;
+use Concept\Stack\Bricks\Http\HttpBrick;
+use Concept\Stack\Bricks\Logging\LoggingBrick;
+use Concept\Stack\Bricks\Masking\MaskingBrick;
+use Concept\Stack\Bricks\Session\SessionBrick;
+use Concept\Stack\Bricks\Telemetry\TelemetryBrick;
+use Concept\Stack\Bricks\Validation\ValidationBrick;
+use Concept\Stack\Bricks\View\ViewBrick;
 use Concept\Stack\ConceptStack;
 use League\Container\Container;
 use League\Event\ListenerSubscriber;
@@ -22,7 +35,6 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Whoops\Handler\PrettyPageHandler;
 
 /**
@@ -40,12 +52,12 @@ final class ApplicationStackBootstrapBackup
         $debug = $config->getBool(ConfigKey::APP_DEBUG);
         $stack = ConceptStack::create();
 
-        $stack->addMasking()
+        $stack->add(new MaskingBrick())->builder()
             ->setPatterns($config->getStringMap(ConfigKey::MASKING_PATTERNS))
             ->setKeyPatterns($config->getStringList(ConfigKey::MASKING_KEY_PATTERNS))
             ->setRules($config->getClassList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
 
-        $stack->addCustom(
+        $stack->add(
             (new CacheBrick())->setCache(new Psr16Cache(new FilesystemAdapter(
                 namespace: 'app',
                 defaultLifetime: 3600,
@@ -54,7 +66,7 @@ final class ApplicationStackBootstrapBackup
         );
 
         $appLogFileName = $config->getString(ConfigKey::LOG_FILE, 'app.log');
-        $stack->addLogging()
+        $stack->add(new LoggingBrick())->builder()
             ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'ERROR'))
             ->setChannel($config->getString(ConfigKey::LOG_NAME, 'app'))
             ->toRotatingFile(
@@ -64,23 +76,23 @@ final class ApplicationStackBootstrapBackup
             ->withMasking();
 
         if ($config->getBool(ConfigKey::EVENTS_ENABLED)) {
-            $stack->addEvents()
+            $stack->add(new EventBrick())->builder()
                 ->setSubscribers($config->getClassList(ConfigKey::EVENTS_SUBSCRIBERS, ListenerSubscriber::class));
         }
 
-        $stack->addTelemetry()
+        $stack->add(new TelemetryBrick())->builder()
             ->setEnabled($config->getBool(ConfigKey::TELEMETRY_ENABLED))
             ->setLogs($config->getBool(ConfigKey::TELEMETRY_LOGS))
             ->setEventName(TelemetryEvent::LOG_RECORDED);
 
         $casterCacheDir = $config->getString(ConfigKey::CASTER_CACHE_DIR, 'valinor');
-        $stack->addCasting()
+        $stack->add(new CastingBrick())->builder()
             ->setTransformers($config->getClassStringList(ConfigKey::CASTER_TRANSFORMERS))
             ->setCacheDir($pathManager->get(PathName::CACHE, $casterCacheDir))
             ->setDebug($debug);
 
         $validationLogFileName = $config->getString(ConfigKey::VALIDATOR_LOG_FILE, 'validation.log');
-        $validation = $stack->addValidation()
+        $validation = $stack->add(new ValidationBrick())->builder()
             ->setRules($config->getClassMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
             ->setGlobalExcept($config->getStringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT));
         if ($config->getBool(ConfigKey::VALIDATOR_LOG_ENABLED)) {
@@ -91,7 +103,7 @@ final class ApplicationStackBootstrapBackup
         }
         $validation->withMasking();
 
-        $database = $stack->addDatabase()
+        $database = $stack->add(new DatabaseBrick())->builder()
             ->setConnection($app->dbConnection())
             ->setMigrations($pathManager->rootList($config->getStringList(ConfigKey::MIGRATIONS_PATHS)))
             ->setMigrationsTable($config->getString(ConfigKey::MIGRATIONS_TABLE, 'migrations'))
@@ -111,7 +123,7 @@ final class ApplicationStackBootstrapBackup
         }
 
         $sessionFilePath = $config->get(ConfigKey::SESSION_FILE_PATH);
-        $stack->addSession()
+        $stack->add(new SessionBrick())->builder()
             ->setOptions($app->sessionOptions())
             ->setHandlerFactory(function() use ($pathManager, $sessionFilePath): NativeFileSessionHandler {
                 return is_string($sessionFilePath) && $sessionFilePath !== ''
@@ -120,7 +132,7 @@ final class ApplicationStackBootstrapBackup
             })
             ->withCsrf();
 
-        $stack->addHttp()
+        $stack->add(new HttpBrick())->builder()
             ->setRoutes($pathManager->rootList($config->getStringList(ConfigKey::ROUTES_LIST)))
             ->setInterceptors($config->getClassList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
             ->withFormRequests()
@@ -132,7 +144,7 @@ final class ApplicationStackBootstrapBackup
         }
 
         $viewCacheDir = $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views');
-        $stack->addView()
+        $stack->add(new ViewBrick())->builder()
             ->setPaths($pathManager->rootMap($config->getStringMap(ConfigKey::VIEW_PATHS)))
             ->setExtensions($viewExtensions)
             ->setRouteNamespaces($config->getStringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
@@ -141,17 +153,17 @@ final class ApplicationStackBootstrapBackup
             ->setCacheDir($pathManager->get(PathName::CACHE, $viewCacheDir))
             ->setDebug($debug);
 
-        $stack->addConsole()
+        $stack->add(new ConsoleBrick())->builder()
             ->setName($config->getString(ConfigKey::APP_NAME, 'Concept Skeleton'))
             ->setVersion($config->getString(ConfigKey::APP_VERSION, '1.0.0'))
             ->setCommands($config->getClassList(ConfigKey::COMMANDS, Command::class));
 
-        $stack->addErrorHandling()
+        $stack->add(new ErrorHandlingBrick())->builder()
             ->setDebug($debug, new PrettyPageHandler())
             ->setLogReporting()
             ->withViewRenderer($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));
 
-        $components = $stack->addComponents()
+        $components = $stack->add(new ComponentsBrick())->builder()
             ->setClasses($config->getClassList(ConfigKey::COMPONENTS, ComponentInterface::class))
             ->withDatabase()
             ->withConsole()

@@ -10,6 +10,11 @@ use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
 use Concept\Extensions\PathManager\PathManager;
+use Concept\Stack\Bricks\Database\DatabaseBrick;
+use Concept\Stack\Bricks\Events\EventBrick;
+use Concept\Stack\Bricks\Logging\LoggingBrick;
+use Concept\Stack\Bricks\Masking\MaskingBrick;
+use Concept\Stack\Bricks\Telemetry\TelemetryBrick;
 use Concept\Stack\ConceptStack;
 use League\Container\Container;
 use League\Event\ListenerSubscriber;
@@ -31,12 +36,12 @@ final class WorkerStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->addMasking()
+        $stack->add(new MaskingBrick())->builder()
             ->setPatterns($config->getStringMap(ConfigKey::MASKING_PATTERNS))
             ->setKeyPatterns($config->getStringList(ConfigKey::MASKING_KEY_PATTERNS))
             ->setRules($config->getClassList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
 
-        $stack->addLogging()
+        $stack->add(new LoggingBrick())->builder()
             ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'INFO'))
             ->setChannel($config->getString(ConfigKey::LOG_NAME, 'worker'))
             ->toRotatingFile(
@@ -46,16 +51,16 @@ final class WorkerStackBootstrap
             ->withMasking();
 
         if ($config->getBool(ConfigKey::EVENTS_ENABLED)) {
-            $stack->addEvents()
+            $stack->add(new EventBrick())->builder()
                 ->setSubscribers($config->getClassList(ConfigKey::EVENTS_SUBSCRIBERS, ListenerSubscriber::class));
         }
 
-        $stack->addTelemetry()
+        $stack->add(new TelemetryBrick())->builder()
             ->setEnabled($config->getBool(ConfigKey::TELEMETRY_ENABLED))
             ->setLogs($config->getBool(ConfigKey::TELEMETRY_LOGS))
             ->setEventName(TelemetryEvent::LOG_RECORDED);
 
-        $database = $stack->addDatabase()
+        $database = $stack->add(new DatabaseBrick())->builder()
             ->setConnection($app->dbConnection())
             ->withMasking();
 

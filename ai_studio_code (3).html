@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Повний технічний аудит Concept 2</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #fdfdfd;
+        }
+        h1 {
+            color: #1a2a3a;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            font-size: 2.2em;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #16a085;
+            margin-top: 25px;
+            font-size: 1.3em;
+        }
+        .meta {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+        .problem-section {
+            background: #fffafa;
+            border-left: 5px solid #e74c3c;
+            padding: 1px 20px 20px 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .recommendation-section {
+            background: #f0fff4;
+            border-left: 5px solid #2ecc71;
+            padding: 1px 20px 20px 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        code {
+            background: #f1f1f1;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            color: #c7254e;
+        }
+        pre {
+            background: #2d3436;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 40px 0;
+        }
+        strong {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Повний технічний аудит та дорожня карта шліфування архітектури Concept 2</h1>
+
+    <div class="meta">
+        <strong>Дата:</strong> Жовтень 2024<br>
+        <strong>Об'єкт:</strong> Core-2, Stack та Skeleton<br>
+        <strong>Ціль:</strong> Досягнення нульової магії, максимального DX та готовності до монорепо-структури.
+    </div>
+
+    <p>Цей документ детально описує кожну знахідку, аналізує її вплив на систему та надає покрокові інструкції з виправлення.</p>
+
+    <hr>
+
+    <h2>1. StackBuilder: Порушення принципу Open/Closed та Монолітна Зв’язаність</h2>
+
+    <div class="problem-section">
+        <h3>Детальний опис проблеми</h3>
+        <p>Клас <code>StackBuilder</code> наразі є «точкою збірки», яка знає занадто багато. Він імпортує класи <code>Options</code>, <code>Builder</code> та <code>StackProvider</code> для кожного розширення (<code>Http</code>, <code>Database</code>, <code>Validation</code>, <code>View</code> тощо).</p>
+        <p>З точки зору SOLID — це порушення принципу <strong>Open/Closed</strong>: система закрита для розширення без модифікації ядра пакета <code>stack</code>.</p>
+        <ul>
+            <li><strong>Зв'язаність:</strong> Пакет <code>php-concept/stack</code> має прямі залежності від усіх <code>php-concept/extension-*</code>.</li>
+            <li><strong>Екосистема:</strong> Сторонній розробник не може написати <code>$stack-&gt;addS3Storage()</code>, щоб це виглядало нативно. Йому доводиться використовувати метод <code>addCustom()</code>, що створює «громадян другого сорту» серед розширень.</li>
+        </ul>
+    </div>
+
+    <div class="recommendation-section">
+        <h3>Рекомендації щодо виправлення</h3>
+        <ul>
+            <li><strong>Децентралізація через Brick Registry:</strong> Впровадити механізм реєстрації «цеглинок». Кожне розширення має постачати свій <code>Brick</code> клас.</li>
+            <li><strong>Використання Traits для DSL:</strong> Для збереження гарного Fluent API (<code>addHttp()</code>, <code>addDatabase()</code>), винести ці методи у відповідні Трейти, які підключаються до основного <code>StackBuilder</code>. Це дозволить фізично розділити код.</li>
+            <li><strong>Динамічне розширення:</strong> Додати метод <code>registerBrick(string $name, string $builderClass)</code>, щоб нові розширення могли «впорскувати» свої методи в Стек під час ініціалізації.</li>
+        </ul>
+    </div>
+
+    <h2>2. App::handle(): Метод-комбайн та порушення SRP</h2>
+
+    <div class="problem-section">
+        <h3>Детальний опис проблеми</h3>
+        <p>Метод <code>handle()</code> у <code>src/App.php</code> виконує три не пов'язані між собою завдання:</p>
+        <ol>
+            <li><strong>Диспатчинг:</strong> Виклик роутера.</li>
+            <li><strong>Інструментація:</strong> Вимірювання часу виконання (<code>microtime</code>) та піків пам'яті (<code>memory_get_peak_usage</code>).</li>
+            <li><strong>Події:</strong> Формування та запуск об'єкта події <code>RequestHandled</code>.</li>
+        </ol>
+        <p>Це робить ядро «думним». Вимірювання ресурсів зашито в runtime, і розробник не може його вимкнути. Це також ускладнює юніт-тестування, оскільки кожен виклик <code>handle()</code> створює побічні ефекти у вигляді системних викликів вимірювання ресурсів.</p>
+    </div>
+
+    <div class="recommendation-section">
+        <h3>Рекомендації щодо виправлення</h3>
+        <ul>
+            <li><strong>Middleware для метрик:</strong> Всю логіку вимірювання часу та пам'яті винести в <code>SystemMetricsMiddleware</code> (PSR-15).</li>
+            <li><strong>Чистий Dispatch:</strong> Метод <code>handle()</code> повинен лише отримувати об'єкти з контейнера та викликати <code>$router-&gt;dispatch($request)</code>.</li>
+            <li><strong>Event Listeners:</strong> Розрахунок тривалості та споживання пам'яті має відбуватися всередині слухача події <code>RequestHandled</code>, а не перед його створенням.</li>
+        </ul>
+    </div>
+
+    <h2>3. RouteStrategy: Динамічне Reflection-пекло</h2>
+
+    <div class="problem-section">
+        <h3>Детальний опис проблеми</h3>
+        <p>У файлі <code>src/Http/Routing/RouteStrategy.php</code> метод <code>invokeRouteCallable</code> виконує <code>getReflection($callable)</code> та <code>resolveArguments()</code> при <strong>кожному</strong> HTTP-запиті.</p>
+        <p>Для кожного аргументу контролера запускається цикл по всіх зареєстрованих <code>ArgumentResolvers</code>. Якщо у вас 5 параметрів у методі та 10 резолверів — це 50 викликів методу <code>supports()</code> на кожен запит.</p>
+    </div>
+
+    <div class="recommendation-section">
+        <h3>Рекомендації щодо виправлення</h3>
+        <ul>
+            <li><strong>Metadata Caching (План виклику):</strong> Після першого розбору маршруту система повинна сформувати «План виклику» — масив, де вказано, який параметр контролера з якого джерела береться (наприклад: <code>0 =&gt; ResolverA, 1 =&gt; ResolverB</code>).</li>
+            <li><strong>Кешування плану:</strong> Цей план має зберігатися в кеші (наприклад, через <code>extension-path-manager</code> у папку <code>storage/cache/routing</code>).</li>
+            <li><strong>Результат:</strong> Наступний запит до цього ж URL взагалі не повинен викликати Reflection API.</li>
+        </ul>
+    </div>
+
+    <h2>4. HttpKernelServiceProvider: Scope Pollution та небезпечний require</h2>
+
+    <div class="problem-section">
+        <h3>Детальний опис проблеми</h3>
+        <p>Метод <code>registerRoutes</code> використовує прямий виклик <code>require $filePath</code> всередині циклу <code>foreach</code>.</p>
+        <ol>
+            <li><strong>Scope Pollution:</strong> Будь-які змінні, оголошені у файлі маршрутів (наприклад, <code>$router</code> або випадкова <code>$data</code>), потрапляють у загальну область видимості об'єкта провайдера.</li>
+            <li><strong>Магія IDE:</strong> Файли маршрутів не мають контексту. IDE не знає, що таке <code>$router</code>, тому автодоповнення не працює «з коробки».</li>
+        </ol>
+    </div>
+
+    <div class="recommendation-section">
+        <h3>Рекомендації щодо виправлення</h3>
+        <ul>
+            <li><strong>Isolated Route Loader:</strong> Створити клас-завантажувач.
+<pre><code>final class RouteLoader {
+    public static function load(Router $router, string $path): void {
+        (static function(Router $router, string $path) {
+            require $path;
+        })($router, $path);
+    }
+}</code></pre>
+            Це гарантує, що змінні всередині файлу маршрутів обмежені анонімною функцією.</li>
+            <li><strong>Анонімні функції:</strong> Рекомендувати (або вимагати) повернення <code>Closure</code> з файлу:
+<pre><code>// routes/web.php
+return fn(Router $router) =&gt; $router-&gt;get(...);</code></pre>
+            </li>
+        </ul>
+    </div>
+
+    <h2>5. resolveParameter: Відсутність Fail-Fast винятків</h2>
+
+    <div class="problem-section">
+        <h3>Детальний опис проблеми</h3>
+        <p>У <code>RouteStrategy.php</code> метод <code>resolveParameter</code> повертає <code>null</code>, якщо жоден резолвер не підійшов. Це призводить до того, що PHP викидає <code>TypeError</code> під час виклику методу контролера.</p>
+        <ul>
+            <li><strong>Проблема DX:</strong> Повідомлення <code>Argument #1 ($form) must be of type X, null given</code> вводить в оману. Розробник думає, що проблема в даних запиту, хоча насправді проблема в тому, що в Стеку не підключено <code>withFormRequests()</code>.</li>
+        </ul>
+    </div>
+
+    <div class="recommendation-section">
+        <h3>Рекомендації щодо виправлення</h3>
+        <ul>
+            <li><strong>UnresolvedArgumentException:</strong> Замість повернення <code>null</code>, кидати типізований виняток.</li>
+            <li><strong>Контекстна допомога:</strong> Виняток повинен містити текст: <em>"Ядро не знайшло способу заповнити параметр [$name] типу [$type]. Переконайтеся, що ви активували необхідну можливість у ConceptStack (наприклад, addValidation() або addCasting())"</em>.</li>
+        </ul>
+    </div>
+
+    <h2>6. Glue Logic: Перевантаженість Ботстрапe</h2>
+
+    <div class="problem-section">
+        <h3>Детальний опис проблеми</h3>
+        <p>У <code>ApplicationStackBootstrap.php</code> ми бачимо конструкції на кшталт створення <code>NativeFileSessionHandler</code> з прямим зверненням до <code>PathManager</code>. Це «жорстке склеювання». Якщо завтра знадобиться змінити сесію на Redis, доведеться переписувати логіку в Ботстрапі, який мав би бути лише декларативним.</p>
+    </div>
+
+    <div class="recommendation-section">
+        <h3>Рекомендації щодо виправлення</h3>
+        <ul>
+            <li><strong>Smart Builders:</strong> Методи Стеку повинні приймати лише назви («file», «redis»), а логіку створення конкретних об'єктів делегувати внутрішнім фабрикам розширень.</li>
+            <li><strong>Configuration Objects:</strong> Винести логіку «якщо шлях порожній — роби так» у методи класу <code>AppConfig</code>. Ботстрап має виглядати як чистий список намірів.</li>
+        </ul>
+    </div>
+
+    <h2>7. ContainerDependency: Приховування помилок у getOrNull</h2>
+
+    <div class="problem-section">
+        <h3>Детальний опис проблеми</h3>
+        <p>Метод <code>getOrNull</code> у <code>ContainerDependency.php</code> ловить <code>ContainerDependencyException</code>. Якщо сервіс зареєстрований, але його створення викликало помилку (наприклад, помилка в конструкторі сервісу), метод може повернути <code>null</code>, приховуючи реальну причину аварії.</p>
+    </div>
+
+    <div class="recommendation-section">
+        <h3>Рекомендації щодо виправлення</h3>
+        <ul>
+            <li><strong>Розрізнення помилок:</strong> <code>getOrNull</code> повинен повертати <code>null</code> <strong>тільки</strong> якщо сервіс фізично не зареєстрований у контейнері (<code>!$container-&gt;has()</code>).</li>
+            <li><strong>Fail-Fast для Runtime:</strong> Будь-які помилки під час самого процесу створення об'єкта (інстанціювання) повинні прокидатися вгору, щоб розробник бачив справжній Stack Trace.</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <h2>План впровадження (Roadmap)</h2>
+    <ul>
+        <li><strong>Етап 1 (Монорепо):</strong> Перенести розширення в єдину структуру, щоб полегшити перехресне тестування при зміні <code>ArgumentResolvers</code>.</li>
+        <li><strong>Етап 2 (Core Clean-up):</strong> Виправити <code>App::handle()</code> та <code>resolveParameter</code>. Це «швидкі перемоги» для стабільності.</li>
+        <li><strong>Етап 3 (Performance):</strong> Впровадити Metadata Cache для роутингу.</li>
+        <li><strong>Етап 4 (Stack Refactoring):</strong> Почати перехід на Traits та динамічну реєстрацію бріків у <code>StackBuilder</code>.</li>
+    </ul>
+
+    <footer>
+        *Цей документ є власністю проекту Concept 2 і призначений для внутрішнього використання розробником.*
+    </footer>
+
+</body>
+</html>

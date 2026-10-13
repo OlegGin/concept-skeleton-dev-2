@@ -9,6 +9,10 @@ use Concept\Core\Container\ContainerDependency;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\PathManager\PathManager;
+use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingBrick;
+use Concept\Stack\Bricks\Http\HttpBrick;
+use Concept\Stack\Bricks\Logging\LoggingBrick;
+use Concept\Stack\Bricks\View\ViewBrick;
 use Concept\Stack\ConceptStack;
 use League\Container\Container;
 use Whoops\Handler\PrettyPageHandler;
@@ -28,7 +32,7 @@ final class StaticSiteStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->addLogging()
+        $stack->add(new LoggingBrick())->builder()
             ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'ERROR'))
             ->setChannel($config->getString(ConfigKey::LOG_NAME, 'web'))
             ->toRotatingFile(
@@ -36,11 +40,11 @@ final class StaticSiteStackBootstrap
                 $config->getInt(ConfigKey::LOG_MAX_FILES, 7),
             );
 
-        $stack->addHttp()
+        $stack->add(new HttpBrick())->builder()
             ->setRoutes($pathManager->rootList($config->getStringList(ConfigKey::ROUTES_LIST)))
             ->setInterceptors($config->getClassList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class));
 
-        $stack->addView()
+        $stack->add(new ViewBrick())->builder()
             ->setPaths($pathManager->rootMap($config->getStringMap(ConfigKey::VIEW_PATHS)))
             ->setExtensions([TwigAppExtension::class])
             ->setRouteNamespaces($config->getStringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
@@ -49,7 +53,7 @@ final class StaticSiteStackBootstrap
             ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
             ->setDebug($debug);
 
-        $stack->addErrorHandling()
+        $stack->add(new ErrorHandlingBrick())->builder()
             ->setDebug($debug, new PrettyPageHandler())
             ->setLogReporting()
             ->withViewRenderer($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));

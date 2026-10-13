@@ -11,6 +11,13 @@ use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
+use Concept\Stack\Bricks\Casting\CastingBrick;
+use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingBrick;
+use Concept\Stack\Bricks\Http\HttpBrick;
+use Concept\Stack\Bricks\Logging\LoggingBrick;
+use Concept\Stack\Bricks\Session\SessionBrick;
+use Concept\Stack\Bricks\Validation\ValidationBrick;
+use Concept\Stack\Bricks\View\ViewBrick;
 use Concept\Stack\ConceptStack;
 use League\Container\Container;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
@@ -32,7 +39,7 @@ final class FormSiteStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->addLogging()
+        $stack->add(new LoggingBrick())->builder()
             ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'ERROR'))
             ->setChannel($config->getString(ConfigKey::LOG_NAME, 'web'))
             ->toRotatingFile(
@@ -40,25 +47,25 @@ final class FormSiteStackBootstrap
                 $config->getInt(ConfigKey::LOG_MAX_FILES, 7),
             );
 
-        $stack->addCasting()
+        $stack->add(new CastingBrick())->builder()
             ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR, 'valinor')))
             ->setDebug($debug);
 
-        $stack->addValidation()
+        $stack->add(new ValidationBrick())->builder()
             ->setRules($config->getClassMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
             ->setGlobalExcept($config->getStringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT));
 
-        $stack->addSession()
+        $stack->add(new SessionBrick())->builder()
             ->setOptions($app->sessionCookieOptions())
             ->setHandlerFactory(fn(): NativeFileSessionHandler => new NativeFileSessionHandler())
             ->withCsrf();
 
-        $stack->addHttp()
+        $stack->add(new HttpBrick())->builder()
             ->setRoutes($pathManager->rootList($config->getStringList(ConfigKey::ROUTES_LIST)))
             ->setInterceptors($config->getClassList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
             ->withFormRequests();
 
-        $stack->addView()
+        $stack->add(new ViewBrick())->builder()
             ->setPaths($pathManager->rootMap($config->getStringMap(ConfigKey::VIEW_PATHS)))
             ->setExtensions([TwigAppExtension::class])
             ->setRouteNamespaces($config->getStringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
@@ -67,7 +74,7 @@ final class FormSiteStackBootstrap
             ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
             ->setDebug($debug);
 
-        $stack->addErrorHandling()
+        $stack->add(new ErrorHandlingBrick())->builder()
             ->setDebug($debug, new PrettyPageHandler())
             ->setLogReporting()
             ->withViewRenderer($pathManager->get(PathName::ERRORS_FALLBACK_VIEWS));

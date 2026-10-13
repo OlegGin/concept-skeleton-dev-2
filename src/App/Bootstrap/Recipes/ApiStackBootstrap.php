@@ -10,6 +10,12 @@ use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
 use Concept\Extensions\PathManager\PathManager;
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
+use Concept\Stack\Bricks\Casting\CastingBrick;
+use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingBrick;
+use Concept\Stack\Bricks\Http\HttpBrick;
+use Concept\Stack\Bricks\Logging\LoggingBrick;
+use Concept\Stack\Bricks\Masking\MaskingBrick;
+use Concept\Stack\Bricks\Validation\ValidationBrick;
 use Concept\Stack\ConceptStack;
 use League\Container\Container;
 
@@ -28,12 +34,12 @@ final class ApiStackBootstrap
 
         $stack = ConceptStack::create();
 
-        $stack->addMasking()
+        $stack->add(new MaskingBrick())->builder()
             ->setPatterns($config->getStringMap(ConfigKey::MASKING_PATTERNS))
             ->setKeyPatterns($config->getStringList(ConfigKey::MASKING_KEY_PATTERNS))
             ->setRules($config->getClassList(ConfigKey::MASKING_RULES, DataMaskerRuleInterface::class));
 
-        $stack->addLogging()
+        $stack->add(new LoggingBrick())->builder()
             ->setLevel($config->getString(ConfigKey::LOG_LEVEL, 'ERROR'))
             ->setChannel($config->getString(ConfigKey::LOG_NAME, 'api'))
             ->toRotatingFile(
@@ -42,22 +48,22 @@ final class ApiStackBootstrap
             )
             ->withMasking();
 
-        $stack->addCasting()
+        $stack->add(new CastingBrick())->builder()
             ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::CASTER_CACHE_DIR, 'valinor')))
             ->setDebug($debug);
 
-        $stack->addValidation()
+        $stack->add(new ValidationBrick())->builder()
             ->setRules($config->getClassMap(ConfigKey::VALIDATOR_RULES, RuleInterface::class))
             ->setGlobalExcept($config->getStringList(ConfigKey::FORM_REQUEST_GLOBAL_EXCEPT))
             ->withMasking();
 
-        $stack->addHttp()
+        $stack->add(new HttpBrick())->builder()
             ->setRoutes($pathManager->rootList($config->getStringList(ConfigKey::ROUTES_LIST)))
             ->setInterceptors($config->getClassList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class))
             ->withFormRequests()
             ->withTypedRouteParameters();
 
-        $stack->addErrorHandling()
+        $stack->add(new ErrorHandlingBrick())->builder()
             ->setDebug($debug)
             ->setLogReporting()
             ->withJsonRenderer();
