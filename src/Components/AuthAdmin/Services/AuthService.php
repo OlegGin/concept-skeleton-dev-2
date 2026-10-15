@@ -2,8 +2,11 @@
 
 namespace Concept\Components\AuthAdmin\Services;
 
+use Concept\Components\AuthAdmin\Events\UserLoginFailed;
+use Concept\Components\AuthAdmin\Events\UserLoginSucceeded;
 use Concept\Components\AuthAdmin\Models\UserModel;
 use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class AuthService
 {
@@ -13,7 +16,8 @@ class AuthService
 
     public function __construct(
         private readonly SessionInterface $session,
-        private readonly UserModel $userModel
+        private readonly UserModel $userModel,
+        private readonly ?EventDispatcherInterface $dispatcher = null,
     ) {}
 
     public function attempt(string $email, string $password, bool $remember = false): bool
@@ -24,10 +28,16 @@ class AuthService
             ->first();
 
         if (!$user || !$user->verifyPassword($password)) {
+            $this->dispatcher?->dispatch(new UserLoginFailed(email: $email));
+
             return false;
         }
 
         $this->login($user, $remember);
+        $this->dispatcher?->dispatch(new UserLoginSucceeded(
+            userId: $user->getId(),
+            email: $user->getEmail(),
+        ));
 
         return true;
     }

@@ -2,19 +2,24 @@
 
 namespace Concept\Components\AuthAdmin\Services;
 
+use Concept\Components\AuthAdmin\Events\UserCreated;
+use Concept\Components\AuthAdmin\Events\UserDeleted;
+use Concept\Components\AuthAdmin\Events\UserUpdated;
 use Concept\Components\AuthAdmin\Dto\User\StoreUserDto;
 use Concept\Components\AuthAdmin\Dto\User\UpdateUserDto;
 use Concept\Components\AuthAdmin\Dto\User\UpdateUserPasswordDto;
 use Concept\Components\AuthAdmin\Mappers\UserAttributesMapper;
 use Concept\Components\AuthAdmin\Models\UserModel;
 use Exception;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class UserService
 {
     public function __construct(
         private readonly UserModel $userModel,
         private readonly UserAttributesMapper $userAttributesMapper,
-        private readonly AuthService $authService
+        private readonly AuthService $authService,
+        private readonly ?EventDispatcherInterface $dispatcher = null,
     ) {}
 
     public function create(StoreUserDto $dto): UserModel
@@ -22,17 +27,41 @@ class UserService
         /** @var UserModel $user */
         $user = $this->userModel->newQuery()->create($this->userAttributesMapper->fromStore($dto));
 
+        $this->dispatcher?->dispatch(new UserCreated(
+            userId: $user->getId(),
+            email: $user->getEmail(),
+            actorUserId: $this->authService->user()?->getId(),
+        ));
+
         return $user;
     }
 
     public function update(UserModel $user, UpdateUserDto $dto): bool
     {
-        return $user->update($this->userAttributesMapper->fromUpdate($dto));
+        $updated = $user->update($this->userAttributesMapper->fromUpdate($dto));
+        if ($updated) {
+            $this->dispatcher?->dispatch(new UserUpdated(
+                userId: $user->getId(),
+                email: $user->getEmail(),
+                actorUserId: $this->authService->user()?->getId(),
+            ));
+        }
+
+        return $updated;
     }
 
     public function updatePassword(UserModel $user, UpdateUserPasswordDto $dto): bool
     {
-        return $user->update($this->userAttributesMapper->fromPasswordUpdate($dto));
+        $updated = $user->update($this->userAttributesMapper->fromPasswordUpdate($dto));
+        if ($updated) {
+            $this->dispatcher?->dispatch(new UserUpdated(
+                userId: $user->getId(),
+                email: $user->getEmail(),
+                actorUserId: $this->authService->user()?->getId(),
+            ));
+        }
+
+        return $updated;
     }
 
     public function delete(UserModel $user): bool
@@ -41,7 +70,18 @@ class UserService
             throw new Exception('Cannot delete self.');
         }
 
-        return (bool)$user->delete();
+        $userId = $user->getId();
+        $email = $user->getEmail();
+        $deleted = (bool) $user->delete();
+        if ($deleted) {
+            $this->dispatcher?->dispatch(new UserDeleted(
+                userId: $userId,
+                email: $email,
+                actorUserId: $this->authService->user()?->getId(),
+            ));
+        }
+
+        return $deleted;
     }
 
     public function findById(int $id): ?UserModel

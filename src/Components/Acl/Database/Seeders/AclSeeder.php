@@ -40,6 +40,7 @@ class AclSeeder extends Seeder implements SeederInterface
         $adminAclId = $this->insertResource('admin.acl', $adminResourceId);
         $adminUsersId = $this->insertResource('admin.users', $adminResourceId);
         $adminSettingsId = $this->insertResource('admin.settings', $adminResourceId);
+        $adminSystemLogId = $this->insertResource('admin.system_log', $adminResourceId);
         $adminContentId = $this->insertResource('admin.content', $adminResourceId);
 
         $this->insertRule(AclRuleType::Allow, $guestId, $cabinetId, AclPrivilege::View->value);
@@ -52,10 +53,12 @@ class AclSeeder extends Seeder implements SeederInterface
         $this->insertRule(AclRuleType::Allow, $editorId, $adminContentId);
         $this->insertRule(AclRuleType::Deny, $editorId, $adminUsersId);
         $this->insertRule(AclRuleType::Deny, $editorId, $adminSettingsId);
+        $this->insertRule(AclRuleType::Deny, $editorId, $adminSystemLogId);
         $this->insertRule(AclRuleType::Deny, $editorId, $adminAclId);
 
         $this->insertRule(AclRuleType::Allow, $managerId, $adminResourceId);
         $this->insertRule(AclRuleType::Allow, $managerId, $adminSettingsId);
+        $this->insertRule(AclRuleType::Allow, $managerId, $adminSystemLogId);
         $this->insertRule(AclRuleType::Deny, $managerId, $adminAclId);
         $this->insertRule(AclRuleType::Allow, $managerId, $adminContentId);
         $this->insertRule(AclRuleType::Allow, $managerId, $adminUsersId);

@@ -1,0 +1,54 @@
+{% set dash_active = 'system_log' %}
+{% extends '@dashboard/layouts/base.twig' %}
+
+{% block title %}Log #{{ log.id }}{% endblock %}
+{% block content_title %}Log #{{ log.id }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ uri('admin.dashboard') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ uri('admin.system_log') }}">System log</a></li>
+    <li class="breadcrumb-item active" aria-current="page">#{{ log.id }}</li>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ log.event }}</h3>
+            <div class="card-tools">
+                <a class="btn btn-sm btn-outline-secondary" href="{{ uri('admin.system_log') }}">Back to list</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9">#{{ log.id }}</dd>
+
+                <dt class="col-sm-3">Event</dt>
+                <dd class="col-sm-9"><span class="badge text-bg-secondary">{{ log.event }}</span></dd>
+
+                <dt class="col-sm-3">Message</dt>
+                <dd class="col-sm-9">{{ log.message }}</dd>
+
+                <dt class="col-sm-3">Actor user</dt>
+                <dd class="col-sm-9">{{ log.actor_user_id ? '#' ~ log.actor_user_id : '—' }}</dd>
+
+                <dt class="col-sm-3">Subject</dt>
+                <dd class="col-sm-9">
+                    {% if log.subject_type and log.subject_id %}
+                        {{ log.subject_type }} #{{ log.subject_id }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3">Created</dt>
+                <dd class="col-sm-9">{{ log.created_at ? log.created_at|date('Y-m-d H:i:s') : '—' }}</dd>
+
+                <dt class="col-sm-3">Context</dt>
+                <dd class="col-sm-9">
+                    <pre class="mb-0 bg-body-tertiary p-3 rounded small">{{ log.context|json_encode }}</pre>
+                </dd>
+            </dl>
+        </div>
+    </div>
+{% endblock %}

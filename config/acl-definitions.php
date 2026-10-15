@@ -21,6 +21,7 @@ return [
                 'admin.acl',
                 'admin.users',
                 'admin.settings',
+                'admin.system_log',
                 'admin.content',
             ],
 
@@ -31,6 +32,7 @@ return [
                 ['role' => 'editor', 'resource' => 'admin.content'],
                 ['role' => 'manager', 'resource' => 'admin'],
                 ['role' => 'manager', 'resource' => 'admin.settings'],
+                ['role' => 'manager', 'resource' => 'admin.system_log'],
                 ['role' => 'manager', 'resource' => 'admin.content'],
                 ['role' => 'manager', 'resource' => 'admin.users'],
                 ['role' => 'admin', 'resource' => 'admin'],
@@ -41,6 +43,7 @@ return [
                 ['role' => 'user', 'resource' => 'admin'],
                 ['role' => 'editor', 'resource' => 'admin.users'],
                 ['role' => 'editor', 'resource' => 'admin.settings'],
+                ['role' => 'editor', 'resource' => 'admin.system_log'],
                 ['role' => 'editor', 'resource' => 'admin.acl'],
                 ['role' => 'manager', 'resource' => 'admin.acl'],
             ],

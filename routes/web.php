@@ -3,6 +3,7 @@
 use Concept\App\Controllers\ErrorTestController;
 use Concept\App\Controllers\IndexController;
 use Concept\App\Controllers\TestController;
+use Concept\App\Middleware\DumpTelemetryMiddleware;
 use Concept\App\Middleware\HandleValidationExceptionMiddleware;
 use Concept\App\Middleware\ShareViewDataMiddleware;
 use Concept\App\Middleware\StorePreviousUrlMiddleware;
@@ -13,6 +14,7 @@ use League\Route\Router;
 
 /** @var Router $router */
 $router->lazyMiddlewares([
+    DumpTelemetryMiddleware::class,
     StorePreviousUrlMiddleware::class,
     HandleValidationExceptionMiddleware::class,
     HandleCsrfExceptionMiddleware::class,

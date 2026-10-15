@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use Concept\Components\SystemLog\Subscribers\SystemLogSubscriber;
 use Concept\App\Telemetry\Subscribers\ComponentsTelemetrySubscriber;
 use Concept\App\Telemetry\Subscribers\DatabaseTelemetrySubscriber;
 use Concept\App\Telemetry\Subscribers\ExtensionsTelemetrySubscriber;
@@ -17,6 +18,7 @@ return [
             FormRequestTelemetrySubscriber::class,
             ViewTelemetrySubscriber::class,
             TelemetryEventSubscriber::class,
+            SystemLogSubscriber::class,
         ],
     ],
 ];

@@ -44,6 +44,15 @@
                 </li>
                 {% endif %}
 
+                {% if has_component('SystemLog') and (not has_component('Acl') or acl_allowed('admin.system_log', 'view')) %}
+                <li class="nav-item">
+                    <a href="{{ uri('admin.system_log') }}" class="nav-link {{ dash_active == 'system_log' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-journal-text"></i>
+                        <p>System log</p>
+                    </a>
+                </li>
+                {% endif %}
+
                 {% if has_component('Acl') and acl_allowed('admin.acl') %}
                 <li class="nav-item {{ dash_active starts with 'acl_' ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ dash_active starts with 'acl_' ? 'active' : '' }}">

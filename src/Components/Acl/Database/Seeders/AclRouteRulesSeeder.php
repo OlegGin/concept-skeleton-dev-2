@@ -56,6 +56,9 @@ class AclRouteRulesSeeder extends Seeder implements SeederInterface
             ['route' => 'admin.settings.update', 'resource' => 'admin.settings', 'privilege' => $update],
             ['route' => 'admin.settings.destroy', 'resource' => 'admin.settings', 'privilege' => $delete],
 
+            ['route' => 'admin.system_log', 'resource' => 'admin.system_log', 'privilege' => $view],
+            ['route' => 'admin.system_log.show', 'resource' => 'admin.system_log', 'privilege' => $view],
+
             ['route' => 'admin.acl.matrix', 'resource' => 'admin.acl'],
             ['route' => 'admin.acl.matrix.update', 'resource' => 'admin.acl'],
             ['route' => 'admin.acl.roles', 'resource' => 'admin.acl'],
