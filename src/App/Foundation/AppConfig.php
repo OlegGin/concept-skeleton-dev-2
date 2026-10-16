@@ -2,7 +2,12 @@
 
 namespace Concept\App\Foundation;
 
+use Closure;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
+use Concept\Extensions\PathManager\PathManager;
+use PDO;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 
 /**
  * App-specific composite config shapes for Stack bootstrap (glue).
@@ -88,5 +93,29 @@ final class AppConfig
             'use_only_cookies' => $this->config->getBool(ConfigKey::SESSION_OPTIONS_USE_ONLY_COOKIES, true),
             'use_strict_mode' => $this->config->getBool(ConfigKey::SESSION_OPTIONS_USE_STRICT_MODE, true),
         ];
+    }
+
+    /**
+     * @return Closure(): NativeFileSessionHandler
+     */
+    public function getSessionHandlerFactory(PathManager $pathManager): Closure
+    {
+        $sessionFilePath = $this->config->get(ConfigKey::SESSION_FILE_PATH);
+
+        return static function () use ($pathManager, $sessionFilePath): NativeFileSessionHandler {
+            return is_string($sessionFilePath) && $sessionFilePath !== ''
+                ? new NativeFileSessionHandler($pathManager->root($sessionFilePath))
+                : new NativeFileSessionHandler();
+        };
+    }
+
+    /**
+     * @return Closure(): PdoSessionHandler
+     */
+    public function getPdoSessionHandlerFactory(PDO $pdo): Closure
+    {
+        $table = $this->config->getString(ConfigKey::SESSION_PDO_TABLE, 'sessions');
+
+        return static fn (): PdoSessionHandler => new PdoSessionHandler($pdo, ['db_table' => $table]);
     }
 }

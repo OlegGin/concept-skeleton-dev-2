@@ -25,7 +25,6 @@ use Concept\Stack\Bricks\View\ViewBrick;
 use Concept\Stack\ConceptStack;
 use League\Container\Container;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 use Whoops\Handler\PrettyPageHandler;
 
 /**
@@ -76,7 +75,7 @@ final class AdminApiStackBootstrap
 
         $stack->add(new SessionBrick())->builder()
             ->setOptions($app->sessionCookieOptions())
-            ->setHandlerFactory(fn(): NativeFileSessionHandler => new NativeFileSessionHandler())
+            ->setHandlerFactory($app->getSessionHandlerFactory($pathManager))
             ->withCsrf();
 
         // routes.list typically: ['routes/web.php', 'routes/api.php'] — middleware differs per file

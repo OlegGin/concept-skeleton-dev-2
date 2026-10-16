@@ -20,7 +20,6 @@ use Concept\Stack\Bricks\Validation\ValidationBrick;
 use Concept\Stack\Bricks\View\ViewBrick;
 use Concept\Stack\ConceptStack;
 use League\Container\Container;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 use Whoops\Handler\PrettyPageHandler;
 
 /**
@@ -57,7 +56,7 @@ final class FormSiteStackBootstrap
 
         $stack->add(new SessionBrick())->builder()
             ->setOptions($app->sessionCookieOptions())
-            ->setHandlerFactory(fn(): NativeFileSessionHandler => new NativeFileSessionHandler())
+            ->setHandlerFactory($app->getSessionHandlerFactory($pathManager))
             ->withCsrf();
 
         $stack->add(new HttpBrick())->builder()

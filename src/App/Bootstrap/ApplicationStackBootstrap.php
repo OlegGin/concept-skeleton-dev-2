@@ -36,8 +36,6 @@ use League\Event\ListenerSubscriber;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Whoops\Handler\PrettyPageHandler;
 
 /**
@@ -139,17 +137,10 @@ final class ApplicationStackBootstrap
             ->builder()
             ->setOptions($app->sessionOptions());
         if ($config->getString(ConfigKey::SESSION_DRIVER, 'file') === 'pdo') {
-            $session->setHandlerFactory(fn(): PdoSessionHandler => new PdoSessionHandler(
-                ContainerDependency::get($container, CapsuleManager::class)->getConnection()->getPdo(),
-                ['db_table' => $config->getString(ConfigKey::SESSION_PDO_TABLE, 'sessions')],
-            ));
+            $pdo = ContainerDependency::get($container, CapsuleManager::class)->getConnection()->getPdo();
+            $session->setHandlerFactory($app->getPdoSessionHandlerFactory($pdo));
         } else {
-            $sessionFilePath = $config->get(ConfigKey::SESSION_FILE_PATH);
-            $session->setHandlerFactory(function() use ($pathManager, $sessionFilePath): NativeFileSessionHandler {
-                return is_string($sessionFilePath) && $sessionFilePath !== ''
-                    ? new NativeFileSessionHandler($pathManager->root($sessionFilePath))
-                    : new NativeFileSessionHandler();
-            });
+            $session->setHandlerFactory($app->getSessionHandlerFactory($pathManager));
         }
         $session->withCsrf();
 

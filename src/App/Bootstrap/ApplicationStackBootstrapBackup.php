@@ -34,7 +34,6 @@ use League\Event\ListenerSubscriber;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 use Whoops\Handler\PrettyPageHandler;
 
 /**
@@ -122,14 +121,10 @@ final class ApplicationStackBootstrapBackup
             $database->withEmitQueryEvents();
         }
 
-        $sessionFilePath = $config->get(ConfigKey::SESSION_FILE_PATH);
-        $stack->add(new SessionBrick())->builder()
+        $stack->add(new SessionBrick())
+            ->builder()
             ->setOptions($app->sessionOptions())
-            ->setHandlerFactory(function() use ($pathManager, $sessionFilePath): NativeFileSessionHandler {
-                return is_string($sessionFilePath) && $sessionFilePath !== ''
-                    ? new NativeFileSessionHandler($pathManager->root($sessionFilePath))
-                    : new NativeFileSessionHandler();
-            })
+            ->setHandlerFactory($app->getSessionHandlerFactory($pathManager))
             ->withCsrf();
 
         $stack->add(new HttpBrick())->builder()
