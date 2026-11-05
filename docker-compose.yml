@@ -2,7 +2,6 @@ services:
   app:
     build: .
     container_name: concept_skeleton_dev_2
-    restart: always
     user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "8088:80"
@@ -24,7 +23,6 @@ services:
     image: mysql:8.4
     command: --mysql-native-password=ON
     container_name: concept_skeleton_dev_db_2
-    restart: always
     environment:
       MYSQL_DATABASE: concept_skeleton_dev_db_2
       MYSQL_ROOT_PASSWORD: root
