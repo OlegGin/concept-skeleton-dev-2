@@ -137,8 +137,9 @@ final class ApplicationStackBootstrap
             ->builder()
             ->setOptions($app->sessionOptions());
         if ($config->getString(ConfigKey::SESSION_DRIVER, 'file') === 'pdo') {
-            $pdo = ContainerDependency::get($container, CapsuleManager::class)->getConnection()->getPdo();
-            $session->setHandlerFactory($app->getPdoSessionHandlerFactory($pdo));
+            $session->setHandlerFactory($app->getPdoSessionHandlerFactory(
+                static fn () => ContainerDependency::get($container, CapsuleManager::class)->getConnection()->getPdo(),
+            ));
         } else {
             $session->setHandlerFactory($app->getSessionHandlerFactory($pathManager));
         }

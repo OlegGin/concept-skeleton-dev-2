@@ -110,12 +110,13 @@ final class AppConfig
     }
 
     /**
+     * @param Closure(): PDO $pdoFactory Resolved lazily — Capsule must already be registered
      * @return Closure(): PdoSessionHandler
      */
-    public function getPdoSessionHandlerFactory(PDO $pdo): Closure
+    public function getPdoSessionHandlerFactory(Closure $pdoFactory): Closure
     {
         $table = $this->config->getString(ConfigKey::SESSION_PDO_TABLE, 'sessions');
 
-        return static fn (): PdoSessionHandler => new PdoSessionHandler($pdo, ['db_table' => $table]);
+        return static fn (): PdoSessionHandler => new PdoSessionHandler($pdoFactory(), ['db_table' => $table]);
     }
 }
