@@ -466,7 +466,7 @@ Skeleton (`ApplicationStackBootstrap` / stack Http brick) описує повн�
 - **ServerRequest** → resolver-клас у core, реєструється `HttpKernelServiceProvider` (не hardcode в RouteStrategy)
 - **castValue / typed route params** → extension Casting, базовий route param без casting — у core
 - **Config** → не використовувати `ConfigInterface` під час міграції; явні параметри; Config extension — в кінці
-- **Enriched request** → лише через resolvers/параметри handler-а; `prepareRequest` додає route vars як attributes, **без** `container->add(ServerRequestInterface)`. Container request — тільки entry point для `App::handle()`. Не використовувати `RequestProxy` у core.
+- **Enriched request** → лише через resolvers/параметри handler-а; `prepareRequest` додає route vars як attributes. Entrypoint передає request у `App::handle($request)`; у контейнері `ServerRequestInterface` не реєструється. `RequestContext` — на час `HttpRunner::handle`. Не використовувати `RequestProxy` у core.
 
 ## Старе ядро та конфіги (reference)
 
@@ -598,7 +598,7 @@ readlink -f /var/www/concept-skeleton-dev-2/vendor/php-concept/core-2
 ```
 public/index.php
   → bootstrap/app.php (App + providers)
-  → App::handle()
+  → App::handle($request)
     → container request (globals) → Router::dispatch($request)
       → RouteStrategy::invokeRouteCallable()
         → interceptors (request без route attributes; є $route)
@@ -612,7 +612,7 @@ public/index.php
 
 | Request | Джерело | Route attributes |
 |---------|---------|------------------|
-| Container `ServerRequestInterface` | `HttpKernelServiceProvider`, globals | Ні — лише для `App::handle()` entry |
+| Container `ServerRequestInterface` | — | Ні — request лише аргументом `App::handle($request)` / `RequestContext` |
 | Enriched | `prepareRequest()` → resolvers → handler | Так |
 
 Extensions (FormRequest, ResponseFactory): отримують `$request` **явно** з resolver/параметра методу, не `$container->get(ServerRequestInterface::class)`.

@@ -12,6 +12,8 @@ return [
             TwigAppExtension::class,
         ],
         'route_namespace' => [
+            '/' => 'frontend',
+            'admin/' => 'dashboard',
         ],
         'cache_dir' => 'views',
     ],

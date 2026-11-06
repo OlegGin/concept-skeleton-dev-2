@@ -6,7 +6,6 @@ use Concept\Extensions\Components\ComponentRegistry;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\Http\Contracts\UrlGeneratorInterface;
 use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
-use Psr\Http\Message\ServerRequestInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -20,7 +19,6 @@ class TwigAppExtension extends AbstractExtension
         private readonly ConfigInterface $config,
         private readonly ViewRouteNamespaceResolver $routeNamespaceResolver,
         private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly ServerRequestInterface $request,
         private readonly ComponentRegistry $componentRegistry,
     ) {}
 
@@ -43,7 +41,7 @@ class TwigAppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('config', [$this->config, 'get']),
-            new TwigFunction('route_namespace', fn(): ?string => $this->routeNamespaceResolver->resolve($this->request)),
+            new TwigFunction('route_namespace', [$this->routeNamespaceResolver, 'resolve']),
             new TwigFunction('uri', [$this->urlGenerator, 'uri']),
             new TwigFunction('url', [$this->urlGenerator, 'url']),
             new TwigFunction('base_url', [$this->urlGenerator, 'base']),

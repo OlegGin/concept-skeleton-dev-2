@@ -9,6 +9,8 @@ use Concept\Components\DebugBar\Support\ExtensionsDataCollector;
 use Concept\Components\DebugBar\Support\RouteDataCollector;
 use Concept\Components\DebugBar\Support\ComponentsDataCollector;
 use Concept\Components\DebugBar\Support\TimelineDataCollector;
+use Concept\Core\Container\ContainerDependency;
+use Concept\Core\Http\Contracts\RequestContextInterface;
 use Concept\Extensions\Config\Contracts\ConfigInterface;
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\Http\Routing\RouteDescriptor;
@@ -16,7 +18,6 @@ use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use Concept\Extensions\Telemetry\TelemetryCollector;
 use DebugBar\JavascriptRenderer;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use Psr\Http\Message\ServerRequestInterface;
 
 class DebugBarServiceProvider extends AbstractServiceProvider
 {
@@ -37,37 +38,44 @@ class DebugBarServiceProvider extends AbstractServiceProvider
         $container = $this->getContainer();
 
         $container->add(CustomDebugBar::class, function () use ($container) {
-            /** @var ServerRequestInterface $request */
-            $request = $container->get(ServerRequestInterface::class);
-            /** @var SessionInterface $session */
-            $session = $container->get(SessionInterface::class);
-            /** @var TelemetryCollector $telemetryCollector */
-            $telemetryCollector = $container->get(TelemetryCollector::class);
-            /** @var DataMaskerInterface $masker */
-            $masker = $container->get(DataMaskerInterface::class);
+            $debugBar = new CustomDebugBar(
+                ContainerDependency::get($container, RequestContextInterface::class),
+                ContainerDependency::get($container, SessionInterface::class),
+                ContainerDependency::get($container, TelemetryCollector::class),
+                ContainerDependency::get($container, DataMaskerInterface::class),
+            );
 
-            $debugBar = new CustomDebugBar($request, $session, $telemetryCollector, $masker);
+            $config = ContainerDependency::get($container, ConfigInterface::class);
+            $routeDescriptor = ContainerDependency::get($container, RouteDescriptor::class);
 
-            /** @var ConfigInterface $config */
-            $config = $container->get(ConfigInterface::class);
-            /** @var RouteDescriptor $routeDescriptor */
-            $routeDescriptor = $container->get(RouteDescriptor::class);
-
-            $debugBar->addCollector(new DatabaseDataCollector($telemetryCollector));
-            $debugBar->addCollector(new RouteDataCollector($telemetryCollector, $routeDescriptor));
-            $debugBar->addCollector(new ComponentsDataCollector($telemetryCollector));
-            $debugBar->addCollector(new ExtensionsDataCollector($telemetryCollector));
-            $debugBar->addCollector(new TimelineDataCollector($telemetryCollector));
-            $debugBar->addCollector(new ConfigDataCollector($config, $masker));
+            $debugBar->addCollector(new DatabaseDataCollector(
+                ContainerDependency::get($container, TelemetryCollector::class),
+            ));
+            $debugBar->addCollector(new RouteDataCollector(
+                ContainerDependency::get($container, TelemetryCollector::class),
+                $routeDescriptor,
+            ));
+            $debugBar->addCollector(new ComponentsDataCollector(
+                ContainerDependency::get($container, TelemetryCollector::class),
+            ));
+            $debugBar->addCollector(new ExtensionsDataCollector(
+                ContainerDependency::get($container, TelemetryCollector::class),
+            ));
+            $debugBar->addCollector(new TimelineDataCollector(
+                ContainerDependency::get($container, TelemetryCollector::class),
+            ));
+            $debugBar->addCollector(new ConfigDataCollector(
+                $config,
+                ContainerDependency::get($container, DataMaskerInterface::class),
+            ));
 
             return $debugBar;
         })->setShared(true);
 
         $container->add(JavascriptRenderer::class, function () use ($container) {
-            /** @var CustomDebugBar $debugBar */
-            $debugBar = $container->get(CustomDebugBar::class);
+            $debugBar = ContainerDependency::get($container, CustomDebugBar::class);
             $debugBarRenderer = $debugBar->getJavascriptRenderer();
-            $debugBarRenderer->setBaseUrl( self::ASSETS_DIR);
+            $debugBarRenderer->setBaseUrl(self::ASSETS_DIR);
 
             return $debugBarRenderer;
         })->setShared(true);

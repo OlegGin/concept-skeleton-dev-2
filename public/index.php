@@ -8,6 +8,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 /** @var App $app */
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-$response = $app->handle();
+$request = $app->requestFromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+$response = $app->handle($request);
 
-(new SapiEmitter)->emit($response);
+(new SapiEmitter())->emit($response);

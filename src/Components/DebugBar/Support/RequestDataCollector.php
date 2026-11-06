@@ -7,9 +7,9 @@ use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use Concept\Extensions\Telemetry\Contracts\TelemetryItemInterface;
 use Concept\Extensions\Telemetry\TelemetryCollector;
 use Concept\App\Telemetry\TelemetryEvent;
+use Concept\Core\Http\Contracts\RequestContextInterface;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
-use Psr\Http\Message\ServerRequestInterface;
 
 final class RequestDataCollector extends DataCollector implements Renderable
 {
@@ -18,7 +18,7 @@ final class RequestDataCollector extends DataCollector implements Renderable
     private const string NAME = 'request';
 
     public function __construct(
-        private readonly ServerRequestInterface $request,
+        private readonly RequestContextInterface $requestContext,
         private readonly SessionInterface $session,
         private readonly TelemetryCollector $telemetryCollector,
         private readonly DataMaskerInterface $masker,
@@ -34,15 +34,24 @@ final class RequestDataCollector extends DataCollector implements Renderable
      */
     public function collect(): array
     {
+        $request = $this->requestContext->current();
+        if ($request === null) {
+            return [
+                'data' => [],
+                'tooltip' => null,
+                'badge' => null,
+            ];
+        }
+
         $data = [
-            'Path' => $this->request->getUri()->getPath(),
-            'Method' => $this->request->getMethod(),
+            'Path' => $request->getUri()->getPath(),
+            'Method' => $request->getMethod(),
             'View' => $this->getTplRenderInfo(),
-            'QueryParams' => $this->masker->mask($this->request->getQueryParams()),
-            'Cookies' => $this->masker->mask($this->request->getCookieParams()),
+            'QueryParams' => $this->masker->mask($request->getQueryParams()),
+            'Cookies' => $this->masker->mask($request->getCookieParams()),
             'Session' => $this->masker->mask($this->session->all()),
-            'Uri' => $this->request->getUri(),
-            'Attributes' => $this->request->getAttributes(),
+            'Uri' => $request->getUri(),
+            'Attributes' => $request->getAttributes(),
         ];
 
         foreach ($data as $name => $global) {
