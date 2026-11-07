@@ -13,6 +13,7 @@ use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingBrick;
 use Concept\Stack\Bricks\Http\HttpBrick;
 use Concept\Stack\Bricks\Logging\LoggingBrick;
 use Concept\Stack\Bricks\View\ViewBrick;
+use Concept\Stack\Bricks\ViewTwig\ViewTwigBrick;
 use Concept\Stack\ConceptStack;
 use League\Container\Container;
 use Whoops\Handler\PrettyPageHandler;
@@ -44,14 +45,17 @@ final class StaticSiteStackBootstrap
             ->setRoutes($pathManager->rootList($config->getStringList(ConfigKey::ROUTES_LIST)))
             ->setInterceptors($config->getClassList(ConfigKey::ROUTES_INTERCEPTORS, RouteInterceptorInterface::class));
 
+        $twig = new ViewTwigBrick();
+        $twig->builder()
+            ->setViewsPath($pathManager->get(PathName::VIEWS))
+            ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
+            ->setDebug($debug);
+
         $stack->add(new ViewBrick())->builder()
             ->setPaths($pathManager->rootMap($config->getStringMap(ConfigKey::VIEW_PATHS)))
             ->setExtensions([TwigAppExtension::class])
             ->setRouteNamespaces($config->getStringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
-            ->withTwig()
-            ->setViewsPath($pathManager->get(PathName::VIEWS))
-            ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
-            ->setDebug($debug);
+            ->withEngine($twig);
 
         $stack->add(new ErrorHandlingBrick())->builder()
             ->setDebug($debug, new PrettyPageHandler())

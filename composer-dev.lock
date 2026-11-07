@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b20d00b590538ec2db9e2fcd60d9f19d",
+    "content-hash": "bbeb12f00dc8944df42a3b5c25d342fb",
     "packages": [
         {
             "name": "brick/math",
@@ -2140,7 +2140,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/casting-valinor",
-                "reference": "266c53830a263deda2d699a982963834ec8b188b"
+                "reference": "4862eb3f6b20dbcb67f7ce987c2f134a7fe3450e"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2169,7 +2169,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/components",
-                "reference": "a3a8645fff95ffb4496aa3abdc76e2dd3f39b4b4"
+                "reference": "0107a9bd49554171b63dca21227e685ad75e8909"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2206,7 +2206,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/console-symfony",
-                "reference": "a4b863165ee697dc58b4d84840d62935ec963759"
+                "reference": "f886d29d906735aa2e1888c217ff90bd235217e1"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2236,7 +2236,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/data-masker",
-                "reference": "5e6c0ed63bec8505534760715c187fe1de3947ad"
+                "reference": "d32990b3f1904de9b524b3f4a5be73b22b2a902d"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2265,7 +2265,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/database-eloquent",
-                "reference": "253bee4cc0bfb2de21c9cf47150006d05b3adddc"
+                "reference": "2c86e74cbbba4af87e5781371c678424134ad4db"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2298,7 +2298,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/error-handler-whoops",
-                "reference": "e316a7a010b2125ee8160e93237ce8fc091b7452"
+                "reference": "b863a693f0e5d2f067da4caa60ebe8b87426c299"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2306,13 +2306,15 @@
                 "php": "^8.4",
                 "php-concept/brick-http": "^1.0",
                 "php-concept/brick-logger-monolog": "^1.0",
-                "php-concept/brick-view": "^1.0",
                 "php-concept/core-2": "^1.0",
                 "php-concept/extension-error-handler-whoops": "^1.0",
                 "php-concept/extension-http": "^1.0",
                 "php-concept/extension-logger-monolog": "^1.0",
-                "php-concept/extension-view": "^1.0",
                 "php-concept/stack": "^2.0"
+            },
+            "suggest": {
+                "php-concept/brick-view": "Required for withViewRenderer()",
+                "php-concept/extension-view": "Required for withViewRenderer()"
             },
             "type": "library",
             "autoload": {
@@ -2335,7 +2337,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/event",
-                "reference": "71a53928c5305975b112aea79ab73ecce8ed0420"
+                "reference": "899ccfa5cfe7c71239c963cd2855a0571020f178"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2364,7 +2366,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/http",
-                "reference": "1a887abaa4f2a622a4452fde790adf70b14033f5"
+                "reference": "71db470e928d65bebf833fde535339470fce18f2"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2399,7 +2401,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/logger-monolog",
-                "reference": "580c67c21a91817a221645df0cd5b367252ed3cb"
+                "reference": "7ff54076d2f61c2b60a383bd2157859789706769"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2431,7 +2433,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/session-symfony",
-                "reference": "46874e09758b9867a23cd1388772494763ef86b4"
+                "reference": "f53b3b89c1bd666af7388900db4c468febe5cfaa"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2463,7 +2465,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/telemetry",
-                "reference": "2a1c42d1b50a0f5db5237b88efebce8c01705efa"
+                "reference": "71682ffc6b52ceaccc4399067de06ee7ca74e596"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2495,7 +2497,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/validation-rakit",
-                "reference": "7cf4276cc2b2e97dbb5bdf8a6c7f48ea63d100a5"
+                "reference": "e22b5e33da515f5faea25cbef84af22766e5e710"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2530,7 +2532,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-bricks/packages/view",
-                "reference": "1a5cb402f2e9003c8a3059b0135791e92ef1ab19"
+                "reference": "4907ce4a3fcaaf615544e3c37539a5781ff7870d"
             },
             "require": {
                 "league/container": "^5.1",
@@ -2539,8 +2541,6 @@
                 "php-concept/core-2": "^1.0",
                 "php-concept/extension-http": "^1.0",
                 "php-concept/extension-view": "^1.0",
-                "php-concept/extension-view-plates": "^1.0",
-                "php-concept/extension-view-twig": "^1.0",
                 "php-concept/stack": "^2.0"
             },
             "type": "library",
@@ -2552,7 +2552,37 @@
             "license": [
                 "MIT"
             ],
-            "description": "Concept stack brick: view (Twig / Plates)",
+            "description": "Concept stack brick: view registry (engine via brick-view-twig / brick-view-plates)",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "php-concept/brick-view-twig",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "../concept-bricks/packages/view-twig",
+                "reference": "f1a49fb7a2814ed5da2e7251e08631d683a8d717"
+            },
+            "require": {
+                "league/container": "^5.1",
+                "php": "^8.4",
+                "php-concept/brick-view": "^1.0",
+                "php-concept/extension-view-twig": "^1.0",
+                "php-concept/stack": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concept\\Stack\\Bricks\\ViewTwig\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Concept stack brick: Twig view engine",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -2564,7 +2594,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-core-2",
-                "reference": "1725dfc28a4bef374070268e0b75dae6a83a2971"
+                "reference": "df54479e9c7673858ae99b3fdbabc86273062eb2"
             },
             "require": {
                 "laminas/laminas-diactoros": "^3.8",
@@ -3281,7 +3311,7 @@
             "dist": {
                 "type": "path",
                 "url": "../concept-stack",
-                "reference": "5e8ce8d0228d93926650b8afbefaf42c7b66dbd8"
+                "reference": "f97658b170c0ac68bb7d76c4784bb958d8a82b20"
             },
             "require": {
                 "league/container": "^5.1",
@@ -8079,10 +8109,10 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
-    "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
 }

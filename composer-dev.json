@@ -69,7 +69,9 @@
                     "php-concept/brick-session-symfony": "1.0.0",
                     "php-concept/brick-telemetry": "1.0.0",
                     "php-concept/brick-validation-rakit": "1.0.0",
-                    "php-concept/brick-view": "1.0.0"
+                    "php-concept/brick-view": "1.0.0",
+                    "php-concept/brick-view-twig": "1.0.0",
+                    "php-concept/brick-view-plates": "1.0.0"
                 }
             }
         }
@@ -131,7 +133,8 @@
         "symfony/cache": "^7.2|^8.0",
         "twbs/bootstrap": "^5.3",
         "twbs/bootstrap-icons": "^1.13",
-        "vlucas/phpdotenv": "^5.6"
+        "vlucas/phpdotenv": "^5.6",
+        "php-concept/brick-view-twig": "^1.0"
     },
     "scripts": {
         "post-install-cmd": [

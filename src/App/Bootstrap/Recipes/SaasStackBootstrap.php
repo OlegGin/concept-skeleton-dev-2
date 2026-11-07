@@ -27,6 +27,7 @@ use Concept\Stack\Bricks\Session\SessionBrick;
 use Concept\Stack\Bricks\Telemetry\TelemetryBrick;
 use Concept\Stack\Bricks\Validation\ValidationBrick;
 use Concept\Stack\Bricks\View\ViewBrick;
+use Concept\Stack\Bricks\ViewTwig\ViewTwigBrick;
 use Concept\Stack\ConceptStack;
 use League\Container\Container;
 use League\Event\ListenerSubscriber;
@@ -105,14 +106,17 @@ final class SaasStackBootstrap
             ->withFormRequests()
             ->withTypedRouteParameters();
 
+        $twig = new ViewTwigBrick();
+        $twig->builder()
+            ->setViewsPath($pathManager->get(PathName::VIEWS))
+            ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
+            ->setDebug($debug);
+
         $stack->add(new ViewBrick())->builder()
             ->setPaths($pathManager->rootMap($config->getStringMap(ConfigKey::VIEW_PATHS)))
             ->setExtensions([TwigAppExtension::class])
             ->setRouteNamespaces($config->getStringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
-            ->withTwig()
-            ->setViewsPath($pathManager->get(PathName::VIEWS))
-            ->setCacheDir($pathManager->get(PathName::CACHE, $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views')))
-            ->setDebug($debug);
+            ->withEngine($twig);
 
         $stack->add(new ConsoleBrick())->builder()
             ->setName($config->getString(ConfigKey::APP_NAME, 'SaaS'))

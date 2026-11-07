@@ -29,6 +29,7 @@ use Concept\Stack\Bricks\Session\SessionBrick;
 use Concept\Stack\Bricks\Telemetry\TelemetryBrick;
 use Concept\Stack\Bricks\Validation\ValidationBrick;
 use Concept\Stack\Bricks\View\ViewBrick;
+use Concept\Stack\Bricks\ViewTwig\ViewTwigBrick;
 use Concept\Stack\ConceptStack;
 use Illuminate\Database\Capsule\Manager as CapsuleManager;
 use League\Container\Container;
@@ -158,15 +159,18 @@ final class ApplicationStackBootstrap
         }
 
         $viewCacheDir = $config->getString(ConfigKey::VIEW_CACHE_DIR, 'views');
+        $twig = new ViewTwigBrick();
+        $twig->builder()
+            ->setViewsPath($pathManager->get(PathName::VIEWS))
+            ->setCacheDir($pathManager->get(PathName::CACHE, $viewCacheDir))
+            ->setDebug($debug);
+
         $stack->add(new ViewBrick())
             ->builder()
             ->setPaths($pathManager->rootMap($config->getStringMap(ConfigKey::VIEW_PATHS)))
             ->setExtensions($viewExtensions)
             ->setRouteNamespaces($config->getStringMap(ConfigKey::VIEW_ROUTE_NAMESPACE))
-            ->withTwig()
-            ->setViewsPath($pathManager->get(PathName::VIEWS))
-            ->setCacheDir($pathManager->get(PathName::CACHE, $viewCacheDir))
-            ->setDebug($debug);
+            ->withEngine($twig);
 
         $stack->add(new ConsoleBrick())
             ->builder()
