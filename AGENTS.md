@@ -533,7 +533,7 @@ config/*.php                   → data-only; glue → stack params
 - [x] `HandleValidationExceptionMiddleware` — `ValidationException` → 422 JSON або redirect + flash (web)
 - [x] Тест: `POST /test/echo` + `TestEchoRequest` (name, email)
 - [x] **Console extension**: `ConsoleSymfonyServiceProvider`, `route:list`
-- [x] **Session + CSRF**: stack `addSession()->withCsrf()`; middleware chain у `web.php`
+- [x] **Session + CSRF**: stack `addSession()->withCsrf()`; `VerifyCsrfTokenMiddleware` у extension, `HandleCsrfExceptionMiddleware` у app (`routes/web.php`)
 - [x] **Validation redirect flow**: `HandleValidationExceptionMiddleware` + flash + форма на `/` з errors/old
 - [x] **Json middleware**: `routes/api.php`, `ParseJsonBodyMiddleware`, `ForceJsonResponseMiddleware`; CSRF/session middleware лише на web group
 - [x] **DataMasker extension**: stack `addMasking()` + opt-in `LoggingBuilder::withMasking()` / validation / db
