@@ -31,10 +31,12 @@ final class HandleValidationExceptionMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         } catch (ValidationException $e) {
             if ($this->requestFormat->expectsJson($request)) {
-                return $this->responseFactory->jsonError(
-                    $e->getMessage(),
+                return $this->responseFactory->json(
+                    [
+                        'message' => $e->getMessage(),
+                        'errors' => $e->getErrors(),
+                    ],
                     HttpStatusCode::UNPROCESSABLE_ENTITY,
-                    $e->getErrors(),
                 );
             }
 

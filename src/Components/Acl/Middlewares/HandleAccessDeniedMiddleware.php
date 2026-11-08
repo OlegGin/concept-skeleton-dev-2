@@ -26,9 +26,9 @@ final class HandleAccessDeniedMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         } catch (AccessDeniedException $exception) {
             if ($this->requestFormat->expectsJson($request)) {
-                return $this->responseFactory->jsonError(
-                    $exception->getMessage(),
-                    HttpStatusCode::FORBIDDEN
+                return $this->responseFactory->json(
+                    ['message' => $exception->getMessage()],
+                    HttpStatusCode::FORBIDDEN,
                 );
             }
 

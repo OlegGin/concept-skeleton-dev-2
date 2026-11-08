@@ -14,14 +14,14 @@ final class ApiController
 
     public function ping(): ResponseInterface
     {
-        return $this->response->jsonSuccess(['message' => 'pong']);
+        return $this->response->json(['message' => 'pong']);
     }
 
     public function echo(ServerRequestInterface $request): ResponseInterface
     {
         $body = $request->getParsedBody();
 
-        return $this->response->jsonSuccess([
+        return $this->response->json([
             'method' => $request->getMethod(),
             'received' => is_array($body) ? $body : [],
         ]);
