@@ -5,7 +5,7 @@ namespace Concept\App\Bootstrap;
 use Concept\App\Http\Error\Handlers\FallbackFileHandler;
 use Concept\Extensions\ErrorHandlerWhoops\EarlyWhoopsServiceProvider;
 use Concept\Extensions\ErrorHandlerWhoops\Handlers\ReportExceptionHandler;
-use Concept\Stack\Bricks\ErrorHandling\Reporting\PhpErrorLogReporter;
+use Concept\Extensions\ErrorHandlerWhoops\Reporting\PhpErrorLogReporter;
 use League\Container\Container;
 use Whoops\Handler\Handler;
 use Whoops\Handler\PlainTextHandler;
